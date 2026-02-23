@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.turbo/
+.vite/
+.claude/settings.json

@@ -1,0 +1,33 @@
+{
+  "name": "@circa-input/web-component",
+  "version": "0.0.1",
+  "description": "Web Component implementation of circa-input (<circa-input> tag)",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "dev": "vite build --watch"
+  },
+  "dependencies": {
+    "@circa-input/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.0",
+    "vite-plugin-dts": "^4.5.0"
+  }
+}

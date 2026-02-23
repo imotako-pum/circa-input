@@ -1,0 +1,20 @@
+{
+  "name": "circa-input-demo",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Demo site for circa-input",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@circa-input/core": "workspace:*",
+    "@circa-input/web-component": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.1.0"
+  }
+}
