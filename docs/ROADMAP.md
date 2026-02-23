@@ -26,9 +26,9 @@ core完成  WC動作        デモ公開    React対応     npm公開準備
 **現状**: 基本実装・テスト28件が全グリーン。ビルドも成功。
 
 **残タスク**:
-- [ ] `step`属性によるスナップ処理（値を刻み幅に丸めるロジック）
-- [ ] 対称モード連動（`asymmetric=false`時にmarginLow/marginHighを同期）
-- [ ] 上記に対するテスト追加
+- [x] `step`属性によるスナップ処理（値を刻み幅に丸めるロジック）
+- [x] 対称モード連動（`asymmetric=false`時にmarginLow/marginHighを同期）
+- [x] 上記に対するテスト追加
 
 **完了条件**:
 - `pnpm --filter @circa-input/core test` 全グリーン
@@ -180,6 +180,7 @@ M1 ──→ M2 ──→ M3
 | 日付 | マイルストーン | 内容 |
 |------|---------------|------|
 | 2026-02-23 | M1 途中 | core基本実装済み（types, state, validation, helpers, errors）。テスト28件全グリーン。ビルド成功。step処理・対称連動が未実装。 |
+| 2026-02-23 | M1 完了 | step属性スナップ処理（snapToStep関数）と対称モード連動を実装。テスト45件全グリーン。ビルド成功（gzip 0.97KB）。 |
 
 ---
 

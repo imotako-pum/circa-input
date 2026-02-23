@@ -9,6 +9,7 @@ export {
   clampMargins,
   createDefaultConfig,
   createInitialValue,
+  snapToStep,
   updateValue,
 } from "./state.js";
 export type { CircaInputConfig, CircaValue, Distribution } from "./types.js";

@@ -3,6 +3,7 @@ import {
   clampMargins,
   createDefaultConfig,
   createInitialValue,
+  snapToStep,
   updateValue,
 } from "../state.js";
 import type { CircaValue } from "../types.js";
@@ -49,6 +50,43 @@ describe("createDefaultConfig", () => {
     });
     expect(config.asymmetric).toBe(true);
     expect(config.step).toBe(0.5);
+  });
+});
+
+describe("snapToStep", () => {
+  it("step='any'のときはそのまま返す", () => {
+    expect(snapToStep(13.7, { min: 0, max: 100, step: "any" })).toBe(13.7);
+  });
+
+  it("最も近いstep刻みにスナップする", () => {
+    expect(snapToStep(13, { min: 0, max: 100, step: 5 })).toBe(15);
+    expect(snapToStep(12, { min: 0, max: 100, step: 5 })).toBe(10);
+  });
+
+  it("ちょうどstep刻みの値はそのまま", () => {
+    expect(snapToStep(15, { min: 0, max: 100, step: 5 })).toBe(15);
+  });
+
+  it("minを基準にスナップする", () => {
+    // min=2, step=5 → 有効な値: 2, 7, 12, 17, ...
+    expect(snapToStep(10, { min: 2, max: 100, step: 5 })).toBe(12);
+  });
+
+  it("maxを超えない", () => {
+    expect(snapToStep(99, { min: 0, max: 100, step: 5 })).toBe(100);
+    expect(snapToStep(100, { min: 0, max: 97, step: 5 })).toBe(97);
+  });
+
+  it("minを下回らない", () => {
+    expect(snapToStep(-5, { min: 0, max: 100, step: 5 })).toBe(0);
+  });
+
+  it("小数stepでも浮動小数点誤差が出ない", () => {
+    expect(snapToStep(0.3, { min: 0, max: 1, step: 0.1 })).toBe(0.3);
+    expect(snapToStep(0.14, { min: 0, max: 1, step: 0.1 })).toBe(0.1);
+    // 0.15はIEEE 754では0.14999...なので0.1にスナップされる（HTMLの<input step>と同じ挙動）
+    expect(snapToStep(0.15, { min: 0, max: 1, step: 0.1 })).toBe(0.1);
+    expect(snapToStep(0.16, { min: 0, max: 1, step: 0.1 })).toBe(0.2);
   });
 });
 
@@ -150,5 +188,116 @@ describe("updateValue", () => {
     );
     expect(updated.marginLow).toBe(5); // clamped to value - min
     expect(updated.marginHigh).toBe(20);
+  });
+
+  describe("stepスナップ", () => {
+    const stepConfig = createDefaultConfig({ min: 0, max: 100, step: 5 });
+
+    it("valueがstep刻みにスナップされる", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 13 }, stepConfig);
+      expect(updated.value).toBe(15);
+    });
+
+    it("ちょうどstep刻みの値はそのまま", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 20 }, stepConfig);
+      expect(updated.value).toBe(20);
+    });
+
+    it("step='any'の場合はスナップしない", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 13 }, config);
+      expect(updated.value).toBe(13);
+    });
+
+    it("スナップ結果がmaxを超えない", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 99 }, stepConfig);
+      expect(updated.value).toBe(100);
+    });
+
+    it("小数stepに対応する（浮動小数点誤差なし）", () => {
+      const decimalConfig = createDefaultConfig({
+        min: 0,
+        max: 10,
+        step: 0.1,
+      });
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 3.14 }, decimalConfig);
+      expect(updated.value).toBe(3.1);
+    });
+
+    it("minが0以外のときもminを基準にスナップする", () => {
+      const offsetConfig = createDefaultConfig({
+        min: 1,
+        max: 21,
+        step: 5,
+      });
+      const initial = createInitialValue({ distribution: "normal" });
+      // min=1, step=5 → 有効な値: 1, 6, 11, 16, 21
+      const updated = updateValue(initial, { value: 13 }, offsetConfig);
+      expect(updated.value).toBe(11);
+    });
+  });
+
+  describe("対称モード連動（asymmetric=false）", () => {
+    it("marginLowだけ更新するとmarginHighも同期される", () => {
+      const current: CircaValue = {
+        value: 50,
+        marginLow: null,
+        marginHigh: null,
+        distribution: "normal",
+        distributionParams: {},
+      };
+      const updated = updateValue(current, { marginLow: 10 }, config);
+      expect(updated.marginLow).toBe(10);
+      expect(updated.marginHigh).toBe(10);
+    });
+
+    it("marginHighだけ更新するとmarginLowも同期される", () => {
+      const current: CircaValue = {
+        value: 50,
+        marginLow: null,
+        marginHigh: null,
+        distribution: "normal",
+        distributionParams: {},
+      };
+      const updated = updateValue(current, { marginHigh: 15 }, config);
+      expect(updated.marginLow).toBe(15);
+      expect(updated.marginHigh).toBe(15);
+    });
+
+    it("同期後もクランプが適用される", () => {
+      const current: CircaValue = {
+        value: 5,
+        marginLow: null,
+        marginHigh: null,
+        distribution: "normal",
+        distributionParams: {},
+      };
+      // marginHigh=20はそのまま通るが、marginLow=20はvalue-min=5にクランプ
+      const updated = updateValue(current, { marginHigh: 20 }, config);
+      expect(updated.marginHigh).toBe(20);
+      expect(updated.marginLow).toBe(5); // clamped: value(5) - min(0) = 5
+    });
+
+    it("asymmetric=trueの場合は同期しない", () => {
+      const asymConfig = createDefaultConfig({
+        min: 0,
+        max: 100,
+        asymmetric: true,
+      });
+      const current: CircaValue = {
+        value: 50,
+        marginLow: 5,
+        marginHigh: 5,
+        distribution: "normal",
+        distributionParams: {},
+      };
+      const updated = updateValue(current, { marginLow: 10 }, asymConfig);
+      expect(updated.marginLow).toBe(10);
+      expect(updated.marginHigh).toBe(5); // 変更されない
+    });
   });
 });
