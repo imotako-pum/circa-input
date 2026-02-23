@@ -210,7 +210,79 @@ const plain = toPlainValue(circaValue); // 14.0
 
 ---
 
-## 8. 実装優先順位
+## 8. アクセシビリティ（a11y）
+
+最初からしっかり対応する。後付けは構造変更のリスクが高い。
+
+### ARIA
+
+- `<circa-input>` は `role="group"` で全体を囲む
+- 内部のvalue操作部分は `role="slider"` + `aria-valuenow` / `aria-valuemin` / `aria-valuemax`
+- margin操作ハンドル（非対称時）もそれぞれ `role="slider"`
+- `aria-label` で「中心値」「下側許容幅」「上側許容幅」を区別
+
+### キーボード操作
+
+| キー | 動作 |
+|------|------|
+| `Tab` | コンポーネントにフォーカス移動 |
+| `←` / `→` | valueを1step増減（step="any"の場合は範囲の1%） |
+| `Shift + ←` / `Shift + →` | marginを対称に拡縮 |
+| `Home` / `End` | valueをmin / maxに設定 |
+
+### スクリーンリーダー
+
+- 値変更時に `aria-valuenow` を更新し、変更を通知する
+- 読み上げ例：「14、プラスマイナス1」
+
+---
+
+## 9. CSSカスタマイズ
+
+Shadow DOM内部のスタイルはCSS Custom Propertiesで外部からカスタマイズ可能にする。
+
+### 提供するCSS変数（初期設計）
+
+| 変数名 | デフォルト | 説明 |
+|--------|-----------|------|
+| `--circa-track-height` | `8px` | トラックの高さ |
+| `--circa-track-color` | `#e0e0e0` | トラックの色 |
+| `--circa-track-radius` | `4px` | トラックの角丸 |
+| `--circa-value-color` | `#1976d2` | 値インジケータの色 |
+| `--circa-margin-color` | `rgba(25, 118, 210, 0.2)` | マージン領域の色 |
+| `--circa-handle-size` | `20px` | ハンドルのサイズ |
+| `--circa-handle-color` | `#1976d2` | ハンドルの色 |
+
+※ 実装中に必要に応じて変数を追加する。追加時はこの表も更新すること。
+
+---
+
+## 10. 対応環境
+
+### ブラウザ
+
+モダンブラウザの最新2バージョンのみ。Polyfillは使用しない。
+
+- Chrome / Edge（最新2バージョン）
+- Firefox（最新2バージョン）
+- Safari（最新2バージョン）
+
+### バンドルサイズ目標
+
+| パッケージ | 目標（gzip） |
+|-----------|-------------|
+| @circa-input/core | 1KB以下 |
+| @circa-input/core + @circa-input/web-component | 5KB以下 |
+
+---
+
+## 11. ライセンス
+
+MIT
+
+---
+
+## 12. 実装優先順位
 
 1. `packages/core` — ロジックとバリデーション
 2. `packages/web-component` — `<circa-input>`タグの実装
@@ -219,7 +291,7 @@ const plain = toPlainValue(circaValue); // 14.0
 
 ---
 
-## 9. 未解決・将来課題
+## 13. 未解決・将来課題
 
 - [ ] `distribution: "skewed"` のUIをどう実現するか
 - [ ] `distributionParams`の具体的な中身の設計
