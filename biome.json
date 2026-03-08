@@ -36,7 +36,8 @@
       "**/*.json",
       "!**/dist",
       "!**/node_modules",
-      "!**/.claude"
+      "!**/.claude",
+      "!**/coverage"
     ]
   }
 }

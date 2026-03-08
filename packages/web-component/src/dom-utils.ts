@@ -9,7 +9,11 @@
  * 値をパーセント位置（0〜100）に変換する。
  * トラック上のインジケータ位置の計算に使う。
  */
-export function valueToPercent(value: number, min: number, max: number): number {
+export function valueToPercent(
+  value: number,
+  min: number,
+  max: number,
+): number {
   if (max === min) return 0;
   return ((value - min) / (max - min)) * 100;
 }
@@ -18,7 +22,11 @@ export function valueToPercent(value: number, min: number, max: number): number 
  * パーセント位置（0〜100）を値に変換する。
  * クリック位置から値を算出するのに使う。
  */
-export function percentToValue(percent: number, min: number, max: number): number {
+export function percentToValue(
+  percent: number,
+  min: number,
+  max: number,
+): number {
   return (percent / 100) * (max - min) + min;
 }
 

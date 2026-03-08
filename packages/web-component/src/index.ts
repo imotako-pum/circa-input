@@ -1,5 +1,9 @@
+export type {
+  CircaInputConfig,
+  CircaValue,
+  Distribution,
+} from "@circa-input/core";
 export { CircaInputElement } from "./circa-input.js";
-export type { CircaValue, CircaInputConfig, Distribution } from "@circa-input/core";
 
 // カスタム要素の登録
 import { CircaInputElement } from "./circa-input.js";
