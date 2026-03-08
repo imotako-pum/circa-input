@@ -1,0 +1,513 @@
+/* === Reset & Base === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: #fff;
+}
+
+/* === Layout === */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* === Hero === */
+.hero {
+  background: linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #42a5f5 100%);
+  color: #fff;
+  padding: 4rem 0 3rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.95;
+  margin-bottom: 1rem;
+}
+
+.hero-description {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.hero-description em {
+  font-style: normal;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+/* === Navigation === */
+.nav {
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.nav .container {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.nav a {
+  display: block;
+  padding: 0.75rem 1.25rem;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.nav a:hover {
+  color: #1976d2;
+  border-bottom-color: #1976d2;
+}
+
+/* === Sections === */
+.section {
+  padding: 3rem 0;
+}
+
+.section-alt {
+  background: #fafafa;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #222;
+}
+
+.section-description {
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+.section-description code {
+  background: #f0f0f0;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: #d32f2f;
+}
+
+/* === Demo Area === */
+.demo-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.demo-input {
+  padding: 2rem 1rem;
+}
+
+.demo-input circa-input {
+  width: 100%;
+}
+
+.demo-output {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.output-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #999;
+  margin-bottom: 0.5rem;
+}
+
+.output-value {
+  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* === Guide === */
+.guide {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  background: #e3f2fd;
+  border-radius: 8px;
+}
+
+.guide-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #1565c0;
+}
+
+.guide-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #1976d2;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* === Use Cases === */
+.use-case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.use-case-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.use-case-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.use-case-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.use-case-description {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.use-case-card circa-input {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.use-case-output {
+  text-align: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.use-case-formatted {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+/* === Playground === */
+.playground-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+}
+
+.playground-main {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.playground-main circa-input {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.playground-controls {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.playground-controls h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.control-group {
+  margin-bottom: 0.75rem;
+}
+
+.control-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.control-group input[type="number"],
+.control-group input[type="text"] {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.control-group input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+.control-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.control-checkbox label {
+  margin-bottom: 0;
+}
+
+.control-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1976d2;
+}
+
+.playground-log {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.playground-log h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+
+.log-entries {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+}
+
+.log-empty {
+  color: #666;
+  font-style: italic;
+}
+
+.log-entry {
+  border-bottom: 1px solid #333;
+  padding: 0.25rem 0;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-type {
+  font-weight: 600;
+}
+
+.log-type-input {
+  color: #4ec9b0;
+}
+
+.log-type-change {
+  color: #dcdcaa;
+}
+
+.log-time {
+  color: #666;
+  margin-right: 0.5em;
+}
+
+.btn-small {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  color: #666;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-small:hover {
+  background: #f0f0f0;
+}
+
+/* === Form Demo === */
+.form-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+
+.form-field circa-input {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-primary {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1565c0;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #666;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f5f5f5;
+}
+
+.form-result {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* === Footer === */
+.footer {
+  background: #333;
+  color: #aaa;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .demo-area {
+    grid-template-columns: 1fr;
+  }
+
+  .guide {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .use-case-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .playground-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .playground-controls {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .form-demo {
+    grid-template-columns: 1fr;
+  }
+}

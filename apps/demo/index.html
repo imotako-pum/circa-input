@@ -4,10 +4,227 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>circa-input Demo</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <h1>circa-input Demo</h1>
-    <p>Coming soon...</p>
+    <!-- ヘッダー -->
+    <header class="hero">
+      <div class="container">
+        <h1>circa-input</h1>
+        <p class="hero-subtitle">
+          値と「その曖昧さ」を同時に入力できるUIプリミティブ
+        </p>
+        <p class="hero-description">
+          従来のUIはユーザーに正確な1点での入力を強制しますが、人間の本音は「14時<em>前後</em>」「5万円<em>くらい</em>」といった曖昧さを含みます。<br />
+          circa-inputはこの曖昧さをそのままデータ化します。
+        </p>
+      </div>
+    </header>
+
+    <!-- ナビゲーション -->
+    <nav class="nav">
+      <div class="container">
+        <a href="#basic">基本操作</a>
+        <a href="#asymmetric">非対称モード</a>
+        <a href="#use-cases">ユースケース</a>
+        <a href="#playground">プレイグラウンド</a>
+        <a href="#form">フォーム統合</a>
+      </div>
+    </nav>
+
+    <!-- Section 1: 基本操作 -->
+    <section id="basic" class="section">
+      <div class="container">
+        <h2>基本操作（対称モード）</h2>
+        <p class="section-description">
+          <strong>クリック</strong>で値を設定し、<strong>上下ドラッグ</strong>でマージン（許容幅）を調整します。<br />
+          マージンは上下対称に広がります。
+        </p>
+        <div class="demo-area">
+          <div class="demo-input">
+            <circa-input id="basic-input" min="0" max="100"></circa-input>
+          </div>
+          <div class="demo-output" id="basic-output">
+            <div class="output-label">CircaValue</div>
+            <pre class="output-value">まだ操作されていません</pre>
+          </div>
+        </div>
+        <div class="guide">
+          <div class="guide-step">
+            <span class="guide-number">1</span>
+            <span>トラック上をクリックして値を設定</span>
+          </div>
+          <div class="guide-step">
+            <span class="guide-number">2</span>
+            <span>値のハンドルを上下にドラッグしてマージンを調整</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: 非対称モード -->
+    <section id="asymmetric" class="section section-alt">
+      <div class="container">
+        <h2>非対称モード</h2>
+        <p class="section-description">
+          <code>asymmetric</code>属性を付けると、下側と上側のマージンを<strong>個別に</strong>調整できます。<br />
+          例：「14時より前は30分OK、後ろは2時間OK」のような入力が可能です。
+        </p>
+        <div class="demo-area">
+          <div class="demo-input">
+            <circa-input id="asymmetric-input" min="0" max="100" asymmetric></circa-input>
+          </div>
+          <div class="demo-output" id="asymmetric-output">
+            <div class="output-label">CircaValue</div>
+            <pre class="output-value">まだ操作されていません</pre>
+          </div>
+        </div>
+        <div class="guide">
+          <div class="guide-step">
+            <span class="guide-number">1</span>
+            <span>クリックで値を設定し、上下ドラッグでマージンを作成</span>
+          </div>
+          <div class="guide-step">
+            <span class="guide-number">2</span>
+            <span>左右のハンドルをそれぞれドラッグして個別に調整</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: ユースケース集 -->
+    <section id="use-cases" class="section">
+      <div class="container">
+        <h2>ユースケース</h2>
+        <p class="section-description">
+          circa-inputは様々な場面で「だいたいの値」を入力するのに使えます。
+        </p>
+
+        <div class="use-case-grid">
+          <!-- 配達時間 -->
+          <div class="use-case-card">
+            <h3>配達時間</h3>
+            <p class="use-case-description">希望する配達時間帯を指定</p>
+            <circa-input id="uc-time" min="9" max="21" step="0.5" default-value="14" default-margin-low="1" default-margin-high="1"></circa-input>
+            <div class="use-case-output" id="uc-time-output">
+              <span class="use-case-formatted">14:00 &plusmn; 1時間</span>
+            </div>
+          </div>
+
+          <!-- 予算 -->
+          <div class="use-case-card">
+            <h3>予算</h3>
+            <p class="use-case-description">だいたいの予算感を入力</p>
+            <circa-input id="uc-budget" min="0" max="100000" step="1000" default-value="50000" default-margin-low="10000" default-margin-high="10000"></circa-input>
+            <div class="use-case-output" id="uc-budget-output">
+              <span class="use-case-formatted">&yen;50,000 &plusmn; &yen;10,000</span>
+            </div>
+          </div>
+
+          <!-- 気温 -->
+          <div class="use-case-card">
+            <h3>気温</h3>
+            <p class="use-case-description">快適に感じる気温の範囲</p>
+            <circa-input id="uc-temp" min="-10" max="40" step="1" default-value="25" default-margin-low="3" default-margin-high="3"></circa-input>
+            <div class="use-case-output" id="uc-temp-output">
+              <span class="use-case-formatted">25&deg;C &plusmn; 3&deg;C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: プレイグラウンド -->
+    <section id="playground" class="section section-alt">
+      <div class="container">
+        <h2>プレイグラウンド</h2>
+        <p class="section-description">
+          属性を動的に変更して、circa-inputの挙動を試してみましょう。
+        </p>
+
+        <div class="playground-layout">
+          <div class="playground-main">
+            <circa-input id="playground-input" min="0" max="100"></circa-input>
+            <div class="demo-output" id="playground-output">
+              <div class="output-label">CircaValue</div>
+              <pre class="output-value">まだ操作されていません</pre>
+            </div>
+          </div>
+
+          <div class="playground-controls">
+            <h3>属性コントロール</h3>
+            <div class="control-group">
+              <label for="ctrl-min">min</label>
+              <input type="number" id="ctrl-min" value="0" />
+            </div>
+            <div class="control-group">
+              <label for="ctrl-max">max</label>
+              <input type="number" id="ctrl-max" value="100" />
+            </div>
+            <div class="control-group">
+              <label for="ctrl-step">step</label>
+              <input type="text" id="ctrl-step" value="any" />
+            </div>
+            <div class="control-group">
+              <label for="ctrl-margin-max">margin-max</label>
+              <input type="text" id="ctrl-margin-max" value="" placeholder="制限なし" />
+            </div>
+            <div class="control-group control-checkbox">
+              <input type="checkbox" id="ctrl-asymmetric" />
+              <label for="ctrl-asymmetric">asymmetric</label>
+            </div>
+            <div class="control-group control-checkbox">
+              <input type="checkbox" id="ctrl-disabled" />
+              <label for="ctrl-disabled">disabled</label>
+            </div>
+          </div>
+
+          <div class="playground-log">
+            <h3>イベントログ</h3>
+            <div class="log-entries" id="event-log">
+              <div class="log-empty">イベントがここに表示されます</div>
+            </div>
+            <button type="button" id="clear-log" class="btn-small">ログをクリア</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: フォーム統合 -->
+    <section id="form" class="section">
+      <div class="container">
+        <h2>フォーム統合</h2>
+        <p class="section-description">
+          <code>name</code>属性を指定すると、<code>&lt;form&gt;</code>のFormDataにCircaValueがJSON文字列として含まれます。<br />
+          <code>required</code>属性でバリデーションも可能です。
+        </p>
+
+        <div class="form-demo">
+          <form id="demo-form">
+            <div class="form-field">
+              <label for="form-input">希望する配達時間</label>
+              <circa-input id="form-input" name="delivery_time" min="9" max="21" step="0.5" required></circa-input>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">送信</button>
+              <button type="reset" class="btn-secondary">リセット</button>
+            </div>
+          </form>
+          <div class="form-result" id="form-result">
+            <div class="output-label">送信結果（FormData）</div>
+            <pre class="output-value">フォームを送信してください</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="footer">
+      <div class="container">
+        <p>circa-input &mdash; 曖昧さをデータ化するUIプリミティブ</p>
+      </div>
+    </footer>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
