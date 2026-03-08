@@ -5,7 +5,7 @@
  * Shadow DOMで描画し、ARIA属性でアクセシビリティを確保する。
  */
 import type { CircaInputConfig, CircaValue } from "@circa-input/core";
-import { updateValue } from "@circa-input/core";
+import { checkRequired, updateValue } from "@circa-input/core";
 import { buildConfig, buildInitialValue } from "./attributes.js";
 import { valueToPercent } from "./dom-utils.js";
 import { createTemplate } from "./template.js";
@@ -60,6 +60,12 @@ export class CircaInputElement extends HTMLElement {
   private _handleDragStartX = 0;
   private _handleDragStartMargin = 0;
 
+  /** フォーム連携 */
+  private _internals: ElementInternals | null = null;
+
+  /** フォーム関連カスタム要素として登録 */
+  static formAssociated = true;
+
   static get observedAttributes(): readonly string[] {
     return OBSERVED_ATTRS;
   }
@@ -67,6 +73,13 @@ export class CircaInputElement extends HTMLElement {
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: "open" });
+
+    // ElementInternals（フォーム連携用）
+    try {
+      this._internals = this.attachInternals();
+    } catch {
+      // happy-dom では未サポートの場合がある
+    }
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
 
@@ -110,6 +123,14 @@ export class CircaInputElement extends HTMLElement {
   /** 現在のCircaValueを読み取り専用プロパティとして公開 */
   get circaValue(): CircaValue {
     return { ...this._circaValue };
+  }
+
+  /** フォーム送信用のJSON値 */
+  get formValue(): string | null {
+    if (this._circaValue.value !== null) {
+      return JSON.stringify(this._circaValue);
+    }
+    return null;
   }
 
   /** Controlled モードか判定 */
@@ -259,6 +280,7 @@ export class CircaInputElement extends HTMLElement {
 
     this._valueEl.addEventListener("pointermove", this._onValuePointerMove);
     this._valueEl.addEventListener("pointerup", this._onValuePointerUp);
+    this._valueEl.addEventListener("pointercancel", this._onValuePointerUp);
   };
 
   /** ドラッグ中のポインター移動 */
@@ -306,6 +328,7 @@ export class CircaInputElement extends HTMLElement {
 
     this._valueEl.removeEventListener("pointermove", this._onValuePointerMove);
     this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
+    this._valueEl.removeEventListener("pointercancel", this._onValuePointerUp);
 
     this._emitChange();
   };
@@ -342,6 +365,7 @@ export class CircaInputElement extends HTMLElement {
 
     handle.addEventListener("pointermove", this._onHandlePointerMove);
     handle.addEventListener("pointerup", this._onHandlePointerUp);
+    handle.addEventListener("pointercancel", this._onHandlePointerUp);
   }
 
   /** 非対称ハンドルのドラッグ中 */
@@ -396,6 +420,7 @@ export class CircaInputElement extends HTMLElement {
 
     handle.removeEventListener("pointermove", this._onHandlePointerMove);
     handle.removeEventListener("pointerup", this._onHandlePointerUp);
+    handle.removeEventListener("pointercancel", this._onHandlePointerUp);
 
     this._emitChange();
   };
@@ -454,6 +479,31 @@ export class CircaInputElement extends HTMLElement {
     if (value !== null && marginHigh !== null && marginHigh !== Infinity) {
       const highPercent = valueToPercent(value + marginHigh, min, max);
       this._handleHigh.style.left = `${highPercent}%`;
+    }
+
+    // フォーム値の更新
+    this._updateFormValue();
+  }
+
+  /** ElementInternals経由でFormDataにJSON値を設定 */
+  private _updateFormValue(): void {
+    if (!this._internals) return;
+
+    if (this._circaValue.value !== null) {
+      this._internals.setFormValue(JSON.stringify(this._circaValue));
+    } else {
+      this._internals.setFormValue(null);
+    }
+
+    // requiredバリデーション
+    if (this._config.required && !checkRequired(this._circaValue, this._config)) {
+      this._internals.setValidity(
+        { valueMissing: true },
+        "This field is required",
+        this._valueEl,
+      );
+    } else {
+      this._internals.setValidity({});
     }
   }
 

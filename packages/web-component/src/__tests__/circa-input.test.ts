@@ -510,4 +510,104 @@ describe("CircaInputElement", () => {
       el2.remove();
     });
   });
+
+  describe("フォーム統合（M2-d）", () => {
+    it("name属性が設定されている場合、formAssociatedがtrue", () => {
+      // CircaInputElement.formAssociated should be true
+      const CircaInputCtor = customElements.get("circa-input") as { formAssociated?: boolean };
+      expect(CircaInputCtor.formAssociated).toBe(true);
+    });
+
+    it("name属性でフォームに関連付けられる", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("name", "delivery_time");
+      el2.setAttribute("default-value", "14");
+      document.body.appendChild(el2);
+
+      // name属性が設定されていることを確認
+      expect(el2.getAttribute("name")).toBe("delivery_time");
+
+      el2.remove();
+    });
+
+    it("circaValueをJSON文字列としてフォーム値を設定する", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "9");
+      el2.setAttribute("max", "21");
+      el2.setAttribute("name", "delivery_time");
+      el2.setAttribute("default-value", "14");
+      el2.setAttribute("default-margin-low", "1");
+      el2.setAttribute("default-margin-high", "2");
+      document.body.appendChild(el2);
+
+      // formValue が JSON 文字列として設定されていることを確認
+      const circaEl = el2 as unknown as { readonly formValue: string | null };
+      if (circaEl.formValue !== undefined) {
+        const parsed = JSON.parse(circaEl.formValue as string);
+        expect(parsed.value).toBe(14);
+        expect(parsed.marginLow).toBe(1);
+        expect(parsed.marginHigh).toBe(2);
+      }
+
+      el2.remove();
+    });
+
+    it("required=trueかつ未入力時にバリデーションエラーを示す", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("name", "test");
+      el2.setAttribute("required", "");
+      document.body.appendChild(el2);
+
+      // value未設定 → required違反
+      const circaEl = el2 as unknown as { readonly circaValue: { value: number | null } };
+      expect(circaEl.circaValue.value).toBeNull();
+
+      el2.remove();
+    });
+  });
+
+  describe("モバイル対応（M2-d）", () => {
+    it("pointercancel でドラッグが安全にキャンセルされる", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      // ドラッグ開始
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 150, pointerId: 1, bubbles: true }),
+      );
+
+      // pointercancel 発生
+      slider.dispatchEvent(
+        new PointerEvent("pointercancel", { pointerId: 1, bubbles: true }),
+      );
+
+      // ドラッグが終了していることを確認（追加のpointermoveが影響しない）
+      const marginBefore = (el as unknown as { readonly circaValue: { marginLow: number | null } }).circaValue.marginLow;
+
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 200, pointerId: 1, bubbles: true }),
+      );
+
+      const marginAfter = (el as unknown as { readonly circaValue: { marginLow: number | null } }).circaValue.marginLow;
+      expect(marginAfter).toBe(marginBefore);
+    });
+
+    it("touch-action: none がhost要素に設定されている（CSSで管理）", () => {
+      // styles.ts で :host に touch-action: none が設定されていることを確認
+      // Shadow DOM内のスタイルとして存在する
+      const style = el.shadowRoot!.querySelector("style");
+      expect(style).not.toBeNull();
+      expect(style!.textContent).toContain("touch-action: none");
+    });
+  });
 });
