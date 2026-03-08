@@ -5,10 +5,19 @@
  * Shadow DOMで描画し、ARIA属性でアクセシビリティを確保する。
  */
 import type { CircaInputConfig, CircaValue } from "@circa-input/core";
-import { checkRequired, updateValue } from "@circa-input/core";
+import { CircaInputError, checkRequired, updateValue } from "@circa-input/core";
 import { buildConfig, buildInitialValue } from "./attributes.js";
 import { valueToPercent } from "./dom-utils.js";
 import { createTemplate } from "./template.js";
+
+/** Shadow DOM内の必須要素を取得。見つからなければエラー。 */
+function queryRequired(root: ShadowRoot, selector: string): HTMLElement {
+  const el = root.querySelector(selector);
+  if (!el) {
+    throw new CircaInputError(`Required shadow DOM element not found: ${selector}`);
+  }
+  return el as HTMLElement;
+}
 
 /** 監視対象のHTML属性一覧 */
 const OBSERVED_ATTRS = [
@@ -83,14 +92,21 @@ export class CircaInputElement extends HTMLElement {
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
 
-    // 要素キャッシュ
-    this._track = shadow.querySelector("[part='track']") as HTMLElement;
-    this._valueEl = shadow.querySelector("[part='value']") as HTMLElement;
-    this._marginEl = shadow.querySelector("[part='margin']") as HTMLElement;
-    this._handleLow = shadow.querySelector("[part='handle-low']") as HTMLElement;
-    this._handleHigh = shadow.querySelector("[part='handle-high']") as HTMLElement;
+    // 要素キャッシュ（見つからなければCircaInputErrorをthrow）
+    this._track = queryRequired(shadow, "[part='track']");
+    this._valueEl = queryRequired(shadow, "[part='value']");
+    this._marginEl = queryRequired(shadow, "[part='margin']");
+    this._handleLow = queryRequired(shadow, "[part='handle-low']");
+    this._handleHigh = queryRequired(shadow, "[part='handle-high']");
 
-    // イベントリスナー
+  }
+
+  connectedCallback(): void {
+    this._config = buildConfig((name) => this.getAttribute(name));
+    this._circaValue = buildInitialValue((name) => this.getAttribute(name), this._config);
+    this._render();
+
+    // connectedCallback時にリスナーを登録（disconnectedCallbackで解除）
     this._valueEl.addEventListener("keydown", this._onKeyDown);
     this._track.addEventListener("pointerdown", this._onTrackPointerDown);
     this._valueEl.addEventListener("pointerdown", this._onValuePointerDown);
@@ -98,10 +114,28 @@ export class CircaInputElement extends HTMLElement {
     this._handleHigh.addEventListener("pointerdown", this._onHandleHighPointerDown);
   }
 
-  connectedCallback(): void {
-    this._config = buildConfig((name) => this.getAttribute(name));
-    this._circaValue = buildInitialValue((name) => this.getAttribute(name), this._config);
-    this._render();
+  disconnectedCallback(): void {
+    // リスナー解除
+    this._valueEl.removeEventListener("keydown", this._onKeyDown);
+    this._track.removeEventListener("pointerdown", this._onTrackPointerDown);
+    this._valueEl.removeEventListener("pointerdown", this._onValuePointerDown);
+    this._handleLow.removeEventListener("pointerdown", this._onHandleLowPointerDown);
+    this._handleHigh.removeEventListener("pointerdown", this._onHandleHighPointerDown);
+
+    // 進行中のドラッグをクリーンアップ
+    if (this._isDragging) {
+      this._isDragging = false;
+      this._valueEl.removeEventListener("pointermove", this._onValuePointerMove);
+      this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
+      this._valueEl.removeEventListener("pointercancel", this._onValuePointerUp);
+    }
+    if (this._handleDragTarget) {
+      const handle = this._handleDragTarget === "low" ? this._handleLow : this._handleHigh;
+      this._handleDragTarget = null;
+      handle.removeEventListener("pointermove", this._onHandlePointerMove);
+      handle.removeEventListener("pointerup", this._onHandlePointerUp);
+      handle.removeEventListener("pointercancel", this._onHandlePointerUp);
+    }
   }
 
   attributeChangedCallback(_name: string, _oldValue: string | null, _newValue: string | null): void {
@@ -471,14 +505,32 @@ export class CircaInputElement extends HTMLElement {
       this._marginEl.style.display = "none";
     }
 
-    // 非対称ハンドルの位置
+    // 非対称ハンドルのアクセシビリティと位置
+    const isAsymmetric = this._config.asymmetric;
+    this._handleLow.setAttribute("tabindex", isAsymmetric ? "0" : "-1");
+    this._handleLow.setAttribute("aria-hidden", isAsymmetric ? "false" : "true");
+    this._handleHigh.setAttribute("tabindex", isAsymmetric ? "0" : "-1");
+    this._handleHigh.setAttribute("aria-hidden", isAsymmetric ? "false" : "true");
+
     if (value !== null && marginLow !== null) {
       const lowPercent = valueToPercent(value - marginLow, min, max);
       this._handleLow.style.left = `${lowPercent}%`;
+      this._handleLow.setAttribute("aria-valuenow", String(marginLow));
+      this._handleLow.setAttribute("aria-valuemin", "0");
+      this._handleLow.setAttribute(
+        "aria-valuemax",
+        String(this._config.marginMax ?? value - min),
+      );
     }
     if (value !== null && marginHigh !== null && marginHigh !== Infinity) {
       const highPercent = valueToPercent(value + marginHigh, min, max);
       this._handleHigh.style.left = `${highPercent}%`;
+      this._handleHigh.setAttribute("aria-valuenow", String(marginHigh));
+      this._handleHigh.setAttribute("aria-valuemin", "0");
+      this._handleHigh.setAttribute(
+        "aria-valuemax",
+        String(this._config.marginMax ?? max - value),
+      );
     }
 
     // フォーム値の更新

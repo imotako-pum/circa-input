@@ -7,6 +7,19 @@
 import type { CircaInputConfig, CircaValue, Distribution } from "@circa-input/core";
 import { createDefaultConfig, createInitialValue } from "@circa-input/core";
 
+/** 有効なdistribution値 */
+const VALID_DISTRIBUTIONS: readonly string[] = ["normal", "uniform", "skewed"];
+
+/**
+ * distribution属性をパースし、無効な値は"normal"にフォールバックする。
+ */
+function parseDistribution(raw: string | null): Distribution {
+  if (raw !== null && VALID_DISTRIBUTIONS.includes(raw)) {
+    return raw as Distribution;
+  }
+  return "normal";
+}
+
 /**
  * 文字列をnumber | nullに変換する。
  * 空文字やnullはnullを返す。数値として不正な文字列もnullを返す。
@@ -37,7 +50,7 @@ export function buildConfig(
   const min = parseNumberAttr(getAttr("min")) ?? 0;
   const max = parseNumberAttr(getAttr("max")) ?? 100;
   const marginMax = parseNumberAttr(getAttr("margin-max"));
-  const distribution = (getAttr("distribution") as Distribution) ?? "normal";
+  const distribution = parseDistribution(getAttr("distribution"));
   const asymmetric = parseBooleanAttr(getAttr("asymmetric"));
   const stepRaw = parseNumberAttr(getAttr("step"));
   const step: number | "any" = stepRaw ?? "any";

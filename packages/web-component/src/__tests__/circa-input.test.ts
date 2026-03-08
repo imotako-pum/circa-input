@@ -66,6 +66,47 @@ describe("CircaInputElement", () => {
       const value = el.shadowRoot!.querySelector("[part='value']");
       expect(value?.getAttribute("aria-valuenow")).toBe("");
     });
+
+    it("非対称モードでない場合、handle-low/highは aria-hidden='true' かつ tabindex='-1'", () => {
+      const low = el.shadowRoot!.querySelector("[part='handle-low']");
+      const high = el.shadowRoot!.querySelector("[part='handle-high']");
+      expect(low?.getAttribute("aria-hidden")).toBe("true");
+      expect(low?.getAttribute("tabindex")).toBe("-1");
+      expect(high?.getAttribute("aria-hidden")).toBe("true");
+      expect(high?.getAttribute("tabindex")).toBe("-1");
+    });
+
+    it("非対称モードの場合、handle-low/highは aria-hidden='false' かつ tabindex='0'", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "5");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const low = el.shadowRoot!.querySelector("[part='handle-low']");
+      const high = el.shadowRoot!.querySelector("[part='handle-high']");
+      expect(low?.getAttribute("aria-hidden")).toBe("false");
+      expect(low?.getAttribute("tabindex")).toBe("0");
+      expect(high?.getAttribute("aria-hidden")).toBe("false");
+      expect(high?.getAttribute("tabindex")).toBe("0");
+    });
+
+    it("非対称ハンドルに aria-valuenow/min/max が設定される", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "5");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const low = el.shadowRoot!.querySelector("[part='handle-low']");
+      const high = el.shadowRoot!.querySelector("[part='handle-high']");
+      expect(low?.getAttribute("aria-valuenow")).toBe("5");
+      expect(low?.getAttribute("aria-valuemin")).toBe("0");
+      expect(high?.getAttribute("aria-valuenow")).toBe("10");
+      expect(high?.getAttribute("aria-valuemin")).toBe("0");
+    });
   });
 
   describe("属性変更", () => {
@@ -508,6 +549,38 @@ describe("CircaInputElement", () => {
       expect(slider.getAttribute("aria-valuenow")).toBe("70");
 
       el2.remove();
+    });
+  });
+
+  describe("disconnectedCallback（リソース解放）", () => {
+    it("DOMから除去後にキーボード操作が無効になる", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+      el.remove();
+
+      // 除去後のキー操作で状態が変わらないことを確認
+      slider.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+      const circaEl = el as unknown as { readonly circaValue: { value: number | null } };
+      expect(circaEl.circaValue.value).toBe(50);
+    });
+
+    it("ドラッグ中にDOMから除去されてもクラッシュしない", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+
+      // ドラッグ中に除去
+      expect(() => el.remove()).not.toThrow();
     });
   });
 
