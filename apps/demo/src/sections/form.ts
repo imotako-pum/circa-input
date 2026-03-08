@@ -1,11 +1,14 @@
+import { requireById, requireElement } from "../utils/dom";
+
 /**
  * Section 5: フォーム統合の初期化
  */
 export function initFormSection(): void {
-  const form = document.getElementById("demo-form") as HTMLFormElement;
-  const resultEl = document.querySelector(
+  const form = requireById<HTMLFormElement>("demo-form", "form");
+  const resultEl = requireElement<HTMLElement>(
     "#form-result .output-value",
-  ) as HTMLElement;
+    "form",
+  );
 
   form.addEventListener("submit", (e: Event) => {
     e.preventDefault();

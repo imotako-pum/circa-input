@@ -173,6 +173,8 @@ body {
   padding: 1rem;
   background: #e3f2fd;
   border-radius: 8px;
+  list-style: none;
+  counter-reset: guide-step;
 }
 
 .guide-step {
@@ -181,9 +183,11 @@ body {
   gap: 0.75rem;
   font-size: 0.9rem;
   color: #1565c0;
+  counter-increment: guide-step;
 }
 
-.guide-number {
+.guide-step::before {
+  content: counter(guide-step);
   display: inline-flex;
   align-items: center;
   justify-content: center;

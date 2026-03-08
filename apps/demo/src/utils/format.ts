@@ -9,10 +9,12 @@ export function formatCircaValue(v: CircaValue): string {
 
 /**
  * 数値を時刻文字列に変換（例: 14.5 → "14:30"）
+ * 浮動小数点誤差対策のため、先に総分数に変換してから時・分を求める
  */
 function toTimeString(hours: number): string {
-  const h = Math.floor(hours);
-  const m = Math.round((hours - h) * 60);
+  const totalMinutes = Math.round(hours * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
   return `${h}:${m.toString().padStart(2, "0")}`;
 }
 
@@ -20,8 +22,9 @@ function toTimeString(hours: number): string {
  * 数値を時間幅文字列に変換（例: 1.5 → "1時間30分"）
  */
 function toTimeDuration(hours: number): string {
-  const h = Math.floor(hours);
-  const m = Math.round((hours - h) * 60);
+  const totalMinutes = Math.round(hours * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
   if (h === 0) return `${m}分`;
   if (m === 0) return `${h}時間`;
   return `${h}時間${m}分`;

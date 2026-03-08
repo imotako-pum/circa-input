@@ -1,4 +1,5 @@
 import type { CircaValue } from "@circa-input/core";
+import { requireById, requireElement } from "../utils/dom";
 import { formatBudget, formatTemp, formatTime } from "../utils/format";
 
 interface UseCaseConfig {
@@ -22,10 +23,11 @@ const useCases: UseCaseConfig[] = [
  */
 export function initUseCasesSection(): void {
   for (const uc of useCases) {
-    const input = document.getElementById(uc.inputId) as HTMLElement;
-    const outputEl = document.querySelector(
+    const input = requireById(uc.inputId, "use-cases");
+    const outputEl = requireElement<HTMLElement>(
       `#${uc.outputId} .use-case-formatted`,
-    ) as HTMLElement;
+      "use-cases",
+    );
 
     const handleEvent = (e: Event) => {
       const detail = (e as CustomEvent<CircaValue>).detail;
