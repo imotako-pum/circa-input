@@ -20,7 +20,8 @@
     "build": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dev": "vite build --watch"
+    "dev": "vite build --watch",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

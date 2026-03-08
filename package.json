@@ -7,7 +7,8 @@
     "dev": "pnpm -r run dev",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "type-check": "pnpm -r run type-check"
   },
   "engines": {
     "node": ">=18"

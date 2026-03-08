@@ -19,7 +19,8 @@
   "scripts": {
     "build": "vite build",
     "test": "vitest run",
-    "dev": "vite build --watch"
+    "dev": "vite build --watch",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@circa-input/core": "workspace:*"
