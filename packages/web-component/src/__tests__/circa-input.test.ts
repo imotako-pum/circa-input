@@ -367,4 +367,147 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.value).toBe(65);
     });
   });
+
+  describe("非対称モード（M2-c）", () => {
+    it("asymmetric属性がない場合、handle-low/highは非表示のまま（CSSで制御）", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      // asymmetric属性がないことを確認
+      expect(el.hasAttribute("asymmetric")).toBe(false);
+    });
+
+    it("asymmetric属性がある場合、configに反映される", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "5");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      expect(circaEl.circaValue.marginLow).toBe(5);
+      expect(circaEl.circaValue.marginHigh).toBe(10);
+    });
+
+    it("非対称ハンドルのドラッグでmarginLowが個別に変更できる", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "10");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const track = el.shadowRoot!.querySelector("[part='track']") as HTMLElement;
+      Object.defineProperty(track, "getBoundingClientRect", {
+        value: () => ({ left: 0, top: 0, width: 200, height: 8, right: 200, bottom: 8 }),
+      });
+
+      const handleLow = el.shadowRoot!.querySelector("[part='handle-low']") as HTMLElement;
+
+      handleLow.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 80, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      // 左に20px移動（10%追加 → marginLow +10）
+      handleLow.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 60, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      expect(circaEl.circaValue.marginLow).toBe(20);
+      // marginHighは変わらない
+      expect(circaEl.circaValue.marginHigh).toBe(10);
+    });
+
+    it("非対称ハンドルのドラッグでmarginHighが個別に変更できる", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "10");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const track = el.shadowRoot!.querySelector("[part='track']") as HTMLElement;
+      Object.defineProperty(track, "getBoundingClientRect", {
+        value: () => ({ left: 0, top: 0, width: 200, height: 8, right: 200, bottom: 8 }),
+      });
+
+      const handleHigh = el.shadowRoot!.querySelector("[part='handle-high']") as HTMLElement;
+
+      handleHigh.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 120, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      // 右に20px移動（10%追加 → marginHigh +10）
+      handleHigh.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 140, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      // marginLowは変わらない
+      expect(circaEl.circaValue.marginLow).toBe(10);
+      expect(circaEl.circaValue.marginHigh).toBe(20);
+    });
+  });
+
+  describe("Controlled/Uncontrolled（M2-c）", () => {
+    it("Uncontrolled: 操作で内部状態が変わる", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+      slider.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+      const circaEl = el as unknown as { readonly circaValue: { value: number | null } };
+      expect(circaEl.circaValue.value).toBe(51);
+
+      // ARIA属性も更新されている
+      expect(slider.getAttribute("aria-valuenow")).toBe("51");
+    });
+
+    it("Controlled: value属性が存在する場合、外部から更新しないと表示が変わらない", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("value", "50");
+      document.body.appendChild(el2);
+
+      const slider = el2.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      // changeイベントは発火するが…
+      let detail: unknown = null;
+      el2.addEventListener("change", ((e: CustomEvent) => {
+        detail = e.detail;
+      }) as EventListener);
+
+      slider.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+      // イベントは発火する
+      expect(detail).not.toBeNull();
+      expect((detail as { value: number }).value).toBe(51);
+
+      // value属性を外部から更新すれば表示が変わる
+      el2.setAttribute("value", "51");
+      expect(slider.getAttribute("aria-valuenow")).toBe("51");
+
+      el2.remove();
+    });
+
+    it("Controlled: value属性を動的に変更すると描画が更新される", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("value", "30");
+      document.body.appendChild(el2);
+
+      const slider = el2.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+      expect(slider.getAttribute("aria-valuenow")).toBe("30");
+
+      el2.setAttribute("value", "70");
+      expect(slider.getAttribute("aria-valuenow")).toBe("70");
+
+      el2.remove();
+    });
+  });
 });

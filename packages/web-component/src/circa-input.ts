@@ -55,6 +55,11 @@ export class CircaInputElement extends HTMLElement {
   private _dragStartMargin = 0;
   private _dragStartValue = 0;
 
+  /** 非対称ハンドルドラッグ状態 */
+  private _handleDragTarget: "low" | "high" | null = null;
+  private _handleDragStartX = 0;
+  private _handleDragStartMargin = 0;
+
   static get observedAttributes(): readonly string[] {
     return OBSERVED_ATTRS;
   }
@@ -76,6 +81,8 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.addEventListener("keydown", this._onKeyDown);
     this._track.addEventListener("pointerdown", this._onTrackPointerDown);
     this._valueEl.addEventListener("pointerdown", this._onValuePointerDown);
+    this._handleLow.addEventListener("pointerdown", this._onHandleLowPointerDown);
+    this._handleHigh.addEventListener("pointerdown", this._onHandleHighPointerDown);
   }
 
   connectedCallback(): void {
@@ -299,6 +306,96 @@ export class CircaInputElement extends HTMLElement {
 
     this._valueEl.removeEventListener("pointermove", this._onValuePointerMove);
     this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
+
+    this._emitChange();
+  };
+
+  /** handle-low の pointerdown */
+  private _onHandleLowPointerDown = (e: Event): void => {
+    this._startHandleDrag(e as PointerEvent, "low");
+  };
+
+  /** handle-high の pointerdown */
+  private _onHandleHighPointerDown = (e: Event): void => {
+    this._startHandleDrag(e as PointerEvent, "high");
+  };
+
+  /** 非対称ハンドルのドラッグ開始 */
+  private _startHandleDrag(pe: PointerEvent, target: "low" | "high"): void {
+    pe.stopPropagation();
+    pe.preventDefault();
+
+    this._handleDragTarget = target;
+    this._handleDragStartX = pe.clientX;
+    this._handleDragStartMargin =
+      target === "low"
+        ? this._circaValue.marginLow ?? 0
+        : this._circaValue.marginHigh ?? 0;
+
+    const handle = target === "low" ? this._handleLow : this._handleHigh;
+
+    try {
+      handle.setPointerCapture(pe.pointerId);
+    } catch {
+      // happy-dom ではサポートされない場合がある
+    }
+
+    handle.addEventListener("pointermove", this._onHandlePointerMove);
+    handle.addEventListener("pointerup", this._onHandlePointerUp);
+  }
+
+  /** 非対称ハンドルのドラッグ中 */
+  private _onHandlePointerMove = (e: Event): void => {
+    if (!this._handleDragTarget) return;
+    const pe = e as PointerEvent;
+
+    const rect = this._track.getBoundingClientRect();
+    const range = this._config.max - this._config.min;
+    const deltaX = pe.clientX - this._handleDragStartX;
+
+    if (this._handleDragTarget === "low") {
+      // handle-low: 左に動かすとmarginLow増加（deltaX負で増加）
+      const deltaPercent = rect.width > 0 ? (deltaX / rect.width) * 100 : 0;
+      const deltaValue = (deltaPercent / 100) * range;
+      const newMargin = Math.max(this._handleDragStartMargin - deltaValue, 0);
+      const newCirca = updateValue(
+        this._circaValue,
+        { marginLow: newMargin },
+        this._config,
+      );
+      this._setValue(newCirca);
+    } else {
+      // handle-high: 右に動かすとmarginHigh増加
+      const deltaPercent = rect.width > 0 ? (deltaX / rect.width) * 100 : 0;
+      const deltaValue = (deltaPercent / 100) * range;
+      const newMargin = Math.max(this._handleDragStartMargin + deltaValue, 0);
+      const newCirca = updateValue(
+        this._circaValue,
+        { marginHigh: newMargin },
+        this._config,
+      );
+      this._setValue(newCirca);
+    }
+
+    this._emitInput();
+  };
+
+  /** 非対称ハンドルのドラッグ終了 */
+  private _onHandlePointerUp = (e: Event): void => {
+    if (!this._handleDragTarget) return;
+    const pe = e as PointerEvent;
+
+    const handle = this._handleDragTarget === "low" ? this._handleLow : this._handleHigh;
+    this._handleDragTarget = null;
+
+    try {
+      handle.releasePointerCapture(pe.pointerId);
+    } catch {
+      // happy-dom ではサポートされない場合がある
+    }
+
+    handle.removeEventListener("pointermove", this._onHandlePointerMove);
+    handle.removeEventListener("pointerup", this._onHandlePointerUp);
 
     this._emitChange();
   };
