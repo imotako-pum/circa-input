@@ -234,4 +234,137 @@ describe("CircaInputElement", () => {
       expect((detail as { value: number }).value).toBe(51);
     });
   });
+
+  describe("マージンドラッグ（M2-b）", () => {
+    it("つまみの縦ドラッグでmarginが拡大する（pointerdown → pointermove → pointerup）", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      // pointerdown でドラッグ開始
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+
+      // 下方向にドラッグ（deltaY=50 → margin拡大）
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 150, pointerId: 1, bubbles: true }),
+      );
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      // margin が設定されている（具体的な値はscaleFactorに依存）
+      expect(circaEl.circaValue.marginLow).not.toBeNull();
+      expect(circaEl.circaValue.marginLow).toBeGreaterThan(0);
+      // 対称モードなので marginHigh も同じ
+      expect(circaEl.circaValue.marginHigh).toBe(circaEl.circaValue.marginLow);
+    });
+
+    it("上方向ドラッグでmarginが縮小する（0未満にならない）", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      // marginが0の状態で上にドラッグ
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 50, pointerId: 1, bubbles: true }),
+      );
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      // margin は 0 以上
+      if (circaEl.circaValue.marginLow !== null) {
+        expect(circaEl.circaValue.marginLow).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it("pointerup でドラッグが終了し change イベントが発火する", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      let changeDetail: unknown = null;
+      el.addEventListener("change", ((e: CustomEvent) => {
+        changeDetail = e.detail;
+      }) as EventListener);
+
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 150, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointerup", { clientX: 100, clientY: 150, pointerId: 1, bubbles: true }),
+      );
+
+      expect(changeDetail).not.toBeNull();
+    });
+
+    it("ドラッグ中に input イベントがリアルタイム発火する", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      const inputEvents: unknown[] = [];
+      el.addEventListener("input", ((e: CustomEvent) => {
+        inputEvents.push(e.detail);
+      }) as EventListener);
+
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 120, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 140, pointerId: 1, bubbles: true }),
+      );
+
+      // 各pointermoveでinputイベントが発火
+      expect(inputEvents.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it("水平ドラッグでvalueも同時に移動する", () => {
+      el.setAttribute("default-value", "50");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+
+      // トラックの getBoundingClientRect をモック
+      const track = el.shadowRoot!.querySelector("[part='track']") as HTMLElement;
+      Object.defineProperty(track, "getBoundingClientRect", {
+        value: () => ({
+          left: 0,
+          top: 0,
+          width: 200,
+          height: 8,
+          right: 200,
+          bottom: 8,
+        }),
+      });
+
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+
+      // 右に30pxドラッグ（200pxトラックの15% → value +15）
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 130, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+
+      const circaEl = el as unknown as { readonly circaValue: { value: number | null } };
+      expect(circaEl.circaValue.value).toBe(65);
+    });
+  });
 });

@@ -29,6 +29,13 @@ const OBSERVED_ATTRS = [
   "disabled",
 ] as const;
 
+/**
+ * マージンドラッグのスケールファクター。
+ * 縦方向のピクセル移動量を、値の範囲に対する比率に変換する係数。
+ * 例: 100pxドラッグ → (100/SCALE_PX) * range = margin変化量
+ */
+const MARGIN_DRAG_SCALE_PX = 100;
+
 export class CircaInputElement extends HTMLElement {
   /** 内部状態 */
   private _circaValue!: CircaValue;
@@ -40,6 +47,13 @@ export class CircaInputElement extends HTMLElement {
   private _marginEl!: HTMLElement;
   private _handleLow!: HTMLElement;
   private _handleHigh!: HTMLElement;
+
+  /** ドラッグ状態 */
+  private _isDragging = false;
+  private _dragStartY = 0;
+  private _dragStartX = 0;
+  private _dragStartMargin = 0;
+  private _dragStartValue = 0;
 
   static get observedAttributes(): readonly string[] {
     return OBSERVED_ATTRS;
@@ -61,6 +75,7 @@ export class CircaInputElement extends HTMLElement {
     // イベントリスナー
     this._valueEl.addEventListener("keydown", this._onKeyDown);
     this._track.addEventListener("pointerdown", this._onTrackPointerDown);
+    this._valueEl.addEventListener("pointerdown", this._onValuePointerDown);
   }
 
   connectedCallback(): void {
@@ -198,7 +213,12 @@ export class CircaInputElement extends HTMLElement {
 
   /** トラッククリックで値を設定 */
   private _onTrackPointerDown = (e: Event): void => {
+    // つまみ上のクリックはドラッグとして扱うのでスキップ
+    if (this._isDragging) return;
     const pe = e as PointerEvent;
+    // valueEl上のイベントはバブリングで来るのでスキップ
+    if (pe.target === this._valueEl) return;
+
     const rect = this._track.getBoundingClientRect();
     const percent = ((pe.clientX - rect.left) / rect.width) * 100;
     const clampedPercent = Math.min(Math.max(percent, 0), 100);
@@ -206,6 +226,80 @@ export class CircaInputElement extends HTMLElement {
 
     const newCirca = updateValue(this._circaValue, { value: newVal }, this._config);
     this._setValue(newCirca);
+    this._emitChange();
+  };
+
+  /** つまみのpointerdownでドラッグ開始 */
+  private _onValuePointerDown = (e: Event): void => {
+    const pe = e as PointerEvent;
+    pe.stopPropagation(); // トラッククリックへのバブリングを防止
+    pe.preventDefault();
+
+    this._isDragging = true;
+    this._dragStartY = pe.clientY;
+    this._dragStartX = pe.clientX;
+
+    const currentValue = this._circaValue.value ?? (this._config.min + this._config.max) / 2;
+    this._dragStartValue = currentValue;
+    this._dragStartMargin = this._circaValue.marginLow ?? 0;
+
+    // setPointerCapture でドラッグ中のイベント漏れ防止
+    try {
+      this._valueEl.setPointerCapture(pe.pointerId);
+    } catch {
+      // happy-dom ではサポートされない場合がある
+    }
+
+    this._valueEl.addEventListener("pointermove", this._onValuePointerMove);
+    this._valueEl.addEventListener("pointerup", this._onValuePointerUp);
+  };
+
+  /** ドラッグ中のポインター移動 */
+  private _onValuePointerMove = (e: Event): void => {
+    if (!this._isDragging) return;
+    const pe = e as PointerEvent;
+
+    const range = this._config.max - this._config.min;
+
+    // 縦方向: margin操作（下で拡大、上で縮小）
+    const deltaY = pe.clientY - this._dragStartY;
+    const newMarginRaw = this._dragStartMargin + (deltaY / MARGIN_DRAG_SCALE_PX) * range;
+    const newMargin = Math.max(newMarginRaw, 0);
+
+    // 水平方向: value移動
+    const rect = this._track.getBoundingClientRect();
+    let newValue = this._dragStartValue;
+    if (rect.width > 0) {
+      const deltaX = pe.clientX - this._dragStartX;
+      const deltaPercent = (deltaX / rect.width) * 100;
+      newValue = this._dragStartValue + (deltaPercent / 100) * range;
+    }
+
+    const newCirca = updateValue(
+      this._circaValue,
+      { value: newValue, marginLow: newMargin },
+      this._config,
+    );
+    this._setValue(newCirca);
+    this._emitInput();
+  };
+
+  /** ドラッグ終了 */
+  private _onValuePointerUp = (e: Event): void => {
+    if (!this._isDragging) return;
+    const pe = e as PointerEvent;
+
+    this._isDragging = false;
+
+    try {
+      this._valueEl.releasePointerCapture(pe.pointerId);
+    } catch {
+      // happy-dom ではサポートされない場合がある
+    }
+
+    this._valueEl.removeEventListener("pointermove", this._onValuePointerMove);
+    this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
+
     this._emitChange();
   };
 
@@ -266,10 +360,21 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** changeイベントを発火 */
+  /** changeイベントを発火（操作完了時） */
   private _emitChange(): void {
     this.dispatchEvent(
       new CustomEvent("change", {
+        detail: this.circaValue,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  /** inputイベントを発火（操作中リアルタイム） */
+  private _emitInput(): void {
+    this.dispatchEvent(
+      new CustomEvent("input", {
         detail: this.circaValue,
         bubbles: true,
         composed: true,
