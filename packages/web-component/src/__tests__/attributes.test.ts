@@ -93,14 +93,22 @@ describe("buildConfig", () => {
   });
 
   it("不正なdistribution値はデフォルト'normal'にフォールバックする", () => {
-    const config = buildConfig(makeGetAttr({ min: "0", max: "100", distribution: "invalid" }));
+    const config = buildConfig(
+      makeGetAttr({ min: "0", max: "100", distribution: "invalid" }),
+    );
     expect(config.distribution).toBe("normal");
   });
 
   it("有効なdistribution値はそのまま採用する", () => {
-    expect(buildConfig(makeGetAttr({ distribution: "normal" })).distribution).toBe("normal");
-    expect(buildConfig(makeGetAttr({ distribution: "uniform" })).distribution).toBe("uniform");
-    expect(buildConfig(makeGetAttr({ distribution: "skewed" })).distribution).toBe("skewed");
+    expect(
+      buildConfig(makeGetAttr({ distribution: "normal" })).distribution,
+    ).toBe("normal");
+    expect(
+      buildConfig(makeGetAttr({ distribution: "uniform" })).distribution,
+    ).toBe("uniform");
+    expect(
+      buildConfig(makeGetAttr({ distribution: "skewed" })).distribution,
+    ).toBe("skewed");
   });
 
   it("margin-max未指定時はnullを使う", () => {
@@ -163,7 +171,10 @@ describe("buildInitialValue", () => {
   });
 
   it("configのdistributionを使用する", () => {
-    const uniformConfig = { ...defaultConfig, distribution: "uniform" as const };
+    const uniformConfig = {
+      ...defaultConfig,
+      distribution: "uniform" as const,
+    };
     const val = buildInitialValue(makeGetAttr({}), uniformConfig);
     expect(val.distribution).toBe("uniform");
   });

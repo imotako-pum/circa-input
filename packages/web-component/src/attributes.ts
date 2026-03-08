@@ -4,7 +4,11 @@
  * <circa-input> の HTML属性を読み取り、coreの CircaInputConfig に変換する。
  * DOM操作はせず、文字列→型変換のみを行う。
  */
-import type { CircaInputConfig, CircaValue, Distribution } from "@circa-input/core";
+import type {
+  CircaInputConfig,
+  CircaValue,
+  Distribution,
+} from "@circa-input/core";
 import { createDefaultConfig, createInitialValue } from "@circa-input/core";
 
 /** 有効なdistribution値 */
