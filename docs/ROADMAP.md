@@ -182,6 +182,7 @@ M1 ──→ M2 ──→ M3
 | 2026-02-23 | M1 途中 | core基本実装済み（types, state, validation, helpers, errors）。テスト28件全グリーン。ビルド成功。step処理・対称連動が未実装。 |
 | 2026-02-23 | M1 完了 | step属性スナップ処理（snapToStep関数）と対称モード連動を実装。テスト45件全グリーン。ビルド成功（gzip 0.97KB）。 |
 | 2026-03-08 | M2 完了 | Web Component実装完了。dom-utils/attributes/styles/template/circa-input/indexの6モジュール。Shadow DOM、クリック/キーボード/ドラッグ操作、マージン対称・非対称、Controlled/Uncontrolled、フォーム統合(ElementInternals)、モバイル対応(pointercancel)。テスト72件全グリーン。ビルド成功（gzip 3.79KB、core合算4.76KB < 5KB）。カバレッジ91.2%。 |
+| 2026-03-08 | M2 品質改善 | コードレビューで検出したCRITICAL/HIGH 6件・MEDIUM/LOW 8件を全て修正。handle-low/highキーボード操作追加、disabled状態ブロック、validateConfig呼び出し、valueToPercentゼロ除算ガード、--circa-value-color CSS変数追加。lint/type-check全クリア。テスト87件全グリーン。合算gzip 4.95KB < 5KB。 |
 
 ---
 
