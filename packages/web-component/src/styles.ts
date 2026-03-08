@@ -47,7 +47,7 @@ export const STYLES = `
   top: 50%;
   width: var(--circa-handle-size, 20px);
   height: var(--circa-handle-size, 20px);
-  background: var(--circa-handle-color, #1976d2);
+  background: var(--circa-value-color, var(--circa-handle-color, #1976d2));
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: grab;

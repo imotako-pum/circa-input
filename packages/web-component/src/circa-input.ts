@@ -5,9 +5,9 @@
  * Shadow DOMで描画し、ARIA属性でアクセシビリティを確保する。
  */
 import type { CircaInputConfig, CircaValue } from "@circa-input/core";
-import { CircaInputError, checkRequired, updateValue } from "@circa-input/core";
+import { CircaInputError, checkRequired, updateValue, validateConfig } from "@circa-input/core";
 import { buildConfig, buildInitialValue } from "./attributes.js";
-import { valueToPercent } from "./dom-utils.js";
+import { clientXToPercent, percentToValue, valueToPercent } from "./dom-utils.js";
 import { createTemplate } from "./template.js";
 
 /** Shadow DOM内の必須要素を取得。見つからなければエラー。 */
@@ -103,6 +103,7 @@ export class CircaInputElement extends HTMLElement {
 
   connectedCallback(): void {
     this._config = buildConfig((name) => this.getAttribute(name));
+    validateConfig(this._config);
     this._circaValue = buildInitialValue((name) => this.getAttribute(name), this._config);
     this._render();
 
@@ -112,6 +113,8 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.addEventListener("pointerdown", this._onValuePointerDown);
     this._handleLow.addEventListener("pointerdown", this._onHandleLowPointerDown);
     this._handleHigh.addEventListener("pointerdown", this._onHandleHighPointerDown);
+    this._handleLow.addEventListener("keydown", this._onHandleLowKeyDown);
+    this._handleHigh.addEventListener("keydown", this._onHandleHighKeyDown);
   }
 
   disconnectedCallback(): void {
@@ -121,6 +124,8 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.removeEventListener("pointerdown", this._onValuePointerDown);
     this._handleLow.removeEventListener("pointerdown", this._onHandleLowPointerDown);
     this._handleHigh.removeEventListener("pointerdown", this._onHandleHighPointerDown);
+    this._handleLow.removeEventListener("keydown", this._onHandleLowKeyDown);
+    this._handleHigh.removeEventListener("keydown", this._onHandleHighKeyDown);
 
     // 進行中のドラッグをクリーンアップ
     if (this._isDragging) {
@@ -172,6 +177,11 @@ export class CircaInputElement extends HTMLElement {
     return this.getAttribute("value") !== null;
   }
 
+  /** disabled状態か判定 */
+  private get _isDisabled(): boolean {
+    return this.hasAttribute("disabled");
+  }
+
   /** step刻み（step="any"なら範囲の1%） */
   private get _stepSize(): number {
     if (this._config.step === "any") {
@@ -180,101 +190,40 @@ export class CircaInputElement extends HTMLElement {
     return this._config.step;
   }
 
-  /** キーボードイベント処理 */
+  /** valueスライダーのキーボードイベント処理 */
   private _onKeyDown = (e: Event): void => {
+    if (this._isDisabled) return;
     const ke = e as KeyboardEvent;
+    const { key, shiftKey } = ke;
     const step = this._stepSize;
-
-    // 値が未設定の場合は中央値をベースにする
-    const currentValue = this._circaValue.value ?? (this._config.min + this._config.max) / 2;
-    const currentMarginLow = this._circaValue.marginLow ?? 0;
-    const currentMarginHigh = this._circaValue.marginHigh ?? 0;
-
+    const cv = this._circaValue.value ?? (this._config.min + this._config.max) / 2;
     let handled = false;
 
-    if (ke.shiftKey) {
-      // Shift + 矢印: margin操作
-      switch (ke.key) {
-        case "ArrowRight":
-        case "ArrowUp": {
-          const newValue = updateValue(
-            { ...this._circaValue, value: currentValue, marginLow: currentMarginLow, marginHigh: currentMarginHigh },
-            { marginLow: currentMarginLow + step },
-            this._config,
-          );
-          this._setValue(newValue);
-          handled = true;
-          break;
-        }
-        case "ArrowLeft":
-        case "ArrowDown": {
-          const newMargin = Math.max(currentMarginLow - step, 0);
-          const newValue = updateValue(
-            { ...this._circaValue, value: currentValue, marginLow: currentMarginLow, marginHigh: currentMarginHigh },
-            { marginLow: newMargin },
-            this._config,
-          );
-          this._setValue(newValue);
-          handled = true;
-          break;
-        }
+    if (shiftKey) {
+      const ml = this._circaValue.marginLow ?? 0;
+      const mh = this._circaValue.marginHigh ?? 0;
+      const base = { ...this._circaValue, value: cv, marginLow: ml, marginHigh: mh };
+      if (key === "ArrowRight" || key === "ArrowUp") {
+        this._setValue(updateValue(base, { marginLow: ml + step }, this._config)); handled = true;
+      } else if (key === "ArrowLeft" || key === "ArrowDown") {
+        this._setValue(updateValue(base, { marginLow: Math.max(ml - step, 0) }, this._config)); handled = true;
       }
-    } else {
-      // 通常矢印: value操作
-      switch (ke.key) {
-        case "ArrowRight":
-        case "ArrowUp": {
-          const newValue = updateValue(
-            this._circaValue,
-            { value: currentValue + step },
-            this._config,
-          );
-          this._setValue(newValue);
-          handled = true;
-          break;
-        }
-        case "ArrowLeft":
-        case "ArrowDown": {
-          const newValue = updateValue(
-            this._circaValue,
-            { value: currentValue - step },
-            this._config,
-          );
-          this._setValue(newValue);
-          handled = true;
-          break;
-        }
-        case "Home": {
-          const newValue = updateValue(
-            this._circaValue,
-            { value: this._config.min },
-            this._config,
-          );
-          this._setValue(newValue);
-          handled = true;
-          break;
-        }
-        case "End": {
-          const newValue = updateValue(
-            this._circaValue,
-            { value: this._config.max },
-            this._config,
-          );
-          this._setValue(newValue);
-          handled = true;
-          break;
-        }
-      }
+    } else if (key === "ArrowRight" || key === "ArrowUp") {
+      this._setValue(updateValue(this._circaValue, { value: cv + step }, this._config)); handled = true;
+    } else if (key === "ArrowLeft" || key === "ArrowDown") {
+      this._setValue(updateValue(this._circaValue, { value: cv - step }, this._config)); handled = true;
+    } else if (key === "Home") {
+      this._setValue(updateValue(this._circaValue, { value: this._config.min }, this._config)); handled = true;
+    } else if (key === "End") {
+      this._setValue(updateValue(this._circaValue, { value: this._config.max }, this._config)); handled = true;
     }
 
-    if (handled) {
-      ke.preventDefault();
-      this._emitChange();
-    }
+    if (handled) { ke.preventDefault(); this._emitChange(); }
   };
 
   /** トラッククリックで値を設定 */
   private _onTrackPointerDown = (e: Event): void => {
+    if (this._isDisabled) return;
     // つまみ上のクリックはドラッグとして扱うのでスキップ
     if (this._isDragging) return;
     const pe = e as PointerEvent;
@@ -282,9 +231,8 @@ export class CircaInputElement extends HTMLElement {
     if (pe.target === this._valueEl) return;
 
     const rect = this._track.getBoundingClientRect();
-    const percent = ((pe.clientX - rect.left) / rect.width) * 100;
-    const clampedPercent = Math.min(Math.max(percent, 0), 100);
-    const newVal = (clampedPercent / 100) * (this._config.max - this._config.min) + this._config.min;
+    const percent = clientXToPercent(pe.clientX, rect.left, rect.width);
+    const newVal = percentToValue(percent, this._config.min, this._config.max);
 
     const newCirca = updateValue(this._circaValue, { value: newVal }, this._config);
     this._setValue(newCirca);
@@ -293,6 +241,7 @@ export class CircaInputElement extends HTMLElement {
 
   /** つまみのpointerdownでドラッグ開始 */
   private _onValuePointerDown = (e: Event): void => {
+    if (this._isDisabled) return;
     const pe = e as PointerEvent;
     pe.stopPropagation(); // トラッククリックへのバブリングを防止
     pe.preventDefault();
@@ -379,6 +328,7 @@ export class CircaInputElement extends HTMLElement {
 
   /** 非対称ハンドルのドラッグ開始 */
   private _startHandleDrag(pe: PointerEvent, target: "low" | "high"): void {
+    if (this._isDisabled) return;
     pe.stopPropagation();
     pe.preventDefault();
 
@@ -459,17 +409,36 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** 内部状態を更新し描画する（Controlledモードの場合は更新しない） */
+  /** 内部状態を更新し描画する。Controlledモードでは描画をスキップ（属性変更で描画される） */
   private _setValue(newValue: CircaValue): void {
-    if (this._isControlled) {
-      // Controlledモードではイベントのみ発火し、内部状態は変更しない
-      // 外部からvalue属性を変更してもらう必要がある
-      this._circaValue = newValue; // イベントdetail用に一時的に保持
-      return;
-    }
     this._circaValue = newValue;
-    this._render();
+    if (!this._isControlled) {
+      this._render();
+    }
   }
+
+  /** 非対称ハンドルのキーボード操作 */
+  private _onHandleLowKeyDown = (e: Event): void => {
+    if (this._isDisabled) return;
+    const ke = e as KeyboardEvent;
+    const s = this._stepSize, c = this._circaValue.marginLow ?? 0;
+    // handle-low: Left/Up=拡大、Right/Down=縮小
+    const d = ke.key === "ArrowLeft" || ke.key === "ArrowUp" ? 1 : ke.key === "ArrowRight" || ke.key === "ArrowDown" ? -1 : 0;
+    if (!d) return;
+    this._setValue(updateValue(this._circaValue, { marginLow: Math.max(c + d * s, 0) }, this._config));
+    ke.preventDefault(); ke.stopPropagation(); this._emitChange();
+  };
+
+  private _onHandleHighKeyDown = (e: Event): void => {
+    if (this._isDisabled) return;
+    const ke = e as KeyboardEvent;
+    const s = this._stepSize, c = this._circaValue.marginHigh ?? 0;
+    // handle-high: Right/Up=拡大、Left/Down=縮小
+    const d = ke.key === "ArrowRight" || ke.key === "ArrowUp" ? 1 : ke.key === "ArrowLeft" || ke.key === "ArrowDown" ? -1 : 0;
+    if (!d) return;
+    this._setValue(updateValue(this._circaValue, { marginHigh: Math.max(c + d * s, 0) }, this._config));
+    ke.preventDefault(); ke.stopPropagation(); this._emitChange();
+  };
 
   /** DOMを現在の状態に合わせて更新 */
   private _render(): void {

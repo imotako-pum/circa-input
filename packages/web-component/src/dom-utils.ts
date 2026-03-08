@@ -10,6 +10,7 @@
  * トラック上のインジケータ位置の計算に使う。
  */
 export function valueToPercent(value: number, min: number, max: number): number {
+  if (max === min) return 0;
   return ((value - min) / (max - min)) * 100;
 }
 

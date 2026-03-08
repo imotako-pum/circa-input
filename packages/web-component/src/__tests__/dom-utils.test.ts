@@ -25,6 +25,11 @@ describe("valueToPercent", () => {
     expect(valueToPercent(0, -50, 50)).toBe(50);
     expect(valueToPercent(-50, -50, 50)).toBe(0);
   });
+
+  it("min === max の場合0%を返す（ゼロ除算ガード）", () => {
+    expect(valueToPercent(5, 5, 5)).toBe(0);
+    expect(valueToPercent(0, 0, 0)).toBe(0);
+  });
 });
 
 describe("percentToValue", () => {

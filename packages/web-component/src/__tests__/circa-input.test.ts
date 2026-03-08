@@ -491,6 +491,56 @@ describe("CircaInputElement", () => {
     });
   });
 
+  describe("非対称ハンドルのキーボード操作", () => {
+    it("handle-lowにフォーカスしてArrowLeftでmarginLowが増加する", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "5");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const handleLow = el.shadowRoot!.querySelector("[part='handle-low']") as HTMLElement;
+      handleLow.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      expect(circaEl.circaValue.marginLow).toBe(6);
+      // marginHighは変わらない
+      expect(circaEl.circaValue.marginHigh).toBe(10);
+    });
+
+    it("handle-highにフォーカスしてArrowRightでmarginHighが増加する", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "5");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const handleHigh = el.shadowRoot!.querySelector("[part='handle-high']") as HTMLElement;
+      handleHigh.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null; marginHigh: number | null } };
+      expect(circaEl.circaValue.marginLow).toBe(5);
+      expect(circaEl.circaValue.marginHigh).toBe(11);
+    });
+
+    it("handle-lowでArrowRightするとmarginLowが縮小する（0未満にならない）", () => {
+      el.setAttribute("asymmetric", "");
+      el.setAttribute("default-value", "50");
+      el.setAttribute("default-margin-low", "0");
+      el.setAttribute("default-margin-high", "10");
+      el.remove();
+      document.body.appendChild(el);
+
+      const handleLow = el.shadowRoot!.querySelector("[part='handle-low']") as HTMLElement;
+      handleLow.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null } };
+      expect(circaEl.circaValue.marginLow).toBe(0);
+    });
+  });
+
   describe("Controlled/Uncontrolled（M2-c）", () => {
     it("Uncontrolled: 操作で内部状態が変わる", () => {
       el.setAttribute("default-value", "50");
@@ -640,6 +690,57 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.value).toBeNull();
 
       el2.remove();
+    });
+  });
+
+  describe("disabled状態", () => {
+    it("disabled時にキーボード操作が無視される", () => {
+      el.setAttribute("default-value", "50");
+      el.setAttribute("disabled", "");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+      slider.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+      const circaEl = el as unknown as { readonly circaValue: { value: number | null } };
+      expect(circaEl.circaValue.value).toBe(50);
+    });
+
+    it("disabled時にポインター操作が無視される", () => {
+      el.setAttribute("default-value", "50");
+      el.setAttribute("disabled", "");
+      el.remove();
+      document.body.appendChild(el);
+
+      const slider = el.shadowRoot!.querySelector("[part='value']") as HTMLElement;
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", { clientX: 100, clientY: 100, pointerId: 1, bubbles: true }),
+      );
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", { clientX: 100, clientY: 150, pointerId: 1, bubbles: true }),
+      );
+
+      const circaEl = el as unknown as { readonly circaValue: { marginLow: number | null } };
+      // マージンが変化しない
+      expect(circaEl.circaValue.marginLow).toBeNull();
+    });
+  });
+
+  describe("バリデーション", () => {
+    it("min >= max の場合にCircaInputErrorをthrowする", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "100");
+      el2.setAttribute("max", "0");
+      expect(() => document.body.appendChild(el2)).toThrow();
+    });
+
+    it("margin-max が負の場合にCircaInputErrorをthrowする", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("margin-max", "-5");
+      expect(() => document.body.appendChild(el2)).toThrow();
     });
   });
 
