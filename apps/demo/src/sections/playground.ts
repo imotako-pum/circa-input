@@ -30,6 +30,10 @@ function setupControls(input: HTMLElement): void {
     "ctrl-asymmetric",
     "playground",
   );
+  const ctrlTickInterval = requireById<HTMLInputElement>(
+    "ctrl-tick-interval",
+    "playground",
+  );
   const ctrlDisabled = requireById<HTMLInputElement>(
     "ctrl-disabled",
     "playground",
@@ -58,6 +62,10 @@ function setupControls(input: HTMLElement): void {
 
   ctrlMarginMax.addEventListener("input", () => {
     updateAttribute("margin-max", ctrlMarginMax.value.trim() || null);
+  });
+
+  ctrlTickInterval.addEventListener("input", () => {
+    updateAttribute("tick-interval", ctrlTickInterval.value.trim() || null);
   });
 
   ctrlAsymmetric.addEventListener("change", () => {

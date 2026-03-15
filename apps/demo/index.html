@@ -93,7 +93,7 @@
           <div class="use-case-card">
             <h3>配達時間</h3>
             <p class="use-case-description">希望する配達時間帯を指定</p>
-            <circa-input id="uc-time" min="9" max="21" step="0.5" default-value="14" default-margin-low="1" default-margin-high="1"></circa-input>
+            <circa-input id="uc-time" min="9" max="21" step="0.5" tick-interval="3" default-value="14" default-margin-low="1" default-margin-high="1"></circa-input>
             <div class="use-case-output" id="uc-time-output">
               <span class="use-case-formatted">14:00 &plusmn; 1時間</span>
             </div>
@@ -103,7 +103,7 @@
           <div class="use-case-card">
             <h3>予算</h3>
             <p class="use-case-description">だいたいの予算感を入力</p>
-            <circa-input id="uc-budget" min="0" max="100000" step="1000" default-value="50000" default-margin-low="10000" default-margin-high="10000"></circa-input>
+            <circa-input id="uc-budget" min="0" max="100000" step="1000" tick-interval="20000" default-value="50000" default-margin-low="10000" default-margin-high="10000"></circa-input>
             <div class="use-case-output" id="uc-budget-output">
               <span class="use-case-formatted">&yen;50,000 &plusmn; &yen;10,000</span>
             </div>
@@ -113,7 +113,7 @@
           <div class="use-case-card">
             <h3>気温</h3>
             <p class="use-case-description">快適に感じる気温の範囲</p>
-            <circa-input id="uc-temp" min="-10" max="40" step="1" default-value="25" default-margin-low="3" default-margin-high="3"></circa-input>
+            <circa-input id="uc-temp" min="-10" max="40" step="1" tick-interval="10" default-value="25" default-margin-low="3" default-margin-high="3"></circa-input>
             <div class="use-case-output" id="uc-temp-output">
               <span class="use-case-formatted">25&deg;C &plusmn; 3&deg;C</span>
             </div>
@@ -156,6 +156,10 @@
             <div class="control-group">
               <label for="ctrl-margin-max">margin-max</label>
               <input type="text" id="ctrl-margin-max" value="" placeholder="制限なし" />
+            </div>
+            <div class="control-group">
+              <label for="ctrl-tick-interval">tick-interval</label>
+              <input type="text" id="ctrl-tick-interval" value="" placeholder="なし" />
             </div>
             <div class="control-group control-checkbox">
               <input type="checkbox" id="ctrl-asymmetric" />
