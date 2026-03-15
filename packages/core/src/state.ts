@@ -1,3 +1,4 @@
+import { clamp } from "./helpers.js";
 import type { CircaInputConfig, CircaValue } from "./types.js";
 
 /**
@@ -13,7 +14,8 @@ export function snapToStep(
   config: Pick<CircaInputConfig, "min" | "max" | "step">,
 ): number {
   if (config.step === "any") {
-    return value;
+    // step="any"でもmin/maxの範囲内にクランプする
+    return clamp(value, config.min, config.max);
   }
 
   const snapped =
@@ -24,7 +26,7 @@ export function snapToStep(
   const rounded = parseFloat(snapped.toFixed(decimals));
 
   // [min, max]にクランプ
-  return Math.min(Math.max(rounded, config.min), config.max);
+  return clamp(rounded, config.min, config.max);
 }
 
 /**

@@ -3,7 +3,7 @@
 // Errors
 export { CircaInputError } from "./errors.js";
 // Helpers
-export { percentToValue, toPlainValue, valueToPercent } from "./helpers.js";
+export { clamp, percentToValue, toPlainValue, valueToPercent } from "./helpers.js";
 // State
 export {
   clampMargins,

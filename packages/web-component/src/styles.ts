@@ -22,10 +22,13 @@ export const STYLES = `
 
 [part="container"] {
   position: relative;
+  display: flex;
+  align-items: center;
   padding: calc(var(--circa-handle-size, 20px) / 2) 0;
 }
 
 [part="track"] {
+  flex: 1;
   position: relative;
   height: var(--circa-track-height, 8px);
   background: var(--circa-track-color, #e0e0e0);
@@ -101,11 +104,27 @@ export const STYLES = `
   display: block;
 }
 
+/* クリアエリア: slotのラッパー */
+[part="clear-area"] {
+  margin-left: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* 値がないとき（JSでクラス付与） */
+[part="clear-area"].inactive {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* no-clear属性でエリア全体を非表示 */
+:host([no-clear]) [part="clear-area"] {
+  display: none;
+}
+
+/* デフォルトの×ボタン（fallback slot内） */
 [part="clear"] {
-  position: absolute;
-  top: 50%;
-  right: calc(var(--circa-handle-size, 20px) * -0.2);
-  transform: translateY(-50%);
   width: calc(var(--circa-handle-size, 20px) * 0.8);
   height: calc(var(--circa-handle-size, 20px) * 0.8);
   border: none;
@@ -116,8 +135,6 @@ export const STYLES = `
   line-height: 1;
   cursor: pointer;
   padding: 0;
-  z-index: 4;
-  display: none;
 }
 
 [part="clear"]:hover {
@@ -127,5 +144,10 @@ export const STYLES = `
 [part="clear"]:focus-visible {
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
   outline: none;
+}
+
+/* スロット経由で渡されたカスタムボタン */
+::slotted([slot="clear"]) {
+  cursor: pointer;
 }
 `;

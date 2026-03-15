@@ -121,6 +121,13 @@ interface CircaValue {
 | `step` | number \| "any" | "any" | 値の刻み幅 |
 | `name` | string \| null | null | フォーム統合用 |
 | `required` | boolean | false | 必須バリデーション |
+| `no-clear` | boolean | false | クリアボタンを非表示にする |
+
+### スロット
+
+| スロット名 | デフォルト | 説明 |
+|-----------|-----------|------|
+| `clear` | `×` ボタン | クリアボタンを外部から差し替え可能。`<button slot="clear">リセット</button>` のように使用 |
 
 ---
 

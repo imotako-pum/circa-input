@@ -8,7 +8,9 @@
  * ここからre-exportしている。
  */
 
-export { percentToValue, valueToPercent } from "@circa-input/core";
+import { clamp } from "@circa-input/core";
+
+export { clamp, percentToValue, valueToPercent } from "@circa-input/core";
 
 /**
  * クライアントX座標をトラック上のパーセント位置に変換する。
@@ -21,5 +23,5 @@ export function clientXToPercent(
 ): number {
   if (trackWidth <= 0) return 0;
   const raw = ((clientX - trackLeft) / trackWidth) * 100;
-  return Math.min(Math.max(raw, 0), 100);
+  return clamp(raw, 0, 100);
 }

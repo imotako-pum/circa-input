@@ -48,6 +48,7 @@ const ATTR = {
   NAME: "name",
   REQUIRED: "required",
   DISABLED: "disabled",
+  NO_CLEAR: "no-clear",
 } as const;
 
 /** 監視対象のHTML属性一覧 */
@@ -60,6 +61,12 @@ const OBSERVED_ATTRS = Object.values(ATTR);
  */
 const MARGIN_DRAG_SCALE_PX = 100;
 
+/**
+ * 非対称モードの中央つまみドラッグで、操作対象マージンを確定するまでの閾値（px）。
+ * この距離を超えた最初の縦方向移動で「low」か「high」がロックされる。
+ */
+const ASYMMETRIC_LOCK_THRESHOLD_PX = 5;
+
 export class CircaInputElement extends HTMLElement {
   /** 内部状態 */
   private _circaValue!: CircaValue;
@@ -71,7 +78,7 @@ export class CircaInputElement extends HTMLElement {
   private _marginEl!: HTMLElement;
   private _handleLow!: HTMLElement;
   private _handleHigh!: HTMLElement;
-  private _clearBtn!: HTMLElement;
+  private _clearArea!: HTMLElement;
 
   /** ドラッグ状態 */
   private _isDragging = false;
@@ -80,6 +87,9 @@ export class CircaInputElement extends HTMLElement {
   private _dragStartMarginLow = 0;
   private _dragStartMarginHigh = 0;
   private _dragStartValue = 0;
+
+  /** 非対称モード中央つまみドラッグ: ロックされた操作対象 */
+  private _asymmetricDragLocked: "low" | "high" | null = null;
 
   /** 非対称ハンドルドラッグ状態 */
   private _handleDragTarget: "low" | "high" | null = null;
@@ -118,7 +128,7 @@ export class CircaInputElement extends HTMLElement {
     this._marginEl = queryRequired(shadow, "[part='margin']");
     this._handleLow = queryRequired(shadow, "[part='handle-low']");
     this._handleHigh = queryRequired(shadow, "[part='handle-high']");
-    this._clearBtn = queryRequired(shadow, "[part='clear']");
+    this._clearArea = queryRequired(shadow, "[part='clear-area']");
   }
 
   connectedCallback(): void {
@@ -146,7 +156,7 @@ export class CircaInputElement extends HTMLElement {
     );
     this._handleLow.addEventListener("keydown", this._onHandleLowKeyDown);
     this._handleHigh.addEventListener("keydown", this._onHandleHighKeyDown);
-    this._clearBtn.addEventListener("click", this._onClearClick);
+    this._clearArea.addEventListener("click", this._onClearClick);
   }
 
   disconnectedCallback(): void {
@@ -164,7 +174,7 @@ export class CircaInputElement extends HTMLElement {
     );
     this._handleLow.removeEventListener("keydown", this._onHandleLowKeyDown);
     this._handleHigh.removeEventListener("keydown", this._onHandleHighKeyDown);
-    this._clearBtn.removeEventListener("click", this._onClearClick);
+    this._clearArea.removeEventListener("click", this._onClearClick);
 
     // 進行中のドラッグをクリーンアップ
     if (this._isDragging) {
@@ -391,6 +401,7 @@ export class CircaInputElement extends HTMLElement {
     pe.preventDefault();
 
     this._isDragging = true;
+    this._asymmetricDragLocked = null;
     this._dragStartY = pe.clientY;
     this._dragStartX = pe.clientX;
 
@@ -438,16 +449,30 @@ export class CircaInputElement extends HTMLElement {
     let newMarginHigh: number;
 
     if (this._config.asymmetric) {
-      // 非対称モード: 上ドラッグ(deltaY<0)→marginLow拡大、下ドラッグ(deltaY>0)→marginHigh拡大
-      const marginDelta = (Math.abs(deltaY) / MARGIN_DRAG_SCALE_PX) * range;
-      if (deltaY < 0) {
-        // 上方向 → marginLow を増やす
-        newMarginLow = this._dragStartMarginLow + marginDelta;
+      // 非対称モード: 最初の縦方向移動で操作対象マージンをロック
+      // 上ドラッグ → marginLow、下ドラッグ → marginHigh
+      // ロック後は上下でそのマージンを自由に増減（もう片方は変化しない）
+      const absDeltaY = Math.abs(deltaY);
+
+      // 閾値を超えたら方向をロック
+      if (this._asymmetricDragLocked === null && absDeltaY >= ASYMMETRIC_LOCK_THRESHOLD_PX) {
+        this._asymmetricDragLocked = deltaY < 0 ? "low" : "high";
+      }
+
+      if (this._asymmetricDragLocked === "low") {
+        // marginLow を操作: 上(deltaY<0)で増加、下(deltaY>0)で減少
+        const marginDelta = (-deltaY / MARGIN_DRAG_SCALE_PX) * range;
+        newMarginLow = Math.max(this._dragStartMarginLow + marginDelta, 0);
         newMarginHigh = this._dragStartMarginHigh;
-      } else {
-        // 下方向 → marginHigh を増やす
+      } else if (this._asymmetricDragLocked === "high") {
+        // marginHigh を操作: 下(deltaY>0)で増加、上(deltaY<0)で減少
+        const marginDelta = (deltaY / MARGIN_DRAG_SCALE_PX) * range;
         newMarginLow = this._dragStartMarginLow;
-        newMarginHigh = this._dragStartMarginHigh + marginDelta;
+        newMarginHigh = Math.max(this._dragStartMarginHigh + marginDelta, 0);
+      } else {
+        // 閾値未満: マージン変化なし
+        newMarginLow = this._dragStartMarginLow;
+        newMarginHigh = this._dragStartMarginHigh;
       }
     } else {
       // 対称モード: 下で拡大、上で縮小（従来通り）
@@ -472,6 +497,7 @@ export class CircaInputElement extends HTMLElement {
     const pe = e as PointerEvent;
 
     this._isDragging = false;
+    this._asymmetricDragLocked = null;
     this._cachedTrackRect = null;
 
     try {
@@ -689,14 +715,16 @@ export class CircaInputElement extends HTMLElement {
       this._valueEl.style.display = "none";
     }
 
+    // マージン関連の共通計算
+    const low = marginLow ?? 0;
+    const high = marginHigh ?? 0;
+
     // マージン帯の描画
     if (value !== null && (marginLow !== null || marginHigh !== null)) {
-      const low = marginLow ?? 0;
-      const high = marginHigh ?? 0;
-      const leftPercent = valueToPercent(value - low, min, max);
-      const rightPercent = valueToPercent(value + high, min, max);
-      this._marginEl.style.left = `${leftPercent}%`;
-      this._marginEl.style.width = `${rightPercent - leftPercent}%`;
+      const lowPercent = valueToPercent(value - low, min, max);
+      const highPercent = valueToPercent(value + high, min, max);
+      this._marginEl.style.left = `${lowPercent}%`;
+      this._marginEl.style.width = `${highPercent - lowPercent}%`;
       this._marginEl.style.display = "";
     } else {
       this._marginEl.style.display = "none";
@@ -704,7 +732,6 @@ export class CircaInputElement extends HTMLElement {
 
     // ハンドル位置とARIA値の更新
     if (value !== null) {
-      const low = marginLow ?? 0;
       const lowPercent = valueToPercent(value - low, min, max);
       this._handleLow.style.left = `${lowPercent}%`;
       this._handleLow.setAttribute("aria-valuenow", String(low));
@@ -714,7 +741,6 @@ export class CircaInputElement extends HTMLElement {
         String(this._config.marginMax ?? value - min),
       );
 
-      const high = marginHigh ?? 0;
       if (high !== Infinity) {
         const highPercent = valueToPercent(value + high, min, max);
         this._handleHigh.style.left = `${highPercent}%`;
@@ -727,8 +753,8 @@ export class CircaInputElement extends HTMLElement {
       }
     }
 
-    // クリアボタンの表示/非表示
-    this._clearBtn.style.display = value !== null ? "" : "none";
+    // クリアエリアの活性/非活性切り替え
+    this._clearArea.classList.toggle("inactive", value === null);
 
     // フォーム値の更新
     this._updateFormValue();
