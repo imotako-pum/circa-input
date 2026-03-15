@@ -14,7 +14,7 @@
 
 **[デモ](https://imotako-pum.github.io/circa-input/)** · **[Reactデモ](https://imotako-pum.github.io/circa-input/react/)**
 
-![circa-input デモ](./docs/assets/demo-screenshot.png)
+![circa-input デモ](./docs/assets/demo.gif)
 
 ![circa-input ユースケース](./docs/assets/demo-use-cases.png)
 

@@ -14,7 +14,7 @@ Traditional UIs force users to pick a single precise value — but people really
 
 **[Live Demo](https://imotako-pum.github.io/circa-input/)** · **[React Demo](https://imotako-pum.github.io/circa-input/react/)**
 
-![circa-input demo](./docs/assets/demo-screenshot.png)
+![circa-input demo](./docs/assets/demo.gif)
 
 ![circa-input use cases](./docs/assets/demo-use-cases.png)
 
