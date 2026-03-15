@@ -1,4 +1,4 @@
-// カスタム要素 <circa-input> の登録（副作用インポート）
+// Register the <circa-input> custom element (side-effect import)
 import "@circa-input/web-component";
 
 export type {

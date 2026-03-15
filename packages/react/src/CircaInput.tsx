@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { CircaInputHandle, CircaInputProps } from "./types";
 
-// JSX で <circa-input> を使えるようにする型宣言（module augmentation）
+// Type declaration to enable <circa-input> in JSX (module augmentation)
 declare module "react" {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
@@ -23,8 +23,8 @@ declare module "react" {
 }
 
 /**
- * camelCase props → kebab-case HTML属性名のマッピング。
- * boolean属性（存在/非存在で制御するもの）は別途扱う。
+ * Mapping from camelCase props to kebab-case HTML attribute names.
+ * Boolean attributes (controlled by presence/absence) are handled separately.
  */
 const PROP_TO_ATTR: Record<string, string> = {
   min: "min",
@@ -42,7 +42,7 @@ const PROP_TO_ATTR: Record<string, string> = {
   tickInterval: "tick-interval",
 };
 
-/** boolean属性のマッピング（true→属性あり、false/undefined→属性なし） */
+/** Boolean attribute mapping (true -> attribute present, false/undefined -> attribute absent) */
 const BOOLEAN_ATTRS: Record<string, string> = {
   asymmetric: "asymmetric",
   required: "required",
@@ -51,10 +51,10 @@ const BOOLEAN_ATTRS: Record<string, string> = {
 };
 
 /**
- * propsをDOM属性に同期する（変更があった属性のみ更新）。
- * - 値属性: null/undefinedなら removeAttribute、それ以外は setAttribute
- * - boolean属性: trueなら setAttribute("")、falseなら removeAttribute
- * - 現在のDOM属性と同じ値の場合はスキップし、不要な attributeChangedCallback を防ぐ
+ * Sync props to DOM attributes (only updates changed attributes).
+ * - Value attributes: removeAttribute if null/undefined, otherwise setAttribute
+ * - Boolean attributes: setAttribute("") if true, removeAttribute if false
+ * - Skips if current DOM attribute matches, preventing unnecessary attributeChangedCallback
  */
 function syncAttributes(el: HTMLElement, props: CircaInputProps): void {
   for (const [prop, attr] of Object.entries(PROP_TO_ATTR)) {
@@ -82,7 +82,7 @@ function syncAttributes(el: HTMLElement, props: CircaInputProps): void {
   }
 }
 
-/** CustomEvent から CircaValue を取り出してコールバックに渡すハンドラを生成 */
+/** Create a handler that extracts CircaValue from a CustomEvent and passes it to the callback */
 function makeEventHandler(
   cb: ((v: CircaValue) => void) | undefined,
 ): (e: Event) => void {
@@ -90,10 +90,10 @@ function makeEventHandler(
 }
 
 /**
- * circa-input Web Component の React ラッパー。
+ * React wrapper for the circa-input Web Component.
  *
- * Web Component の `<circa-input>` をそのまま使い、描画ロジックを再実装しない。
- * props → HTML属性の変換と、CustomEvent → React コールバックの橋渡しを行う。
+ * Uses the `<circa-input>` Web Component directly without reimplementing rendering logic.
+ * Bridges props to HTML attributes and CustomEvents to React callbacks.
  *
  * @example
  * ```tsx
@@ -111,9 +111,9 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
 
     const elRef = useRef<CircaInputElement | null>(null);
 
-    // コールバックを ref で保持し、イベントリスナーの再登録を防ぐ。
-    // 親が inline arrow function を渡しても（毎レンダーで新しい参照が来ても）、
-    // リスナー自体は初回マウント時に一度だけ登録される。
+    // Store callbacks in refs to avoid re-registering event listeners.
+    // Even if the parent passes inline arrow functions (new references each render),
+    // the listeners are only registered once on initial mount.
     const onChangeRef = useRef(props.onChange);
     const onInputRef = useRef(props.onInput);
     useLayoutEffect(() => {
@@ -123,18 +123,18 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
       onInputRef.current = props.onInput;
     });
 
-    // props → HTML属性の同期（変更があった属性のみ更新）
+    // Sync props to HTML attributes (only updates changed attributes)
     useLayoutEffect(() => {
       const el = elRef.current;
       if (!el) return;
       syncAttributes(el, props);
     });
 
-    // 初回マウント時: connectedCallback を再発火させる。
-    // React が <circa-input> をDOMに挿入すると connectedCallback が即座に発火するが、
-    // その時点ではまだ属性が設定されていない。特に default-* 属性は
-    // connectedCallback でしか読まれないため、後から設定しても反映されない。
-    // そこで初回のみ disconnect→reconnect で connectedCallback を再発火させる。
+    // On initial mount: re-trigger connectedCallback.
+    // When React inserts <circa-input> into the DOM, connectedCallback fires immediately,
+    // but attributes are not yet set at that point. In particular, default-* attributes
+    // are only read during connectedCallback and won't take effect if set later.
+    // So on first mount only, we disconnect and reconnect to re-trigger connectedCallback.
     useLayoutEffect(() => {
       const el = elRef.current;
       if (!el) return;
@@ -145,7 +145,7 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
       next ? parent.insertBefore(el, next) : parent.appendChild(el);
     }, []);
 
-    // イベントリスナーの登録（一度だけ。コールバックは ref 経由で最新を参照）
+    // Register event listeners (once only; callbacks reference latest via refs)
     useEffect(() => {
       const el = elRef.current;
       if (!el) return;
@@ -166,7 +166,7 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
       };
     }, []);
 
-    // Ref ハンドルの公開
+    // Expose ref handle
     useImperativeHandle(ref, () => ({
       get circaValue() {
         return (

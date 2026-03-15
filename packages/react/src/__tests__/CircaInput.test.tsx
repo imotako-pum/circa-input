@@ -1,4 +1,4 @@
-// biome-ignore-all lint/style/noNonNullAssertion: テストではnon-null assertionを使用する
+// biome-ignore-all lint/style/noNonNullAssertion: non-null assertions are used in tests
 import type { CircaValue } from "@circa-input/core";
 import { cleanup, render } from "@testing-library/react";
 import { createRef } from "react";
@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CircaInput } from "../CircaInput";
 import type { CircaInputHandle } from "../types";
 
-// カスタム要素の登録
+// Register the custom element
 import "@circa-input/web-component";
 
 afterEach(() => {
@@ -14,21 +14,21 @@ afterEach(() => {
 });
 
 describe("CircaInput", () => {
-  describe("属性マッピング", () => {
-    it("min/max が HTML属性に正しく反映される", () => {
+  describe("Attribute mapping", () => {
+    it("min/max are correctly reflected as HTML attributes", () => {
       const { container } = render(<CircaInput min={0} max={100} />);
       const el = container.querySelector("circa-input")!;
       expect(el.getAttribute("min")).toBe("0");
       expect(el.getAttribute("max")).toBe("100");
     });
 
-    it("value がHTML属性に反映される（Controlledモード）", () => {
+    it("value is reflected as HTML attribute (controlled mode)", () => {
       const { container } = render(<CircaInput min={0} max={100} value={42} />);
       const el = container.querySelector("circa-input")!;
       expect(el.getAttribute("value")).toBe("42");
     });
 
-    it("marginLow/marginHigh が kebab-case 属性に変換される", () => {
+    it("marginLow/marginHigh are converted to kebab-case attributes", () => {
       const { container } = render(
         <CircaInput
           min={0}
@@ -43,7 +43,7 @@ describe("CircaInput", () => {
       expect(el.getAttribute("margin-high")).toBe("10");
     });
 
-    it("defaultValue/defaultMarginLow/defaultMarginHigh が正しく変換される", () => {
+    it("defaultValue/defaultMarginLow/defaultMarginHigh are correctly converted", () => {
       const { container } = render(
         <CircaInput
           min={0}
@@ -59,7 +59,7 @@ describe("CircaInput", () => {
       expect(el.getAttribute("default-margin-high")).toBe("7");
     });
 
-    it("marginMax/distribution/step/name が反映される", () => {
+    it("marginMax/distribution/step/name are reflected", () => {
       const { container } = render(
         <CircaInput
           min={0}
@@ -78,14 +78,14 @@ describe("CircaInput", () => {
     });
   });
 
-  describe("Boolean 属性", () => {
-    it("asymmetric=true で属性が付与される", () => {
+  describe("Boolean attributes", () => {
+    it("asymmetric=true adds the attribute", () => {
       const { container } = render(<CircaInput min={0} max={100} asymmetric />);
       const el = container.querySelector("circa-input")!;
       expect(el.hasAttribute("asymmetric")).toBe(true);
     });
 
-    it("asymmetric=false で属性が除去される", () => {
+    it("asymmetric=false removes the attribute", () => {
       const { container } = render(
         <CircaInput min={0} max={100} asymmetric={false} />,
       );
@@ -93,27 +93,27 @@ describe("CircaInput", () => {
       expect(el.hasAttribute("asymmetric")).toBe(false);
     });
 
-    it("disabled=true で属性が付与される", () => {
+    it("disabled=true adds the attribute", () => {
       const { container } = render(<CircaInput min={0} max={100} disabled />);
       const el = container.querySelector("circa-input")!;
       expect(el.hasAttribute("disabled")).toBe(true);
     });
 
-    it("required=true で属性が付与される", () => {
+    it("required=true adds the attribute", () => {
       const { container } = render(<CircaInput min={0} max={100} required />);
       const el = container.querySelector("circa-input")!;
       expect(el.hasAttribute("required")).toBe(true);
     });
 
-    it("noClear=true で no-clear 属性が付与される", () => {
+    it("noClear=true adds the no-clear attribute", () => {
       const { container } = render(<CircaInput min={0} max={100} noClear />);
       const el = container.querySelector("circa-input")!;
       expect(el.hasAttribute("no-clear")).toBe(true);
     });
   });
 
-  describe("null/undefined による属性除去", () => {
-    it("value={null} で value 属性が除去される", () => {
+  describe("Attribute removal via null/undefined", () => {
+    it("value={null} removes the value attribute", () => {
       const { container, rerender } = render(
         <CircaInput min={0} max={100} value={50} />,
       );
@@ -124,7 +124,7 @@ describe("CircaInput", () => {
       expect(el.hasAttribute("value")).toBe(false);
     });
 
-    it("undefined のpropsは属性が設定されない", () => {
+    it("undefined props do not set attributes", () => {
       const { container } = render(<CircaInput min={0} max={100} />);
       const el = container.querySelector("circa-input")!;
       expect(el.hasAttribute("value")).toBe(false);
@@ -133,8 +133,8 @@ describe("CircaInput", () => {
     });
   });
 
-  describe("イベント", () => {
-    it("onChange コールバックが CircaValue を受け取る", () => {
+  describe("Events", () => {
+    it("onChange callback receives CircaValue", () => {
       const handleChange = vi.fn();
       const { container } = render(
         <CircaInput
@@ -166,7 +166,7 @@ describe("CircaInput", () => {
       expect(handleChange).toHaveBeenCalledWith(mockValue);
     });
 
-    it("onInput コールバックが CircaValue を受け取る", () => {
+    it("onInput callback receives CircaValue", () => {
       const handleInput = vi.fn();
       const { container } = render(
         <CircaInput
@@ -198,7 +198,7 @@ describe("CircaInput", () => {
       expect(handleInput).toHaveBeenCalledWith(mockValue);
     });
 
-    it("onChange/onInput が更新されたらリスナーも更新される", () => {
+    it("listeners update when onChange/onInput are updated", () => {
       const handler1 = vi.fn();
       const handler2 = vi.fn();
 
@@ -215,7 +215,7 @@ describe("CircaInput", () => {
         distributionParams: {},
       };
 
-      // handler1 で受け取る
+      // Received by handler1
       el.dispatchEvent(
         new CustomEvent("change", {
           detail: mockValue,
@@ -225,7 +225,7 @@ describe("CircaInput", () => {
       );
       expect(handler1).toHaveBeenCalledTimes(1);
 
-      // handler2 に差し替え
+      // Switch to handler2
       rerender(<CircaInput min={0} max={100} onChange={handler2} />);
       el.dispatchEvent(
         new CustomEvent("change", {
@@ -235,13 +235,13 @@ describe("CircaInput", () => {
         }),
       );
       expect(handler2).toHaveBeenCalledTimes(1);
-      // handler1 は追加で呼ばれない
+      // handler1 is not called again
       expect(handler1).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe("Ref ハンドル", () => {
-    it("circaValue が取得できる", () => {
+  describe("Ref handle", () => {
+    it("circaValue can be retrieved", () => {
       const ref = createRef<CircaInputHandle>();
       render(<CircaInput ref={ref} min={0} max={100} defaultValue={42} />);
 
@@ -249,7 +249,7 @@ describe("CircaInput", () => {
       expect(ref.current?.circaValue.value).toBe(42);
     });
 
-    it("formValue が JSON 文字列として取得できる", () => {
+    it("formValue can be retrieved as a JSON string", () => {
       const ref = createRef<CircaInputHandle>();
       render(
         <CircaInput
@@ -270,7 +270,7 @@ describe("CircaInput", () => {
       expect(parsed.marginHigh).toBe(10);
     });
 
-    it("clear() で値がクリアされる", () => {
+    it("clear() clears the value", () => {
       const ref = createRef<CircaInputHandle>();
       render(<CircaInput ref={ref} min={0} max={100} defaultValue={50} />);
 
@@ -279,7 +279,7 @@ describe("CircaInput", () => {
       expect(ref.current?.circaValue.value).toBeNull();
     });
 
-    it("nativeElement で内部のカスタム要素にアクセスできる", () => {
+    it("nativeElement provides access to the internal custom element", () => {
       const ref = createRef<CircaInputHandle>();
       render(<CircaInput ref={ref} min={0} max={100} />);
 
@@ -290,7 +290,7 @@ describe("CircaInput", () => {
   });
 
   describe("children (slot)", () => {
-    it("子要素がレンダリングされる", () => {
+    it("children are rendered", () => {
       const { container } = render(
         <CircaInput min={0} max={100}>
           <button type="button" slot="clear">
@@ -306,7 +306,7 @@ describe("CircaInput", () => {
   });
 
   describe("className / style / id", () => {
-    it("className がホスト要素に class として設定される", () => {
+    it("className is set as class on the host element", () => {
       const { container } = render(
         <CircaInput min={0} max={100} className="my-slider" />,
       );
@@ -314,7 +314,7 @@ describe("CircaInput", () => {
       expect(el.getAttribute("class")).toBe("my-slider");
     });
 
-    it("style がホスト要素に適用される", () => {
+    it("style is applied to the host element", () => {
       const { container } = render(
         <CircaInput
           min={0}
@@ -326,7 +326,7 @@ describe("CircaInput", () => {
       expect(el.style.width).toBe("300px");
     });
 
-    it("id がホスト要素に設定される", () => {
+    it("id is set on the host element", () => {
       const { container } = render(
         <CircaInput min={0} max={100} id="my-circa" />,
       );
@@ -336,7 +336,7 @@ describe("CircaInput", () => {
   });
 
   describe("tickInterval", () => {
-    it("tickInterval が tick-interval 属性に変換される", () => {
+    it("tickInterval is converted to tick-interval attribute", () => {
       const { container } = render(
         <CircaInput min={0} max={100} tickInterval={25} />,
       );
@@ -344,13 +344,13 @@ describe("CircaInput", () => {
       expect(el.getAttribute("tick-interval")).toBe("25");
     });
 
-    it("tickInterval 未指定時は tick-interval 属性がない", () => {
+    it("tick-interval attribute is absent when tickInterval is not specified", () => {
       const { container } = render(<CircaInput min={0} max={100} />);
       const el = container.querySelector("circa-input")!;
       expect(el.hasAttribute("tick-interval")).toBe(false);
     });
 
-    it("tickInterval を動的に変更すると属性が更新される", () => {
+    it("dynamically changing tickInterval updates the attribute", () => {
       const { container, rerender } = render(
         <CircaInput min={0} max={100} tickInterval={25} />,
       );
@@ -362,8 +362,8 @@ describe("CircaInput", () => {
     });
   });
 
-  describe("props 更新", () => {
-    it("min/max を動的に変更すると属性が更新される", () => {
+  describe("Props update", () => {
+    it("dynamically changing min/max updates the attributes", () => {
       const { container, rerender } = render(<CircaInput min={0} max={100} />);
       const el = container.querySelector("circa-input")!;
       expect(el.getAttribute("min")).toBe("0");
@@ -374,7 +374,7 @@ describe("CircaInput", () => {
       expect(el.getAttribute("max")).toBe("200");
     });
 
-    it("boolean属性をtrue→falseに切り替えると属性が除去される", () => {
+    it("switching a boolean attribute from true to false removes the attribute", () => {
       const { container, rerender } = render(
         <CircaInput min={0} max={100} disabled />,
       );

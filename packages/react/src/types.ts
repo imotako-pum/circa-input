@@ -2,83 +2,83 @@ import type { CircaValue, Distribution } from "@circa-input/core";
 import type { CSSProperties, ReactNode } from "react";
 
 /**
- * <CircaInput> コンポーネントのProps定義。
+ * Props definition for the <CircaInput> component.
  *
- * camelCase（React慣例）でpropsを受け取り、
- * 内部でkebab-case HTML属性に変換して <circa-input> に同期する。
+ * Accepts props in camelCase (React convention) and
+ * internally converts them to kebab-case HTML attributes to sync with <circa-input>.
  */
 export interface CircaInputProps {
-  // --- 必須 ---
-  /** 選択可能な最小値 */
+  // --- Required ---
+  /** Minimum selectable value */
   min: number;
-  /** 選択可能な最大値 */
+  /** Maximum selectable value */
   max: number;
 
   // --- Controlled ---
-  /** 中心値（Controlled）。存在するとControlledモードになる */
+  /** Center value (Controlled). When present, enables controlled mode */
   value?: number | null;
-  /** 下側の許容幅（Controlled） */
+  /** Lower margin (Controlled) */
   marginLow?: number | null;
-  /** 上側の許容幅（Controlled） */
+  /** Upper margin (Controlled) */
   marginHigh?: number | null;
 
   // --- Uncontrolled ---
-  /** 中心値の初期値（Uncontrolled） */
+  /** Initial center value (Uncontrolled) */
   defaultValue?: number | null;
-  /** 下側の許容幅の初期値（Uncontrolled） */
+  /** Initial lower margin (Uncontrolled) */
   defaultMarginLow?: number | null;
-  /** 上側の許容幅の初期値（Uncontrolled） */
+  /** Initial upper margin (Uncontrolled) */
   defaultMarginHigh?: number | null;
 
-  // --- オプション ---
-  /** 許容幅の最大値 */
+  // --- Options ---
+  /** Maximum margin value */
   marginMax?: number;
-  /** 分布の形状 */
+  /** Distribution shape */
   distribution?: Distribution;
-  /** 非対称モード */
+  /** Asymmetric mode */
   asymmetric?: boolean;
-  /** 値の刻み幅 */
+  /** Step increment for values */
   step?: number | "any";
-  /** フォーム統合用の名前 */
+  /** Name for form integration */
   name?: string;
-  /** 必須バリデーション */
+  /** Required validation */
   required?: boolean;
-  /** 無効化 */
+  /** Disabled state */
   disabled?: boolean;
-  /** クリアボタンを非表示にする */
+  /** Hide the clear button */
   noClear?: boolean;
-  /** 目盛りの間隔（設定時のみ目盛りを表示） */
+  /** Tick mark interval (ticks are displayed only when set) */
   tickInterval?: number;
 
-  // --- イベント ---
-  /** 操作完了時に発火（CircaValueを直接受け取る） */
+  // --- Events ---
+  /** Fires on interaction complete (receives CircaValue directly) */
   onChange?: (value: CircaValue) => void;
-  /** 操作中リアルタイムに発火（CircaValueを直接受け取る） */
+  /** Fires in real-time during interaction (receives CircaValue directly) */
   onInput?: (value: CircaValue) => void;
 
-  // --- スロット・HTML ---
-  /** 子要素（slot="clear" のカスタムクリアボタン等） */
+  // --- Slots / HTML ---
+  /** Children (e.g., custom clear button with slot="clear") */
   children?: ReactNode;
-  /** ホスト要素のclass */
+  /** Class for the host element */
   className?: string;
-  /** ホスト要素のstyle */
+  /** Style for the host element */
   style?: CSSProperties;
-  /** ホスト要素のid */
+  /** ID for the host element */
   id?: string;
 }
 
 /**
- * <CircaInput> の ref ハンドル。
+ * Ref handle for <CircaInput>.
  *
- * useImperativeHandle で公開される命令型API。
+ * Imperative API exposed via useImperativeHandle.
  */
 export interface CircaInputHandle {
-  /** 現在のCircaValue */
+  /** Current CircaValue */
   readonly circaValue: CircaValue;
-  /** フォーム送信用のJSON文字列（未入力時はnull） */
+  /** JSON string for form submission (null when no value is set) */
   readonly formValue: string | null;
-  /** 値をクリアして未入力状態に戻す */
+  /** Clear the value and reset to empty state */
   clear(): void;
-  /** 内部の <circa-input> カスタム要素への参照 */
+  /** Reference to the internal <circa-input> custom element */
   readonly nativeElement: HTMLElement | null;
 }
