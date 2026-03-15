@@ -208,6 +208,9 @@ pnpm build      # Build all packages
 pnpm test       # Run tests
 pnpm dev        # Watch mode
 pnpm lint       # Lint with Biome
+
+# Run demo locally
+pnpm --filter demo dev
 ```
 
 ## License

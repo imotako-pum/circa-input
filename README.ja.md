@@ -208,6 +208,9 @@ pnpm build      # 全パッケージのビルド
 pnpm test       # テスト実行
 pnpm dev        # ウォッチモード
 pnpm lint       # Biomeでリント
+
+# デモをローカルで起動
+pnpm --filter demo dev
 ```
 
 ## ライセンス
