@@ -773,11 +773,34 @@ export class CircaInputElement extends HTMLElement {
     const { value, marginLow, marginHigh } = this._circaValue;
     const { min, max } = this._config;
 
-    // Update aria-valuenow
-    this._valueEl.setAttribute(
-      "aria-valuenow",
-      value !== null ? String(value) : "",
-    );
+    // Common margin calculations
+    const low = marginLow ?? 0;
+    const high = marginHigh ?? 0;
+
+    // Update ARIA attributes
+    if (value !== null) {
+      this._valueEl.setAttribute("aria-valuenow", String(value));
+      // aria-valuetext: communicate margin info to screen readers
+      if (marginLow !== null || marginHigh !== null) {
+        if (!this._config.asymmetric && low === high) {
+          this._valueEl.setAttribute(
+            "aria-valuetext",
+            `${value}, plus or minus ${low}`,
+          );
+        } else {
+          this._valueEl.setAttribute(
+            "aria-valuetext",
+            `${value}, minus ${low}, plus ${high}`,
+          );
+        }
+      } else {
+        this._valueEl.removeAttribute("aria-valuetext");
+      }
+    } else {
+      // Remove aria-valuenow when no value (empty string violates ARIA spec)
+      this._valueEl.removeAttribute("aria-valuenow");
+      this._valueEl.removeAttribute("aria-valuetext");
+    }
 
     // Value indicator position
     if (value !== null) {
@@ -787,10 +810,6 @@ export class CircaInputElement extends HTMLElement {
     } else {
       this._valueEl.style.display = "none";
     }
-
-    // Common margin calculations
-    const low = marginLow ?? 0;
-    const high = marginHigh ?? 0;
 
     // Render margin band
     if (value !== null && (marginLow !== null || marginHigh !== null)) {

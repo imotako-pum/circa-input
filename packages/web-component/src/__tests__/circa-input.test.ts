@@ -62,9 +62,9 @@ describe("CircaInputElement", () => {
       expect(value?.getAttribute("aria-valuemax")).toBe("100");
     });
 
-    it("aria-valuenow is empty string in initial state", () => {
+    it("aria-valuenow is removed in initial state (no value set)", () => {
       const value = el.shadowRoot?.querySelector("[part='value']");
-      expect(value?.getAttribute("aria-valuenow")).toBe("");
+      expect(value?.getAttribute("aria-valuenow")).toBeNull();
     });
 
     it("when not in asymmetric mode, handle-low/high have aria-hidden='true' and tabindex='-1'", () => {
