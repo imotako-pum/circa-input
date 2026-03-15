@@ -1,4 +1,5 @@
 import type { CircaValue } from "@circa-input/react";
+import { useT } from "../i18n";
 
 interface ValueDisplayProps {
   value: CircaValue | null;
@@ -9,11 +10,13 @@ export function ValueDisplay({
   value,
   label = "CircaValue",
 }: ValueDisplayProps) {
+  const t = useT();
+
   return (
     <div className="value-display">
       <div className="value-display-label">{label}</div>
       {value === null || value.value === null ? (
-        <pre className="value-display-content">未設定</pre>
+        <pre className="value-display-content">{t("common.unset")}</pre>
       ) : (
         <pre className="value-display-content">
           {JSON.stringify(

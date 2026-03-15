@@ -29,6 +29,13 @@ body {
   text-align: center;
 }
 
+.hero-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
 .hero h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -38,6 +45,36 @@ body {
   margin-top: 0.5rem;
   opacity: 0.9;
   font-size: 1.1rem;
+}
+
+/* Language Toggle */
+.lang-toggle {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.lang-btn {
+  padding: 0.25rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.lang-btn:hover:not(.active) {
+  color: white;
 }
 
 /* Nav */

@@ -1,12 +1,14 @@
 import { CircaInput } from "@circa-input/react";
 import { type FormEvent, useState } from "react";
 import { Section } from "../components/Section";
+import { useT } from "../i18n";
 
 interface FormResult {
   entries: [string, string][];
 }
 
 export function FormDemo() {
+  const t = useT();
   const [result, setResult] = useState<FormResult | null>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -24,25 +26,22 @@ export function FormDemo() {
   };
 
   return (
-    <Section
-      title="Form Integration"
-      description="name属性を設定すると、CircaValueがJSON文字列としてFormDataに含まれます。"
-    >
+    <Section title={t("form.title")} description={t("form.description")}>
       <div id="form" className="demo-area">
         <form onSubmit={handleSubmit} onReset={handleReset}>
           <div className="form-field">
-            <label htmlFor="customer-name">顧客名</label>
+            <label htmlFor="customer-name">{t("form.customerName")}</label>
             <input
               type="text"
               id="customer-name"
               name="customer_name"
-              placeholder="山田太郎"
+              placeholder={t("form.customerNamePlaceholder")}
             />
           </div>
 
           <div className="form-field">
             {/* biome-ignore lint/a11y/noLabelWithoutControl: circa-input is a custom element, htmlFor cannot target it */}
-            <label>配達時間（9:00〜21:00）</label>
+            <label>{t("form.deliveryTime")}</label>
             <CircaInput
               name="delivery_time"
               min={9}
@@ -57,7 +56,7 @@ export function FormDemo() {
 
           <div className="form-field">
             {/* biome-ignore lint/a11y/noLabelWithoutControl: circa-input is a custom element, htmlFor cannot target it */}
-            <label>予算（0〜100,000円）</label>
+            <label>{t("form.budget")}</label>
             <CircaInput
               name="budget"
               min={0}
@@ -72,17 +71,17 @@ export function FormDemo() {
 
           <div className="form-actions">
             <button type="submit" className="btn-primary">
-              送信
+              {t("form.submit")}
             </button>
             <button type="reset" className="btn-secondary">
-              リセット
+              {t("form.reset")}
             </button>
           </div>
         </form>
 
         {result && (
           <div className="form-result">
-            <div className="form-result-label">送信結果（FormData）</div>
+            <div className="form-result-label">{t("form.resultLabel")}</div>
             <div className="form-result-entries">
               {result.entries.map(([key, val]) => {
                 let display: string;

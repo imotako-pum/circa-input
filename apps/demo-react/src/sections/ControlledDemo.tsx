@@ -2,6 +2,7 @@ import { CircaInput, type CircaValue } from "@circa-input/react";
 import { useState } from "react";
 import { Section } from "../components/Section";
 import { ValueDisplay } from "../components/ValueDisplay";
+import { useT } from "../i18n";
 
 const PRESETS = [
   { label: "50 ± 10", value: 50, marginLow: 10, marginHigh: 10 },
@@ -10,6 +11,7 @@ const PRESETS = [
 ] as const;
 
 export function ControlledDemo() {
+  const t = useT();
   const [value, setValue] = useState<number | null>(50);
   const [marginLow, setMarginLow] = useState<number | null>(10);
   const [marginHigh, setMarginHigh] = useState<number | null>(10);
@@ -42,8 +44,8 @@ export function ControlledDemo() {
 
   return (
     <Section
-      title="Controlled"
-      description="useStateで値を管理し、リアルタイムに同期する制御モードです。"
+      title={t("controlled.title")}
+      description={t("controlled.description")}
       alt
     >
       <div id="controlled" className="demo-area">
@@ -70,7 +72,7 @@ export function ControlledDemo() {
             </button>
           ))}
           <button type="button" className="btn-secondary" onClick={reset}>
-            リセット
+            {t("controlled.reset")}
           </button>
         </div>
 

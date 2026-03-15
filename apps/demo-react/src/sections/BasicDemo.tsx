@@ -6,8 +6,10 @@ import {
 import { useRef, useState } from "react";
 import { Section } from "../components/Section";
 import { ValueDisplay } from "../components/ValueDisplay";
+import { useT } from "../i18n";
 
 export function BasicDemo() {
+  const t = useT();
   const ref = useRef<CircaInputHandle>(null);
   const [displayValue, setDisplayValue] = useState<CircaValue | null>(null);
   const [log, setLog] = useState<string[]>([]);
@@ -18,10 +20,7 @@ export function BasicDemo() {
   };
 
   return (
-    <Section
-      title="Basic (Uncontrolled)"
-      description="useRefパターンでcirca-inputの値を取得する基本的な使い方です。"
-    >
+    <Section title={t("basic.title")} description={t("basic.description")}>
       <div id="basic" className="demo-area">
         <div className="demo-input">
           <CircaInput
@@ -43,7 +42,7 @@ export function BasicDemo() {
               if (ref.current) setDisplayValue(ref.current.circaValue);
             }}
           >
-            値を読む
+            {t("basic.readValue")}
           </button>
           <button
             type="button"
@@ -53,7 +52,7 @@ export function BasicDemo() {
               setDisplayValue(null);
             }}
           >
-            クリア
+            {t("basic.clear")}
           </button>
         </div>
 
