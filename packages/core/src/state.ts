@@ -35,6 +35,11 @@ export function snapToStep(
  */
 function countDecimals(num: number): number {
   const str = num.toString();
+  // Handle scientific notation (e.g., "1e-7" → 7 decimal places)
+  const eIndex = str.indexOf("e-");
+  if (eIndex !== -1) {
+    return parseInt(str.slice(eIndex + 2), 10);
+  }
   const dotIndex = str.indexOf(".");
   return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
 }

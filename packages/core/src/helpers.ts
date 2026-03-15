@@ -62,7 +62,7 @@ export function generateTicks(
 
   // Performance guard: return empty array if tick count exceeds 50
   const count = Math.floor((max - min) / tickInterval) + 1;
-  if (count > 50) return [];
+  if (!Number.isFinite(count) || count > 50) return [];
 
   // Determine decimal places of tickInterval (used for floating-point precision rounding)
   const intervalStr = String(tickInterval);
