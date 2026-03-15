@@ -279,8 +279,8 @@ Styles inside the Shadow DOM can be customized externally via CSS Custom Propert
 | `--circa-margin-color` | `rgba(25, 118, 210, 0.2)` | Margin area color |
 | `--circa-handle-size` | `20px` | Handle size |
 | `--circa-handle-color` | `#1976d2` | Handle color |
-| `--circa-clear-color` | `#999` | Clear button color |
-| `--circa-clear-hover-color` | `#666` | Clear button hover color |
+| `--circa-clear-color` | `#bbb` | Clear button color |
+| `--circa-clear-hover-color` | `#888` | Clear button hover color |
 | `--circa-tick-color` | `#999` | Tick line color |
 | `--circa-tick-label-color` | `#666` | Tick label color |
 | `--circa-tick-height` | `6px` | Tick line height |

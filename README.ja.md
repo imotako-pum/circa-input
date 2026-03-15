@@ -136,6 +136,25 @@ interface CircaValue {
 
 ## CSSカスタマイズ
 
+全14個のCSS Custom Properties:
+
+| 変数名 | デフォルト | 説明 |
+|---|---|---|
+| `--circa-track-height` | `8px` | トラックの高さ |
+| `--circa-track-color` | `#e0e0e0` | トラックの背景色 |
+| `--circa-track-radius` | `4px` | トラックの角丸 |
+| `--circa-value-color` | `#1976d2` | 値インジケーターの色 |
+| `--circa-margin-color` | `rgba(25,118,210,0.2)` | マージンエリアの色 |
+| `--circa-handle-size` | `20px` | ハンドルの直径 |
+| `--circa-handle-color` | `#1976d2` | ハンドルの色 |
+| `--circa-clear-color` | `#bbb` | クリアボタンの色 |
+| `--circa-clear-hover-color` | `#888` | クリアボタンのhover色 |
+| `--circa-tick-height` | `6px` | 目盛り線の高さ |
+| `--circa-tick-width` | `1px` | 目盛り線の幅 |
+| `--circa-tick-color` | `#999` | 目盛り線の色 |
+| `--circa-tick-label-size` | `10px` | 目盛りラベルのフォントサイズ |
+| `--circa-tick-label-color` | `#666` | 目盛りラベルの色 |
+
 ```css
 circa-input {
   --circa-track-height: 8px;
@@ -147,8 +166,6 @@ circa-input {
   --circa-handle-color: #1976d2;
 }
 ```
-
-CSS変数の全リストは [spec.md](./docs/spec.md) を参照してください。
 
 ## フォーム連携
 
