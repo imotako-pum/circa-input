@@ -35,11 +35,49 @@ body {
   text-align: center;
 }
 
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
 .hero h1 {
   font-size: 2.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 0.5rem;
+}
+
+/* === Language Toggle === */
+.lang-toggle {
+  display: flex;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.lang-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.lang-btn.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 .hero-subtitle {

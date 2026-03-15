@@ -18,11 +18,19 @@ const useCases: UseCaseConfig[] = [
   { inputId: "uc-temp", outputId: "uc-temp-output", formatter: formatTemp },
 ];
 
+interface ResolvedUseCase {
+  input: HTMLElement;
+  outputEl: HTMLElement;
+  formatter: (v: CircaValue) => string;
+}
+
+let resolvedCases: ResolvedUseCase[] = [];
+
 /**
- * Section 3: ユースケース集の初期化
+ * Section 3: Bind event listeners for use cases. Called once.
  */
 export function initUseCasesSection(): void {
-  for (const uc of useCases) {
+  resolvedCases = useCases.map((uc) => {
     const input = requireById(uc.inputId, "use-cases");
     const outputEl = requireElement<HTMLElement>(
       `#${uc.outputId} .use-case-formatted`,
@@ -36,5 +44,21 @@ export function initUseCasesSection(): void {
 
     input.addEventListener("input", handleEvent);
     input.addEventListener("change", handleEvent);
+
+    return { input, outputEl, formatter: uc.formatter };
+  });
+}
+
+/**
+ * Re-render use case formatted output with the current locale.
+ * Called on language change.
+ */
+export function updateUseCasesOutput(): void {
+  for (const { input, outputEl, formatter } of resolvedCases) {
+    const currentValue = (input as unknown as { circaValue: CircaValue })
+      .circaValue;
+    if (currentValue && currentValue.value !== null) {
+      outputEl.textContent = formatter(currentValue);
+    }
   }
 }

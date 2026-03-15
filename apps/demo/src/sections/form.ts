@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { requireById, requireElement } from "../utils/dom";
 
 /**
@@ -21,7 +22,7 @@ export function initFormSection(): void {
     }
 
     if (Object.keys(entries).length === 0) {
-      resultEl.textContent = "FormDataは空です（値が未入力またはname属性なし）";
+      resultEl.textContent = t("form.resultEmpty");
       return;
     }
 
@@ -40,6 +41,6 @@ export function initFormSection(): void {
   });
 
   form.addEventListener("reset", () => {
-    resultEl.textContent = "フォームを送信してください";
+    resultEl.textContent = t("form.resultReset");
   });
 }

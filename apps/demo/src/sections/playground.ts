@@ -1,4 +1,5 @@
 import type { CircaValue } from "@circa-input/core";
+import { t } from "../i18n";
 import { requireById, requireElement } from "../utils/dom";
 import { formatCircaValue } from "../utils/format";
 
@@ -158,7 +159,7 @@ function setupEventLog(
   clearBtn.addEventListener("click", () => {
     const empty = document.createElement("div");
     empty.className = "log-empty";
-    empty.textContent = "イベントがここに表示されます";
+    empty.textContent = t("playground.logEmpty");
     logEl.replaceChildren(empty);
     logCleared = false;
   });
