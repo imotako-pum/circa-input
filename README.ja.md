@@ -14,6 +14,10 @@
 
 **[デモ](https://imotako-pum.github.io/circa-input/)** · **[Reactデモ](https://imotako-pum.github.io/circa-input/react/)**
 
+![circa-input デモ](./docs/assets/demo-screenshot.png)
+
+![circa-input ユースケース](./docs/assets/demo-use-cases.png)
+
 ## 特徴
 
 - **値＋曖昧さ** — 「14:00」ではなく「14:00 ± 1時間」を1つの入力で表現
