@@ -5,3 +5,17 @@ coverage/
 .turbo/
 .vite/
 .claude/settings.json
+
+# OS / Editor
+.DS_Store
+*.swp
+*.swo
+.idea/
+
+# Environment
+.env
+.env.local
+
+# Debug logs
+pnpm-debug.log
+npm-debug.log
