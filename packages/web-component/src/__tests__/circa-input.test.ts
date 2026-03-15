@@ -703,16 +703,10 @@ describe("CircaInputElement", () => {
     }
 
     function getValueSlider(target: HTMLElement): HTMLElement {
-      return target.shadowRoot?.querySelector(
-        "[part='value']",
-      ) as HTMLElement;
+      return target.shadowRoot?.querySelector("[part='value']") as HTMLElement;
     }
 
-    function pointerEvent(
-      type: string,
-      x: number,
-      y: number,
-    ): PointerEvent {
+    function pointerEvent(type: string, x: number, y: number): PointerEvent {
       return new PointerEvent(type, {
         clientX: x,
         clientY: y,

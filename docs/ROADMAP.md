@@ -98,11 +98,11 @@ core完成  WC動作        デモ公開    React対応     npm公開準備
 **ゴール**: `<CircaInput min={0} max={100} onChange={(v) => ...} />` で使える。
 
 **内容**:
-- Web ComponentのReactラッパー
-- props → HTML属性の変換
-- CustomEvent → Reactコールバックの変換
-- Controlled/UncontrolledのReact的なDX
-- TypeScript型定義のエクスポート
+- [x] Web ComponentのReactラッパー
+- [x] props → HTML属性の変換
+- [x] CustomEvent → Reactコールバックの変換
+- [x] Controlled/UncontrolledのReact的なDX
+- [x] TypeScript型定義のエクスポート
 
 **完了条件**:
 - Reactアプリ内で`<CircaInput>`が正しく動作する
@@ -187,6 +187,7 @@ M1 ──→ M2 ──→ M3
 | 2026-03-08 | M2 完了 | Web Component実装完了。dom-utils/attributes/styles/template/circa-input/indexの6モジュール。Shadow DOM、クリック/キーボード/ドラッグ操作、マージン対称・非対称、Controlled/Uncontrolled、フォーム統合(ElementInternals)、モバイル対応(pointercancel)。テスト72件全グリーン。ビルド成功（gzip 3.79KB、core合算4.76KB < 5KB）。カバレッジ91.2%。 |
 | 2026-03-08 | M2 品質改善 | コードレビューで検出したCRITICAL/HIGH 6件・MEDIUM/LOW 8件を全て修正。handle-low/highキーボード操作追加、disabled状態ブロック、validateConfig呼び出し、valueToPercentゼロ除算ガード、--circa-value-color CSS変数追加。lint/type-check全クリア。テスト87件全グリーン。合算gzip 4.95KB < 5KB。 |
 | 2026-03-08 | M3 完了 | デモサイト実装完了。5セクション構成（基本操作・非対称モード・ユースケース集・プレイグラウンド・フォーム統合）。セクション分割のモジュール設計（sections/ + utils/）。レスポンシブ対応。ビルド成功。lint/type-checkクリア。全テスト132件グリーン。 |
+| 2026-03-15 | M4 完了 | Reactアダプター実装完了。CircaInput コンポーネント（forwardRef + useImperativeHandle）、型定義（CircaInputProps/CircaInputHandle）、camelCase→kebab-case属性マッピング、CustomEvent→コールバック橋渡し、Controlled/Uncontrolled両対応。テスト25件全グリーン。ビルド成功（ESM gzip 0.97KB / CJS gzip 0.83KB）。lint/type-check全クリア。全テスト188件グリーン。 |
 
 ---
 
