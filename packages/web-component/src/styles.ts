@@ -125,6 +125,8 @@ export const STYLES = `
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  align-self: flex-start;
+  height: var(--circa-track-height, 8px);
 }
 
 /* When no value is set (class added via JS) */
@@ -143,17 +145,24 @@ export const STYLES = `
   width: calc(var(--circa-handle-size, 20px) * 0.8);
   height: calc(var(--circa-handle-size, 20px) * 0.8);
   border: none;
-  background: var(--circa-clear-color, #999);
+  background: var(--circa-clear-color, #bbb);
   color: #fff;
   border-radius: 50%;
-  font-size: calc(var(--circa-handle-size, 20px) * 0.5);
-  line-height: 1;
   cursor: pointer;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
 [part="clear"]:hover {
-  background: var(--circa-clear-hover-color, #666);
+  background: var(--circa-clear-hover-color, #888);
+  transform: scale(1.1);
+}
+
+[part="clear"]:active {
+  transform: scale(0.95);
 }
 
 [part="clear"]:focus-visible {
