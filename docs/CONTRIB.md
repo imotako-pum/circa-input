@@ -114,7 +114,8 @@ circa-input/
 │   ├── web-component/  # <circa-input> custom element
 │   └── react/          # React adapter (@circa-input/react)
 ├── apps/
-│   └── demo/           # Interactive demo site
+│   ├── demo/           # Interactive demo site
+│   └── demo-react/     # React demo site
 ├── docs/
 │   ├── spec.md         # Technical specification (primary source of truth)
 │   ├── ROADMAP.md      # Roadmap and progress
