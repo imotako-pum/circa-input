@@ -1,7 +1,25 @@
 {
   "name": "@circa-input/web-component",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Web Component implementation of circa-input (<circa-input> tag)",
+  "license": "MIT",
+  "author": "imotako-pum",
+  "homepage": "https://github.com/imotako-pum/circa-input/tree/main/packages/web-component",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imotako-pum/circa-input.git",
+    "directory": "packages/web-component"
+  },
+  "keywords": [
+    "circa-input",
+    "web-component",
+    "custom-element",
+    "ambiguity",
+    "fuzzy-input",
+    "range-input",
+    "ui-primitive"
+  ],
+  "sideEffects": true,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

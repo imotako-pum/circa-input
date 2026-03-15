@@ -1,7 +1,24 @@
 {
   "name": "@circa-input/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Core logic for circa-input — value + ambiguity input primitive",
+  "license": "MIT",
+  "author": "imotako-pum",
+  "homepage": "https://github.com/imotako-pum/circa-input/tree/main/packages/core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imotako-pum/circa-input.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "circa-input",
+    "ambiguity",
+    "fuzzy-input",
+    "range-input",
+    "uncertainty",
+    "ui-primitive"
+  ],
+  "sideEffects": false,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
