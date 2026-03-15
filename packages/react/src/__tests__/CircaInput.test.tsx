@@ -385,4 +385,30 @@ describe("CircaInput", () => {
       expect(el.hasAttribute("disabled")).toBe(false);
     });
   });
+
+  describe("cleanup", () => {
+    it("removes event listeners on unmount", () => {
+      const onChange = vi.fn();
+      const { unmount, container } = render(
+        <CircaInput min={0} max={100} onChange={onChange} />,
+      );
+      const el = container.querySelector("circa-input")!;
+
+      unmount();
+
+      // After unmount, dispatching a change event should not call onChange
+      el.dispatchEvent(
+        new CustomEvent("change", {
+          detail: {
+            value: 42,
+            marginLow: null,
+            marginHigh: null,
+            distribution: "normal",
+            distributionParams: {},
+          },
+        }),
+      );
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -1,11 +1,38 @@
 import { describe, expect, it } from "vitest";
 import {
+  clamp,
   generateTicks,
   percentToValue,
   toPlainValue,
   valueToPercent,
 } from "../helpers.js";
 import type { CircaValue } from "../types.js";
+
+describe("clamp", () => {
+  it("returns value when within range", () => {
+    expect(clamp(50, 0, 100)).toBe(50);
+  });
+
+  it("clamps to min when below", () => {
+    expect(clamp(-10, 0, 100)).toBe(0);
+  });
+
+  it("clamps to max when above", () => {
+    expect(clamp(150, 0, 100)).toBe(100);
+  });
+
+  it("handles min === max", () => {
+    expect(clamp(50, 10, 10)).toBe(10);
+  });
+
+  it("returns min when value equals min", () => {
+    expect(clamp(0, 0, 100)).toBe(0);
+  });
+
+  it("returns max when value equals max", () => {
+    expect(clamp(100, 0, 100)).toBe(100);
+  });
+});
 
 describe("toPlainValue", () => {
   it("extracts only the value from a CircaValue", () => {
