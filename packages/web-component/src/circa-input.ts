@@ -75,7 +75,8 @@ export class CircaInputElement extends HTMLElement {
   private _isDragging = false;
   private _dragStartY = 0;
   private _dragStartX = 0;
-  private _dragStartMargin = 0;
+  private _dragStartMarginLow = 0;
+  private _dragStartMarginHigh = 0;
   private _dragStartValue = 0;
 
   /** 非対称ハンドルドラッグ状態 */
@@ -263,20 +264,35 @@ export class CircaInputElement extends HTMLElement {
         marginLow: ml,
         marginHigh: mh,
       };
-      if (key === "ArrowRight" || key === "ArrowUp") {
-        this._setValue(
-          updateValue(base, { marginLow: ml + step }, this._config),
-        );
-        handled = true;
-      } else if (key === "ArrowLeft" || key === "ArrowDown") {
-        this._setValue(
-          updateValue(
-            base,
-            { marginLow: Math.max(ml - step, 0) },
-            this._config,
-          ),
-        );
-        handled = true;
+
+      if (this._config.asymmetric) {
+        // 非対称モード: Up/Left→marginLow調整、Down/Right→marginHigh調整
+        if (key === "ArrowUp" || key === "ArrowLeft") {
+          this._setValue(
+            updateValue(base, { marginLow: ml + step }, this._config),
+          );
+          handled = true;
+        } else if (key === "ArrowDown" || key === "ArrowRight") {
+          this._setValue(
+            updateValue(base, { marginHigh: mh + step }, this._config),
+          );
+          handled = true;
+        }
+      } else {
+        // 対称モード: 上下左右でmarginLow/Highを同時に拡縮
+        if (key === "ArrowRight" || key === "ArrowUp") {
+          const newM = ml + step;
+          this._setValue(
+            updateValue(base, { marginLow: newM, marginHigh: newM }, this._config),
+          );
+          handled = true;
+        } else if (key === "ArrowLeft" || key === "ArrowDown") {
+          const newM = Math.max(ml - step, 0);
+          this._setValue(
+            updateValue(base, { marginLow: newM, marginHigh: newM }, this._config),
+          );
+          handled = true;
+        }
       }
     } else if (key === "ArrowRight" || key === "ArrowUp") {
       this._setValue(
@@ -354,7 +370,8 @@ export class CircaInputElement extends HTMLElement {
     const currentValue =
       this._circaValue.value ?? (this._config.min + this._config.max) / 2;
     this._dragStartValue = currentValue;
-    this._dragStartMargin = this._circaValue.marginLow ?? 0;
+    this._dragStartMarginLow = this._circaValue.marginLow ?? 0;
+    this._dragStartMarginHigh = this._circaValue.marginHigh ?? 0;
 
     // setPointerCapture でドラッグ中のイベント漏れ防止
     try {
@@ -374,12 +391,7 @@ export class CircaInputElement extends HTMLElement {
     const pe = e as PointerEvent;
 
     const range = this._config.max - this._config.min;
-
-    // 縦方向: margin操作（下で拡大、上で縮小）
     const deltaY = pe.clientY - this._dragStartY;
-    const newMarginRaw =
-      this._dragStartMargin + (deltaY / MARGIN_DRAG_SCALE_PX) * range;
-    const newMargin = Math.max(newMarginRaw, 0);
 
     // 水平方向: value移動（キャッシュされたrectを使用）
     const rect = this._cachedTrackRect;
@@ -390,9 +402,33 @@ export class CircaInputElement extends HTMLElement {
       newValue = this._dragStartValue + (deltaPercent / 100) * range;
     }
 
+    // 縦方向: margin操作
+    let newMarginLow: number;
+    let newMarginHigh: number;
+
+    if (this._config.asymmetric) {
+      // 非対称モード: 上ドラッグ(deltaY<0)→marginLow拡大、下ドラッグ(deltaY>0)→marginHigh拡大
+      const marginDelta = (Math.abs(deltaY) / MARGIN_DRAG_SCALE_PX) * range;
+      if (deltaY < 0) {
+        // 上方向 → marginLow を増やす
+        newMarginLow = this._dragStartMarginLow + marginDelta;
+        newMarginHigh = this._dragStartMarginHigh;
+      } else {
+        // 下方向 → marginHigh を増やす
+        newMarginLow = this._dragStartMarginLow;
+        newMarginHigh = this._dragStartMarginHigh + marginDelta;
+      }
+    } else {
+      // 対称モード: 下で拡大、上で縮小（従来通り）
+      const newMarginRaw =
+        this._dragStartMarginLow + (deltaY / MARGIN_DRAG_SCALE_PX) * range;
+      newMarginLow = Math.max(newMarginRaw, 0);
+      newMarginHigh = newMarginLow;
+    }
+
     const newCirca = updateValue(
       this._circaValue,
-      { value: newValue, marginLow: newMargin },
+      { value: newValue, marginLow: newMarginLow, marginHigh: newMarginHigh },
       this._config,
     );
     this._setValue(newCirca);
@@ -630,25 +666,28 @@ export class CircaInputElement extends HTMLElement {
     }
 
     // ハンドル位置とARIA値の更新
-    if (value !== null && marginLow !== null) {
-      const lowPercent = valueToPercent(value - marginLow, min, max);
+    if (value !== null) {
+      const low = marginLow ?? 0;
+      const lowPercent = valueToPercent(value - low, min, max);
       this._handleLow.style.left = `${lowPercent}%`;
-      this._handleLow.setAttribute("aria-valuenow", String(marginLow));
+      this._handleLow.setAttribute("aria-valuenow", String(low));
       this._handleLow.setAttribute("aria-valuemin", "0");
       this._handleLow.setAttribute(
         "aria-valuemax",
         String(this._config.marginMax ?? value - min),
       );
-    }
-    if (value !== null && marginHigh !== null && marginHigh !== Infinity) {
-      const highPercent = valueToPercent(value + marginHigh, min, max);
-      this._handleHigh.style.left = `${highPercent}%`;
-      this._handleHigh.setAttribute("aria-valuenow", String(marginHigh));
-      this._handleHigh.setAttribute("aria-valuemin", "0");
-      this._handleHigh.setAttribute(
-        "aria-valuemax",
-        String(this._config.marginMax ?? max - value),
-      );
+
+      const high = marginHigh ?? 0;
+      if (high !== Infinity) {
+        const highPercent = valueToPercent(value + high, min, max);
+        this._handleHigh.style.left = `${highPercent}%`;
+        this._handleHigh.setAttribute("aria-valuenow", String(high));
+        this._handleHigh.setAttribute("aria-valuemin", "0");
+        this._handleHigh.setAttribute(
+          "aria-valuemax",
+          String(this._config.marginMax ?? max - value),
+        );
+      }
     }
 
     // フォーム値の更新

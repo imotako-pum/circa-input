@@ -74,13 +74,26 @@ export const STYLES = `
   transform: translate(-50%, -50%);
   cursor: ew-resize;
   outline: none;
-  z-index: 1;
+  z-index: 3;
   display: none;
 }
 
 [part="handle-low"]:focus-visible,
 [part="handle-high"]:focus-visible {
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
+}
+
+/* ハンドルのヒットエリアを拡大。margin=0で値つまみと重なってもクリック可能にする */
+[part="handle-low"]::before,
+[part="handle-high"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--circa-handle-size, 20px) * 1.5);
+  height: calc(var(--circa-handle-size, 20px) * 1.5);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
 }
 
 :host([asymmetric]) [part="handle-low"],

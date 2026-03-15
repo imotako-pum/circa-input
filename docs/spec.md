@@ -199,9 +199,21 @@ const plain = toPlainValue(circaValue); // 14.0
 
 ### 非対称操作（asymmetric=true時）
 
-1. 最初のドラッグで対称なmarginを設定
-2. 両端にハンドルが表示される
-3. 各ハンドルを独立してドラッグしてmarginLow・marginHighを個別に調整
+中央つまみの上下ドラッグと両端ハンドルで、marginLow・marginHighを個別に調整する。
+
+| 操作 | 結果 |
+|------|------|
+| 中央つまみを上ドラッグ | marginLow（左側の許容幅）を拡大 |
+| 中央つまみを下ドラッグ | marginHigh（右側の許容幅）を拡大 |
+| handle-low（左端ハンドル）を左右ドラッグ | marginLowを個別に調整 |
+| handle-high（右端ハンドル）を左右ドラッグ | marginHighを個別に調整 |
+
+#### キーボード操作（非対称モード）
+
+| キー | 動作 |
+|------|------|
+| `Shift + ↑` / `Shift + ←` | marginLowを1step拡大 |
+| `Shift + ↓` / `Shift + →` | marginHighを1step拡大 |
 
 ### モバイル対応
 
