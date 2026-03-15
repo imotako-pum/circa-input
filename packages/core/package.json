@@ -21,6 +21,9 @@
     "form-input",
     "ui-primitive"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.cjs",

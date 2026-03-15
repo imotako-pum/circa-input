@@ -23,6 +23,9 @@
     "form-component",
     "ui-primitive"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "sideEffects": true,
   "type": "module",
   "main": "./dist/index.cjs",
