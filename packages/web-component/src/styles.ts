@@ -126,7 +126,7 @@ export const STYLES = `
   display: flex;
   align-items: center;
   align-self: flex-start;
-  margin-top: calc(var(--circa-handle-size, 20px) * 0.1 + var(--circa-track-height, 8px) / 2);
+  height: var(--circa-track-height, 8px);
 }
 
 /* When no value is set (class added via JS) */
