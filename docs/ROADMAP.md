@@ -45,25 +45,25 @@ core完成  WC動作        デモ公開    React対応     npm公開準備
 **サブマイルストーン**:
 
 ### M2-a: 最小限の描画と値の設定
-- Shadow DOM構造（トラック + 値インジケータ）
-- HTML属性バインディング（min, max, value, margin-low, margin-high）
-- クリック/タップで`value`を設定
-- ARIA属性（role="slider", aria-valuenow等）とキーボード操作（矢印キー）
-- CSS Custom Propertiesによるスタイルカスタマイズの基盤
+- [x] Shadow DOM構造（トラック + 値インジケータ）
+- [x] HTML属性バインディング（min, max, value, margin-low, margin-high）
+- [x] クリック/タップで`value`を設定
+- [x] ARIA属性（role="slider", aria-valuenow等）とキーボード操作（矢印キー）
+- [x] CSS Custom Propertiesによるスタイルカスタマイズの基盤
 
 ### M2-b: マージン操作
-- ドラッグでmarginを対称に拡縮
-- マージン領域の可視化（トラック上の範囲表示）
-- `input`イベント（操作中リアルタイム）と`change`イベント（操作完了時）の発火
+- [x] ドラッグでmarginを対称に拡縮
+- [x] マージン領域の可視化（トラック上の範囲表示）
+- [x] `input`イベント（操作中リアルタイム）と`change`イベント（操作完了時）の発火
 
 ### M2-c: 非対称モードとControlled/Uncontrolled
-- `asymmetric=true`時の両端ハンドル
-- Controlled属性（value, margin-low, margin-high）とUncontrolled属性（default-*）の両対応
+- [x] `asymmetric=true`時の両端ハンドル
+- [x] Controlled属性（value, margin-low, margin-high）とUncontrolled属性（default-*）の両対応
 
 ### M2-d: フォーム統合とモバイル
-- `name`属性によるFormData連携
-- `required`属性によるバリデーション
-- タッチイベント対応
+- [x] `name`属性によるFormData連携
+- [x] `required`属性によるバリデーション
+- [x] タッチイベント対応
 
 **完了条件**:
 - ブラウザでHTMLファイルに`<circa-input>`を書いて操作できる
@@ -77,16 +77,19 @@ core完成  WC動作        デモ公開    React対応     npm公開準備
 
 **ゴール**: 第三者がcirca-inputの動作とコンセプトを理解・体験できるページ。
 
+**現状**: デモサイト実装完了。
+
 **内容**:
-- 基本的な使い方（対称モード）
-- 非対称モードのデモ
-- 各種ユースケース（時間入力、金額入力など）
-- イベント出力のリアルタイム表示
-- 属性を動的に切り替えるコントロールパネル
+- [x] 基本的な使い方（対称モード）
+- [x] 非対称モードのデモ
+- [x] 各種ユースケース（時間入力、金額入力など）
+- [x] イベント出力のリアルタイム表示
+- [x] 属性を動的に切り替えるコントロールパネル
+- [x] フォーム統合デモ（FormData + requiredバリデーション）
 
 **完了条件**:
-- `pnpm dev` でローカルに立ち上がる
-- circa-inputを触ったことがない人がページを見て使い方を理解できる
+- [x] `pnpm dev` でローカルに立ち上がる
+- [x] circa-inputを触ったことがない人がページを見て使い方を理解できる
 
 ---
 
@@ -181,6 +184,9 @@ M1 ──→ M2 ──→ M3
 |------|---------------|------|
 | 2026-02-23 | M1 途中 | core基本実装済み（types, state, validation, helpers, errors）。テスト28件全グリーン。ビルド成功。step処理・対称連動が未実装。 |
 | 2026-02-23 | M1 完了 | step属性スナップ処理（snapToStep関数）と対称モード連動を実装。テスト45件全グリーン。ビルド成功（gzip 0.97KB）。 |
+| 2026-03-08 | M2 完了 | Web Component実装完了。dom-utils/attributes/styles/template/circa-input/indexの6モジュール。Shadow DOM、クリック/キーボード/ドラッグ操作、マージン対称・非対称、Controlled/Uncontrolled、フォーム統合(ElementInternals)、モバイル対応(pointercancel)。テスト72件全グリーン。ビルド成功（gzip 3.79KB、core合算4.76KB < 5KB）。カバレッジ91.2%。 |
+| 2026-03-08 | M2 品質改善 | コードレビューで検出したCRITICAL/HIGH 6件・MEDIUM/LOW 8件を全て修正。handle-low/highキーボード操作追加、disabled状態ブロック、validateConfig呼び出し、valueToPercentゼロ除算ガード、--circa-value-color CSS変数追加。lint/type-check全クリア。テスト87件全グリーン。合算gzip 4.95KB < 5KB。 |
+| 2026-03-08 | M3 完了 | デモサイト実装完了。5セクション構成（基本操作・非対称モード・ユースケース集・プレイグラウンド・フォーム統合）。セクション分割のモジュール設計（sections/ + utils/）。レスポンシブ対応。ビルド成功。lint/type-checkクリア。全テスト132件グリーン。 |
 
 ---
 

@@ -16,7 +16,8 @@ export function snapToStep(
     return value;
   }
 
-  const snapped = Math.round((value - config.min) / config.step) * config.step + config.min;
+  const snapped =
+    Math.round((value - config.min) / config.step) * config.step + config.min;
 
   // 浮動小数点誤差を抑えるため、stepの小数桁数で丸める
   const decimals = countDecimals(config.step);

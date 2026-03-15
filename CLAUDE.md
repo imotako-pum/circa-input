@@ -23,7 +23,9 @@ circa-input/
 ├── apps/
 │   └── demo/           # デモサイト
 ├── docs/
-│   └── spec.md         # 技術仕様（詳細はこちら）
+│   ├── spec.md         # 技術仕様（詳細はこちら）
+│   ├── ROADMAP.md      # 計画と進捗
+│   └── CONTRIB.md      # 開発ガイド
 ├── CLAUDE.md           # このファイル
 └── package.json        # モノレポルート（pnpm workspaces）
 ```
