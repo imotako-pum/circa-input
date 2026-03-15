@@ -114,6 +114,11 @@ export const STYLES = `
   display: block;
 }
 
+:host([asymmetric]) [part="handle-low"].unset,
+:host([asymmetric]) [part="handle-high"].unset {
+  display: none;
+}
+
 /* Clear area: wrapper for the slot */
 [part="clear-area"] {
   margin-left: 8px;

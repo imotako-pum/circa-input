@@ -888,6 +888,9 @@ export class CircaInputElement extends HTMLElement {
 
     // Update handle positions and ARIA values
     if (value !== null) {
+      this._handleLow.classList.remove("unset");
+      this._handleHigh.classList.remove("unset");
+
       const lowPercent = valueToPercent(value - low, min, max);
       this._handleLow.style.left = `${lowPercent}%`;
       this._handleLow.setAttribute("aria-valuenow", String(low));
@@ -907,6 +910,9 @@ export class CircaInputElement extends HTMLElement {
           String(this._config.marginMax ?? max - value),
         );
       }
+    } else {
+      this._handleLow.classList.add("unset");
+      this._handleHigh.classList.add("unset");
     }
 
     // Toggle clear area active/inactive state
