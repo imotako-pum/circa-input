@@ -11,14 +11,16 @@ export default defineConfig({
     rollupOptions: {
       external: [
         "@circa-input/core",
+        "@circa-input/web-component",
         "react",
         "react-dom",
         "react/jsx-runtime",
       ],
     },
   },
-  plugins: [dts({ rollupTypes: true })],
+  plugins: [dts({ rollupTypes: true, exclude: ["src/__tests__"] })],
   test: {
     globals: true,
+    environment: "happy-dom",
   },
 });

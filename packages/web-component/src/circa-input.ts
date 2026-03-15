@@ -321,13 +321,21 @@ export class CircaInputElement extends HTMLElement {
         if (key === "ArrowRight" || key === "ArrowUp") {
           const newM = ml + step;
           this._setValue(
-            updateValue(base, { marginLow: newM, marginHigh: newM }, this._config),
+            updateValue(
+              base,
+              { marginLow: newM, marginHigh: newM },
+              this._config,
+            ),
           );
           handled = true;
         } else if (key === "ArrowLeft" || key === "ArrowDown") {
           const newM = Math.max(ml - step, 0);
           this._setValue(
-            updateValue(base, { marginLow: newM, marginHigh: newM }, this._config),
+            updateValue(
+              base,
+              { marginLow: newM, marginHigh: newM },
+              this._config,
+            ),
           );
           handled = true;
         }
@@ -455,7 +463,10 @@ export class CircaInputElement extends HTMLElement {
       const absDeltaY = Math.abs(deltaY);
 
       // 閾値を超えたら方向をロック
-      if (this._asymmetricDragLocked === null && absDeltaY >= ASYMMETRIC_LOCK_THRESHOLD_PX) {
+      if (
+        this._asymmetricDragLocked === null &&
+        absDeltaY >= ASYMMETRIC_LOCK_THRESHOLD_PX
+      ) {
         this._asymmetricDragLocked = deltaY < 0 ? "low" : "high";
       }
 
@@ -569,10 +580,14 @@ export class CircaInputElement extends HTMLElement {
     // handle-low: 左に動かすとmarginLow増加（sign=-1）
     // handle-high: 右に動かすとmarginHigh増加（sign=+1）
     const sign = this._handleDragTarget === "low" ? -1 : 1;
-    const newMargin = Math.max(this._handleDragStartMargin + sign * deltaValue, 0);
-    const marginUpdate = this._handleDragTarget === "low"
-      ? { marginLow: newMargin }
-      : { marginHigh: newMargin };
+    const newMargin = Math.max(
+      this._handleDragStartMargin + sign * deltaValue,
+      0,
+    );
+    const marginUpdate =
+      this._handleDragTarget === "low"
+        ? { marginLow: newMargin }
+        : { marginHigh: newMargin };
     this._setValue(updateValue(this._circaValue, marginUpdate, this._config));
 
     this._emitInput();
