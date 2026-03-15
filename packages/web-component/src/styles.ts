@@ -100,4 +100,32 @@ export const STYLES = `
 :host([asymmetric]) [part="handle-high"] {
   display: block;
 }
+
+[part="clear"] {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--circa-handle-size, 20px) * -0.2);
+  transform: translateY(-50%);
+  width: calc(var(--circa-handle-size, 20px) * 0.8);
+  height: calc(var(--circa-handle-size, 20px) * 0.8);
+  border: none;
+  background: var(--circa-clear-color, #999);
+  color: #fff;
+  border-radius: 50%;
+  font-size: calc(var(--circa-handle-size, 20px) * 0.5);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  z-index: 4;
+  display: none;
+}
+
+[part="clear"]:hover {
+  background: var(--circa-clear-hover-color, #666);
+}
+
+[part="clear"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
+  outline: none;
+}
 `;

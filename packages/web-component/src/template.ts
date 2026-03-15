@@ -16,7 +16,7 @@ export function createTemplate(): HTMLTemplateElement {
 
   const template = document.createElement("template");
   // 静的な固定HTML文字列のみ使用（ユーザー入力は含まない）
-  template.innerHTML = `<div part="container" role="group" aria-label="circa input"><div part="track"><div part="margin" aria-hidden="true"></div><div part="value" role="slider" tabindex="0" aria-label="center value" aria-valuenow="" aria-valuemin="" aria-valuemax=""></div><div part="handle-low" role="slider" tabindex="-1" aria-label="lower margin" aria-hidden="true"></div><div part="handle-high" role="slider" tabindex="-1" aria-label="upper margin" aria-hidden="true"></div></div></div>`;
+  template.innerHTML = `<div part="container" role="group" aria-label="circa input"><div part="track"><div part="margin" aria-hidden="true"></div><div part="value" role="slider" tabindex="0" aria-label="center value" aria-valuenow="" aria-valuemin="" aria-valuemax=""></div><div part="handle-low" role="slider" tabindex="-1" aria-label="lower margin" aria-hidden="true"></div><div part="handle-high" role="slider" tabindex="-1" aria-label="upper margin" aria-hidden="true"></div></div><button part="clear" type="button" tabindex="0" aria-label="clear value" style="display:none">\u00D7</button></div>`;
 
   const style = document.createElement("style");
   style.textContent = STYLES;

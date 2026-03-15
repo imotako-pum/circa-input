@@ -8,6 +8,7 @@ import type { CircaInputConfig, CircaValue } from "@circa-input/core";
 import {
   CircaInputError,
   checkRequired,
+  createInitialValue,
   updateValue,
   validateConfig,
 } from "@circa-input/core";
@@ -70,6 +71,7 @@ export class CircaInputElement extends HTMLElement {
   private _marginEl!: HTMLElement;
   private _handleLow!: HTMLElement;
   private _handleHigh!: HTMLElement;
+  private _clearBtn!: HTMLElement;
 
   /** ドラッグ状態 */
   private _isDragging = false;
@@ -116,6 +118,7 @@ export class CircaInputElement extends HTMLElement {
     this._marginEl = queryRequired(shadow, "[part='margin']");
     this._handleLow = queryRequired(shadow, "[part='handle-low']");
     this._handleHigh = queryRequired(shadow, "[part='handle-high']");
+    this._clearBtn = queryRequired(shadow, "[part='clear']");
   }
 
   connectedCallback(): void {
@@ -143,6 +146,7 @@ export class CircaInputElement extends HTMLElement {
     );
     this._handleLow.addEventListener("keydown", this._onHandleLowKeyDown);
     this._handleHigh.addEventListener("keydown", this._onHandleHighKeyDown);
+    this._clearBtn.addEventListener("click", this._onClearClick);
   }
 
   disconnectedCallback(): void {
@@ -160,6 +164,7 @@ export class CircaInputElement extends HTMLElement {
     );
     this._handleLow.removeEventListener("keydown", this._onHandleLowKeyDown);
     this._handleHigh.removeEventListener("keydown", this._onHandleHighKeyDown);
+    this._clearBtn.removeEventListener("click", this._onClearClick);
 
     // 進行中のドラッグをクリーンアップ
     if (this._isDragging) {
@@ -225,6 +230,29 @@ export class CircaInputElement extends HTMLElement {
       return JSON.stringify(this._circaValue);
     }
     return null;
+  }
+
+  /**
+   * 値をクリアして未入力状態に戻す。
+   * Controlledモードではchangeイベントのみ発火し、内部状態は変更しない。
+   */
+  clear(): void {
+    if (this._isDisabled) return;
+    const initial = createInitialValue(this._config);
+    if (this._isControlled) {
+      // Controlledモードではイベントだけ発火し、外部に判断を委ねる
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          detail: { ...initial },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    } else {
+      this._circaValue = initial;
+      this._render();
+      this._emitChange();
+    }
   }
 
   /** Controlled モードか判定 */
@@ -321,6 +349,9 @@ export class CircaInputElement extends HTMLElement {
           this._config,
         ),
       );
+      handled = true;
+    } else if (key === "Delete" || key === "Backspace") {
+      this.clear();
       handled = true;
     }
 
@@ -603,6 +634,12 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
+  /** クリアボタンのクリックハンドラ */
+  private _onClearClick = (e: Event): void => {
+    e.stopPropagation();
+    this.clear();
+  };
+
   /**
    * config依存の静的ARIA属性を更新する。
    * ドラッグ中には変わらないため、connectedCallback/attributeChangedCallbackでのみ呼ぶ。
@@ -689,6 +726,9 @@ export class CircaInputElement extends HTMLElement {
         );
       }
     }
+
+    // クリアボタンの表示/非表示
+    this._clearBtn.style.display = value !== null ? "" : "none";
 
     // フォーム値の更新
     this._updateFormValue();
