@@ -153,3 +153,25 @@ Check the gzip size of `dist/index.js` after building.
 - Use the `CircaInputError` custom class for errors
 - Tests are required (especially for validation logic)
 - See `CLAUDE.md` for details
+
+---
+
+## Release
+
+Publishing **must** use `pnpm publish` (not `npm publish`) to correctly resolve `workspace:*` dependencies.
+
+### Steps
+
+1. Update version in all 3 `packages/*/package.json` files
+2. Update `CHANGELOG.md`
+3. Build: `pnpm build`
+4. Test: `pnpm test`
+5. Lint: `pnpm lint && pnpm type-check`
+6. Publish in order (scoped packages require `--access public`):
+   ```bash
+   cd packages/core && pnpm publish --access public
+   cd packages/web-component && pnpm publish --access public
+   cd packages/react && pnpm publish --access public
+   ```
+7. Git tag: `git tag v<version> && git push --tags`
+8. Create GitHub Release with changelog
