@@ -1,5 +1,9 @@
 # circa-input
 
+[![npm](https://img.shields.io/npm/v/@circa-input/core)](https://www.npmjs.com/package/@circa-input/core)
+[![CI](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml/badge.svg)](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 [日本語](./README.ja.md)
 
 A UI primitive for entering a **value** and its **ambiguity** at the same time.

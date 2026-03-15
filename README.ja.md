@@ -1,5 +1,9 @@
 # circa-input
 
+[![npm](https://img.shields.io/npm/v/@circa-input/core)](https://www.npmjs.com/package/@circa-input/core)
+[![CI](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml/badge.svg)](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 [English](./README.md)
 
 **値**と**その曖昧さ**を同時に入力できるUIプリミティブです。
