@@ -76,15 +76,18 @@ export function buildConfig(
 /**
  * default-* 属性またはcontrolled属性から初期CircaValueを構築する。
  * controlled（value属性が存在する）の場合はcontrolled属性を優先。
+ *
+ * @param isControlled 外部から渡すことで判定ロジックの重複を防ぐ。省略時はvalue属性の有無で判定。
  */
 export function buildInitialValue(
   getAttr: (name: string) => string | null,
   config: CircaInputConfig,
+  isControlled?: boolean,
 ): CircaValue {
   const initial = createInitialValue(config);
-  const isControlled = getAttr("value") !== null;
+  const controlled = isControlled ?? getAttr("value") !== null;
 
-  if (isControlled) {
+  if (controlled) {
     return {
       ...initial,
       value: parseNumberAttr(getAttr("value")),

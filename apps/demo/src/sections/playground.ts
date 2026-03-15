@@ -102,9 +102,7 @@ function setupEventLog(
 
   const addLogEntry = (type: "input" | "change", detail: CircaValue) => {
     if (!logCleared) {
-      while (logEl.firstChild) {
-        logEl.removeChild(logEl.firstChild);
-      }
+      logEl.replaceChildren();
       logCleared = true;
     }
 
@@ -150,13 +148,10 @@ function setupEventLog(
   });
 
   clearBtn.addEventListener("click", () => {
-    while (logEl.firstChild) {
-      logEl.removeChild(logEl.firstChild);
-    }
     const empty = document.createElement("div");
     empty.className = "log-empty";
     empty.textContent = "イベントがここに表示されます";
-    logEl.appendChild(empty);
+    logEl.replaceChildren(empty);
     logCleared = false;
   });
 }
