@@ -22,7 +22,9 @@ function setupLangToggle(): void {
 
   const updateActive = (locale: Locale) => {
     for (const btn of buttons) {
-      btn.classList.toggle("active", btn.dataset.lang === locale);
+      const isActive = btn.dataset.lang === locale;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-pressed", String(isActive));
     }
   };
 
