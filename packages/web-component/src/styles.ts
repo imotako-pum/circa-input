@@ -63,6 +63,11 @@ export const STYLES = `
   z-index: 2;
 }
 
+[part="value"].unset {
+  opacity: 0.4;
+  cursor: pointer;
+}
+
 [part="value"]:focus-visible {
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
 }

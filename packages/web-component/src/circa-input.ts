@@ -806,9 +806,11 @@ export class CircaInputElement extends HTMLElement {
     if (value !== null) {
       const percent = valueToPercent(value, min, max);
       this._valueEl.style.left = `${percent}%`;
-      this._valueEl.style.display = "";
+      this._valueEl.classList.remove("unset");
     } else {
-      this._valueEl.style.display = "none";
+      // Show thumb at center even when unset so keyboard users can focus it
+      this._valueEl.style.left = "50%";
+      this._valueEl.classList.add("unset");
     }
 
     // Render margin band
