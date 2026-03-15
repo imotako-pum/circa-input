@@ -12,7 +12,7 @@ Initial release of circa-input.
 
 - **@circa-input/core** — Framework-agnostic core logic
   - `CircaValue` data structure (value, marginLow, marginHigh, distribution)
-  - State management (`buildInitialValue`, `updateValue`)
+  - State management (`createInitialValue`, `createDefaultConfig`, `updateValue`)
   - Validation (`validateConfig`, `checkRequired`)
   - Step snapping (`snapToStep`)
   - Helper utilities (`toPlainValue`)

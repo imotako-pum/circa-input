@@ -12,22 +12,22 @@ npm install @circa-input/core
 
 ```typescript
 import {
-  buildInitialValue,
+  createDefaultConfig,
+  createInitialValue,
   updateValue,
   validateConfig,
   type CircaValue,
-  type CircaInputConfig,
 } from "@circa-input/core";
 
 // Create initial state
-const config: CircaInputConfig = { min: 0, max: 100 };
+const config = createDefaultConfig({ min: 0, max: 100 });
 validateConfig(config);
-const value = buildInitialValue(config);
+const value = createInitialValue(config);
 
 // Update value
 const updated = updateValue(value, { value: 42 }, config);
 console.log(updated);
-// { value: 42, marginLow: 0, marginHigh: 0, distribution: "normal", distributionParams: {} }
+// { value: 42, marginLow: null, marginHigh: null, distribution: "normal", distributionParams: {} }
 ```
 
 ## API
@@ -40,12 +40,13 @@ console.log(updated);
 
 ### Functions
 
-- `buildInitialValue(config, defaults?)` — Create an initial CircaValue
+- `createDefaultConfig(overrides)` — Create a CircaInputConfig with defaults
+- `createInitialValue(config)` — Create an initial (empty) CircaValue
 - `updateValue(current, changes, config)` — Update with clamping and validation
 - `validateConfig(config)` — Validate configuration, throws on invalid
 - `checkRequired(value, config)` — Check form required constraint
 - `toPlainValue(value)` — Extract plain number from CircaValue
-- `snapToStep(value, step, min)` — Snap a value to the nearest step
+- `snapToStep(value, config)` — Snap a value to the nearest step
 
 ## License
 
