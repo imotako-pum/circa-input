@@ -167,28 +167,32 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
     }, []);
 
     // Expose ref handle
-    useImperativeHandle(ref, () => ({
-      get circaValue() {
-        return (
-          elRef.current?.circaValue ?? {
-            value: null,
-            marginLow: null,
-            marginHigh: null,
-            distribution: "normal" as const,
-            distributionParams: {},
-          }
-        );
-      },
-      get formValue() {
-        return elRef.current?.formValue ?? null;
-      },
-      clear() {
-        elRef.current?.clear();
-      },
-      get nativeElement() {
-        return elRef.current;
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        get circaValue() {
+          return (
+            elRef.current?.circaValue ?? {
+              value: null,
+              marginLow: null,
+              marginHigh: null,
+              distribution: "normal" as const,
+              distributionParams: {},
+            }
+          );
+        },
+        get formValue() {
+          return elRef.current?.formValue ?? null;
+        },
+        clear() {
+          elRef.current?.clear();
+        },
+        get nativeElement() {
+          return elRef.current;
+        },
+      }),
+      [],
+    );
 
     return (
       <circa-input
