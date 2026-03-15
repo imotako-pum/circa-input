@@ -670,14 +670,14 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** Update only ARIA attributes (for controlled mode live updates during drag) */
+  /** Update ARIA value attributes (aria-valuenow / aria-valuetext). Single source of truth. */
   private _updateAriaValues(): void {
     const { value, marginLow, marginHigh } = this._circaValue;
-    const low = marginLow ?? 0;
-    const high = marginHigh ?? 0;
     if (value !== null) {
       this._valueEl.setAttribute("aria-valuenow", String(value));
       if (marginLow !== null || marginHigh !== null) {
+        const low = marginLow ?? 0;
+        const high = marginHigh ?? 0;
         if (!this._config.asymmetric && low === high) {
           this._valueEl.setAttribute(
             "aria-valuetext",
@@ -689,7 +689,12 @@ export class CircaInputElement extends HTMLElement {
             `${value}, minus ${low}, plus ${high}`,
           );
         }
+      } else {
+        this._valueEl.removeAttribute("aria-valuetext");
       }
+    } else {
+      this._valueEl.removeAttribute("aria-valuenow");
+      this._valueEl.removeAttribute("aria-valuetext");
     }
   }
 
@@ -856,30 +861,8 @@ export class CircaInputElement extends HTMLElement {
     const low = marginLow ?? 0;
     const high = marginHigh ?? 0;
 
-    // Update ARIA attributes
-    if (value !== null) {
-      this._valueEl.setAttribute("aria-valuenow", String(value));
-      // aria-valuetext: communicate margin info to screen readers
-      if (marginLow !== null || marginHigh !== null) {
-        if (!this._config.asymmetric && low === high) {
-          this._valueEl.setAttribute(
-            "aria-valuetext",
-            `${value}, plus or minus ${low}`,
-          );
-        } else {
-          this._valueEl.setAttribute(
-            "aria-valuetext",
-            `${value}, minus ${low}, plus ${high}`,
-          );
-        }
-      } else {
-        this._valueEl.removeAttribute("aria-valuetext");
-      }
-    } else {
-      // Remove aria-valuenow when no value (empty string violates ARIA spec)
-      this._valueEl.removeAttribute("aria-valuenow");
-      this._valueEl.removeAttribute("aria-valuetext");
-    }
+    // Update ARIA attributes (single source of truth)
+    this._updateAriaValues();
 
     // Value indicator position
     if (value !== null) {

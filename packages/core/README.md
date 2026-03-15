@@ -46,6 +46,7 @@ console.log(updated);
 - `validateConfig(config)` — Validate configuration, throws on invalid
 - `checkRequired(value, config)` — Check form required constraint
 - `toPlainValue(value)` — Extract plain number from CircaValue
+- `clamp(value, min, max)` — Clamp a number to the [min, max] range
 - `snapToStep(value, config)` — Snap a value to the nearest step
 
 ## License
