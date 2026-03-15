@@ -1,17 +1,17 @@
-# 開発ガイド（CONTRIB.md）
+# Development Guide (CONTRIB.md)
 
-circa-input の開発に参加するための手順とルールをまとめたドキュメント。
+A guide covering the procedures and rules for contributing to circa-input development.
 
 ---
 
-## 前提条件
+## Prerequisites
 
 - **Node.js**: >= 18
-- **パッケージマネージャ**: pnpm
+- **Package Manager**: pnpm
 
 ---
 
-## セットアップ
+## Setup
 
 ```bash
 git clone <repo>
@@ -22,131 +22,131 @@ pnpm build
 
 ---
 
-## 利用可能なスクリプト
+## Available Scripts
 
-### ルート（モノレポ全体）
+### Root (Entire Monorepo)
 
-| コマンド | 説明 |
+| Command | Description |
 |---|---|
-| `pnpm build` | 全パッケージをビルド |
-| `pnpm test` | 全パッケージのテストを実行 |
-| `pnpm dev` | 全パッケージをwatchモードでビルド |
-| `pnpm lint` | Biomeによる静的解析 |
-| `pnpm lint:fix` | Biomeによる自動修正 |
-| `pnpm format` | Biomeによるフォーマット |
-| `pnpm type-check` | 全パッケージのTypeScript型チェック |
+| `pnpm build` | Build all packages |
+| `pnpm test` | Run tests for all packages |
+| `pnpm dev` | Build all packages in watch mode |
+| `pnpm lint` | Static analysis with Biome |
+| `pnpm lint:fix` | Auto-fix with Biome |
+| `pnpm format` | Format with Biome |
+| `pnpm type-check` | TypeScript type checking for all packages |
 
 ### @circa-input/core
 
-| コマンド | 説明 |
+| Command | Description |
 |---|---|
-| `pnpm --filter @circa-input/core build` | coreをビルド |
-| `pnpm --filter @circa-input/core test` | coreのテストを実行 |
-| `pnpm --filter @circa-input/core test:watch` | coreのテストをwatchモードで実行 |
-| `pnpm --filter @circa-input/core dev` | coreをwatchモードでビルド |
-| `pnpm --filter @circa-input/core type-check` | coreの型チェック |
+| `pnpm --filter @circa-input/core build` | Build core |
+| `pnpm --filter @circa-input/core test` | Run core tests |
+| `pnpm --filter @circa-input/core test:watch` | Run core tests in watch mode |
+| `pnpm --filter @circa-input/core dev` | Build core in watch mode |
+| `pnpm --filter @circa-input/core type-check` | Type check core |
 
 ### @circa-input/web-component
 
-| コマンド | 説明 |
+| Command | Description |
 |---|---|
-| `pnpm --filter @circa-input/web-component build` | web-componentをビルド |
-| `pnpm --filter @circa-input/web-component test` | web-componentのテストを実行 |
-| `pnpm --filter @circa-input/web-component dev` | web-componentをwatchモードでビルド |
-| `pnpm --filter @circa-input/web-component type-check` | web-componentの型チェック |
+| `pnpm --filter @circa-input/web-component build` | Build web-component |
+| `pnpm --filter @circa-input/web-component test` | Run web-component tests |
+| `pnpm --filter @circa-input/web-component dev` | Build web-component in watch mode |
+| `pnpm --filter @circa-input/web-component type-check` | Type check web-component |
 
 ---
 
-## テスト
+## Testing
 
-- **フレームワーク**: Vitest
-- **web-componentのテスト環境**: happy-dom（Shadow DOMサポート）
-- **カバレッジ**: `@vitest/coverage-v8`
+- **Framework**: Vitest
+- **web-component test environment**: happy-dom (Shadow DOM support)
+- **Coverage**: `@vitest/coverage-v8`
 
 ```bash
-# 全テスト実行
+# Run all tests
 pnpm test
 
-# カバレッジ付き
+# With coverage
 pnpm --filter @circa-input/web-component test -- --coverage
 ```
 
 ---
 
-## リンター・フォーマッター
+## Linter & Formatter
 
-**Biome** を使用。設定は `biome.json`。
+**Biome** is used. Configuration is in `biome.json`.
 
 ```bash
-# チェックのみ
+# Check only
 pnpm lint
 
-# 自動修正
+# Auto-fix
 pnpm lint:fix
 ```
 
-主なルール:
-- `noExplicitAny`: error（`any`型の使用禁止）
-- インデント: スペース2
-- 行幅: 80文字
-- クォート: ダブルクォート
-- セミコロン: 必須
+Key rules:
+- `noExplicitAny`: error (usage of `any` type is prohibited)
+- Indentation: 2 spaces
+- Line width: 80 characters
+- Quotes: double quotes
+- Semicolons: required
 
 ---
 
-## ブランチ戦略
+## Branch Strategy
 
-| ブランチ | 用途 |
+| Branch | Purpose |
 |---|---|
-| `main` | リリース用 |
-| `develop` | 開発統合 |
-| `feature/*` | 機能開発 |
-| `fix/*` | バグ修正 |
+| `main` | Release |
+| `develop` | Development integration |
+| `feature/*` | Feature development |
+| `fix/*` | Bug fixes |
 
 ---
 
-## パッケージ構成
+## Package Structure
 
 ```
 circa-input/
 ├── packages/
-│   ├── core/           # 純粋TSロジック（DOM非依存）
-│   └── web-component/  # <circa-input> カスタム要素
+│   ├── core/           # Pure TS logic (no DOM dependency)
+│   └── web-component/  # <circa-input> custom element
 ├── docs/
-│   ├── spec.md         # 技術仕様書（最優先の情報源）
-│   ├── ROADMAP.md      # 計画と進捗
-│   └── CONTRIB.md      # このファイル
-├── CLAUDE.md           # Claude Code運用ルール
-└── biome.json          # リンター/フォーマッター設定
+│   ├── spec.md         # Technical specification (primary source of truth)
+│   ├── ROADMAP.md      # Roadmap and progress
+│   └── CONTRIB.md      # This file
+├── CLAUDE.md           # Claude Code operational rules
+└── biome.json          # Linter/formatter configuration
 ```
 
-### 依存の方向
+### Dependency Direction
 
 ```
-core ← web-component ← react（未実装）
+core ← web-component ← react
 ```
 
-- core は他パッケージに依存しない
-- web-component は core に依存する
-- react は web-component をラップする（将来）
+- core does not depend on any other package
+- web-component depends on core
+- react wraps web-component
 
 ---
 
-## バンドルサイズ制約
+## Bundle Size Constraints
 
-| パッケージ | 目標（gzip） |
+| Package | Target (gzip) |
 |---|---|
-| @circa-input/core | 1KB以下 |
-| core + web-component 合算 | 5KB以下 |
+| @circa-input/core | Under 2KB |
+| core + web-component combined | Under 8KB |
 
-ビルド後に `dist/index.js` の gzip サイズを確認すること。
+Check the gzip size of `dist/index.js` after building.
 
 ---
 
-## コーディング規則
+## Coding Rules
 
-- `any` 型の使用禁止
-- public APIには型定義 + JSDocコメント必須
-- エラーは `CircaInputError` カスタムクラスを使用
-- テスト必須（特にバリデーションロジック）
-- 詳細は `CLAUDE.md` を参照
+- Usage of `any` type is prohibited
+- Type definitions + JSDoc comments required for all public APIs
+- Use the `CircaInputError` custom class for errors
+- Tests are required (especially for validation logic)
+- See `CLAUDE.md` for details

@@ -1,143 +1,143 @@
-# circa-input プロジェクト計画書
+# circa-input Project Roadmap
 
 ---
 
-## ビジョン
+## Vision
 
-ユーザーが「値」と「その曖昧さ」を同時に入力できるUIプリミティブを、
-npm公開可能な品質で3パッケージ + デモサイトとして完成させる。
+Complete a UI primitive that allows users to input both a "value" and its "ambiguity" simultaneously,
+delivered as 3 npm-publishable packages + a demo site.
 
 ---
 
-## 全体マイルストーン
+## Overall Milestones
 
 ```
 M1        M2            M3          M4            M5
  ●────────●─────────────●───────────●─────────────●
-core完成  WC動作        デモ公開    React対応     npm公開準備
+core      WC working    Demo live   React support npm publish prep
 ```
 
 ---
 
-## M1: coreパッケージの完成
+## M1: Core Package Completion
 
-**ゴール**: フレームワーク非依存のロジック層が仕様書のすべての要件を満たしている。
+**Goal**: The framework-agnostic logic layer meets all requirements in the specification.
 
-**現状**: 基本実装・テスト28件が全グリーン。ビルドも成功。
+**Status**: Basic implementation and 28 tests all green. Build succeeds.
 
-**残タスク**:
-- [x] `step`属性によるスナップ処理（値を刻み幅に丸めるロジック）
-- [x] 対称モード連動（`asymmetric=false`時にmarginLow/marginHighを同期）
-- [x] 上記に対するテスト追加
+**Remaining Tasks**:
+- [x] Snap processing via `step` attribute (logic to round values to step intervals)
+- [x] Symmetric mode synchronization (sync marginLow/marginHigh when `asymmetric=false`)
+- [x] Tests for the above
 
-**完了条件**:
-- `pnpm --filter @circa-input/core test` 全グリーン
-- `pnpm --filter @circa-input/core build` 成功
-- 仕様書 Section 2〜6 のロジックが全てcoreでカバーされている
-
----
-
-## M2: Web Componentが動作する
-
-**ゴール**: HTMLに `<circa-input min="0" max="100"></circa-input>` と書くだけで、
-マウス/タッチ操作で値と曖昧さを入力でき、`change`イベントで`CircaValue`が取れる。
-
-**サブマイルストーン**:
-
-### M2-a: 最小限の描画と値の設定
-- [x] Shadow DOM構造（トラック + 値インジケータ）
-- [x] HTML属性バインディング（min, max, value, margin-low, margin-high）
-- [x] クリック/タップで`value`を設定
-- [x] ARIA属性（role="slider", aria-valuenow等）とキーボード操作（矢印キー）
-- [x] CSS Custom Propertiesによるスタイルカスタマイズの基盤
-
-### M2-b: マージン操作
-- [x] ドラッグでmarginを対称に拡縮
-- [x] マージン領域の可視化（トラック上の範囲表示）
-- [x] `input`イベント（操作中リアルタイム）と`change`イベント（操作完了時）の発火
-
-### M2-c: 非対称モードとControlled/Uncontrolled
-- [x] `asymmetric=true`時の両端ハンドル
-- [x] Controlled属性（value, margin-low, margin-high）とUncontrolled属性（default-*）の両対応
-
-### M2-d: フォーム統合とモバイル
-- [x] `name`属性によるFormData連携
-- [x] `required`属性によるバリデーション
-- [x] タッチイベント対応
-
-**完了条件**:
-- ブラウザでHTMLファイルに`<circa-input>`を書いて操作できる
-- `change`イベントのdetailに正しい`CircaValue`が入っている
-- Controlled/Uncontrolledの両方が動く
-- フォーム送信でFormDataにJSONが入る
+**Completion Criteria**:
+- `pnpm --filter @circa-input/core test` all green
+- `pnpm --filter @circa-input/core build` succeeds
+- All logic from spec Sections 2-6 is covered in core
 
 ---
 
-## M3: デモサイト
+## M2: Web Component Working
 
-**ゴール**: 第三者がcirca-inputの動作とコンセプトを理解・体験できるページ。
+**Goal**: Simply writing `<circa-input min="0" max="100"></circa-input>` in HTML enables
+mouse/touch interaction for inputting values and ambiguity, with `CircaValue` available via the `change` event.
 
-**現状**: デモサイト実装完了。
+**Sub-milestones**:
 
-**内容**:
-- [x] 基本的な使い方（対称モード）
-- [x] 非対称モードのデモ
-- [x] 各種ユースケース（時間入力、金額入力など）
-- [x] イベント出力のリアルタイム表示
-- [x] 属性を動的に切り替えるコントロールパネル
-- [x] フォーム統合デモ（FormData + requiredバリデーション）
+### M2-a: Minimal Rendering and Value Setting
+- [x] Shadow DOM structure (track + value indicator)
+- [x] HTML attribute bindings (min, max, value, margin-low, margin-high)
+- [x] Set `value` via click/tap
+- [x] ARIA attributes (role="slider", aria-valuenow, etc.) and keyboard operations (arrow keys)
+- [x] CSS Custom Properties foundation for style customization
 
-**完了条件**:
-- [x] `pnpm dev` でローカルに立ち上がる
-- [x] circa-inputを触ったことがない人がページを見て使い方を理解できる
+### M2-b: Margin Manipulation
+- [x] Drag to expand/contract margin symmetrically
+- [x] Margin area visualization (range display on track)
+- [x] `input` event (real-time during operation) and `change` event (on operation completion) firing
 
----
+### M2-c: Asymmetric Mode and Controlled/Uncontrolled
+- [x] Edge handles when `asymmetric=true`
+- [x] Support for both Controlled attributes (value, margin-low, margin-high) and Uncontrolled attributes (default-*)
 
-## M4: Reactアダプター
+### M2-d: Form Integration and Mobile
+- [x] FormData integration via `name` attribute
+- [x] Validation via `required` attribute
+- [x] Touch event support
 
-**ゴール**: `<CircaInput min={0} max={100} onChange={(v) => ...} />` で使える。
-
-**内容**:
-- [x] Web ComponentのReactラッパー
-- [x] props → HTML属性の変換
-- [x] CustomEvent → Reactコールバックの変換
-- [x] Controlled/UncontrolledのReact的なDX
-- [x] TypeScript型定義のエクスポート
-
-**完了条件**:
-- Reactアプリ内で`<CircaInput>`が正しく動作する
-- 型補完が効く
-- テストがグリーン
+**Completion Criteria**:
+- `<circa-input>` can be written in an HTML file and operated in a browser
+- `change` event detail contains the correct `CircaValue`
+- Both Controlled and Uncontrolled modes work
+- Form submission includes JSON in FormData
 
 ---
 
-## M5: 公開準備
+## M3: Demo Site
 
-**ゴール**: `npm publish` できる状態。
+**Goal**: A page where anyone can understand and experience the behavior and concept of circa-input.
 
-**内容**:
-- 各パッケージのビルド出力確認（ESM + CJS + 型定義）
-- package.jsonのmetadata整備（license, repository, keywords等）
+**Status**: Demo site implementation complete.
+
+**Content**:
+- [x] Basic usage (symmetric mode)
+- [x] Asymmetric mode demo
+- [x] Various use cases (time input, price input, etc.)
+- [x] Real-time event output display
+- [x] Control panel for dynamically switching attributes
+- [x] Form integration demo (FormData + required validation)
+
+**Completion Criteria**:
+- [x] Launches locally with `pnpm dev`
+- [x] Someone who has never used circa-input can understand how to use it from the page
+
+---
+
+## M4: React Adapter
+
+**Goal**: Usable as `<CircaInput min={0} max={100} onChange={(v) => ...} />`.
+
+**Content**:
+- [x] React wrapper for the Web Component
+- [x] props to HTML attribute conversion
+- [x] CustomEvent to React callback conversion
+- [x] React-idiomatic DX for Controlled/Uncontrolled
+- [x] TypeScript type definition exports
+
+**Completion Criteria**:
+- `<CircaInput>` works correctly within a React app
+- Type autocompletion works
+- Tests are green
+
+---
+
+## M5: Publish Preparation
+
+**Goal**: Ready for `npm publish`.
+
+**Content**:
+- Build output verification for each package (ESM + CJS + type definitions)
+- package.json metadata (license, repository, keywords, etc.)
 - CHANGELOG / README
-- CI（lint + test + build）
-- [ ] デモサイト日英両対応
-  - i18n モジュール（言語切替、翻訳オブジェクト、`t()` 関数）
-  - HTML の `data-i18n` 属性化 + `translatePage()` 関数
-  - 言語切替 UI（EN / JA トグル）
-  - フォーマッター文字列のロケール対応（format.ts）
-  - セクションモジュールの動的文字列対応
-  - テスト更新（en ロケール用テスト追加）
-- [ ] ソースコードコメント英語化（JSDoc・インラインコメント・テスト description）
-- [ ] ドキュメント英語化（spec.md, ROADMAP.md, CONTRIB.md）
-  - CLAUDE.md は日本語のまま維持
+- CI (lint + test + build)
+- [x] Demo site bilingual support (EN/JA)
+  - i18n module (language toggle, translation objects, `t()` function)
+  - HTML `data-i18n` attribute conversion + `translatePage()` function
+  - Language toggle UI (EN / JA toggle)
+  - Locale-aware formatter strings (format.ts)
+  - Dynamic string support in section modules
+  - Test updates (add en locale tests)
+- [x] Source code comment translation to English (JSDoc, inline comments, test descriptions)
+- [x] Documentation translation to English (spec.md, ROADMAP.md, CONTRIB.md)
+  - CLAUDE.md remains in Japanese
 
-**完了条件**:
-- `pnpm build && pnpm test` が全パッケージで成功
-- `npm pack --dry-run` で意図したファイルだけが含まれる
+**Completion Criteria**:
+- `pnpm build && pnpm test` succeeds for all packages
+- `npm pack --dry-run` includes only the intended files
 
 ---
 
-## 依存関係
+## Dependencies
 
 ```
 M1 ──→ M2 ──→ M3
@@ -145,66 +145,67 @@ M1 ──→ M2 ──→ M3
                M4 ──→ M5
 ```
 
-- M2はM1に依存（coreのロジックが完成していないとWeb Componentが作れない）
-- M3はM2に依存（Web Componentがないとデモが作れない）
-- M4はM2に依存（ラップ対象が必要）、ただしM3と並行可能
-- M5は全マイルストーンの完了が前提
+- M2 depends on M1 (core logic must be complete before building the Web Component)
+- M3 depends on M2 (demo cannot be built without the Web Component)
+- M4 depends on M2 (needs a component to wrap), but can run in parallel with M3
+- M5 requires all milestones to be complete
 
 ---
 
-## アーキテクチャ決定事項
+## Architecture Decisions
 
-2026-02-23 に以下を決定。詳細は `docs/spec.md` Section 8〜11 を参照。
+Decided on 2026-02-23. See `docs/spec.md` Sections 8-11 for details.
 
-| 項目 | 決定 | 理由 |
-|------|------|------|
-| a11y | 最初からしっかり対応（role, ARIA, キーボード操作） | 後付けは構造変更リスク大 |
-| CSSカスタマイズ | CSS Custom Properties | シンプルで初心者にも分かりやすい |
-| ブラウザ対応 | モダンのみ（最新2バージョン） | Polyfill不要で軽量化 |
-| ライセンス | MIT | OSS標準 |
-| バンドルサイズ | core + WC合計 gzip 5KB以下 | 軽量ライブラリとしての競争力 |
-| React設計 | Web Componentをラップ | 描画ロジック二重管理を避ける |
-
----
-
-## リスクと未解決課題
-
-| リスク | 影響 | 対策 |
-|--------|------|------|
-| Web ComponentのUXデザイン | M2の最大の不確実性。「ドラッグでマージンを広げる」操作が直感的になるか | M2-aで最小限を作り、触ってから調整 |
-| タッチ操作のUX | デスクトップと同じ操作感にならない可能性 | M2-dで別途設計、仕様書にもモバイル別操作の記載あり |
-| `distribution: "skewed"` のUI | 仕様書で未解決課題として明記 | M5以降に先送り可 |
-| `distributionParams`の設計 | 仕様書で未解決課題として明記 | M5以降に先送り可 |
-| React 18/19の両対応 | Web Component経由で差異が出る可能性 | M4で動作検証 |
+| Item | Decision | Reason |
+|------|----------|--------|
+| a11y | Proper support from the start (role, ARIA, keyboard operations) | Retrofitting carries high risk of structural changes |
+| CSS Customization | CSS Custom Properties | Simple and beginner-friendly |
+| Browser Support | Modern only (latest 2 versions) | Lightweight without polyfills |
+| License | MIT | OSS standard |
+| Bundle Size | core + WC combined gzip under 5KB | Competitive as a lightweight library |
+| React Design | Wrap the Web Component | Avoid duplicating rendering logic |
 
 ---
 
-## 推奨する作業順序
+## Risks and Open Issues
 
-1. **まずM1を片付ける**（小さい。step処理と対称連動の追加のみ）
-2. **M2に集中する**（ここがプロジェクトの核心。段階的にa→b→c→dで進める）
-3. **M3とM4は並行可能**（M2が終われば独立して進められる）
-4. **M5は全体が落ち着いてから**
-
----
-
-## 進捗ログ
-
-| 日付 | マイルストーン | 内容 |
-|------|---------------|------|
-| 2026-02-23 | M1 途中 | core基本実装済み（types, state, validation, helpers, errors）。テスト28件全グリーン。ビルド成功。step処理・対称連動が未実装。 |
-| 2026-02-23 | M1 完了 | step属性スナップ処理（snapToStep関数）と対称モード連動を実装。テスト45件全グリーン。ビルド成功（gzip 0.97KB）。 |
-| 2026-03-08 | M2 完了 | Web Component実装完了。dom-utils/attributes/styles/template/circa-input/indexの6モジュール。Shadow DOM、クリック/キーボード/ドラッグ操作、マージン対称・非対称、Controlled/Uncontrolled、フォーム統合(ElementInternals)、モバイル対応(pointercancel)。テスト72件全グリーン。ビルド成功（gzip 3.79KB、core合算4.76KB < 5KB）。カバレッジ91.2%。 |
-| 2026-03-08 | M2 品質改善 | コードレビューで検出したCRITICAL/HIGH 6件・MEDIUM/LOW 8件を全て修正。handle-low/highキーボード操作追加、disabled状態ブロック、validateConfig呼び出し、valueToPercentゼロ除算ガード、--circa-value-color CSS変数追加。lint/type-check全クリア。テスト87件全グリーン。合算gzip 4.95KB < 5KB。 |
-| 2026-03-08 | M3 完了 | デモサイト実装完了。5セクション構成（基本操作・非対称モード・ユースケース集・プレイグラウンド・フォーム統合）。セクション分割のモジュール設計（sections/ + utils/）。レスポンシブ対応。ビルド成功。lint/type-checkクリア。全テスト132件グリーン。 |
-| 2026-03-15 | M4 完了 | Reactアダプター実装完了。CircaInput コンポーネント（forwardRef + useImperativeHandle）、型定義（CircaInputProps/CircaInputHandle）、camelCase→kebab-case属性マッピング、CustomEvent→コールバック橋渡し、Controlled/Uncontrolled両対応。テスト25件全グリーン。ビルド成功（ESM gzip 0.97KB / CJS gzip 0.83KB）。lint/type-check全クリア。全テスト188件グリーン。 |
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Web Component UX design | Biggest uncertainty in M2. Whether "drag to expand margin" is intuitive | Build minimum in M2-a, then adjust after hands-on testing |
+| Touch UX | May not match desktop interaction feel | Design separately in M2-d; spec includes separate mobile operations |
+| `distribution: "skewed"` UI | Listed as open issue in spec | Can be deferred to post-M5 |
+| `distributionParams` design | Listed as open issue in spec | Can be deferred to post-M5 |
+| React 18/19 compatibility | Potential differences via Web Component layer | Verify in M4 |
 
 ---
 
-## 仕様変更履歴
+## Recommended Work Order
 
-実装中に変更・追加された仕様をここに記録する。`docs/spec.md` への反映も必ず行うこと。
+1. **Finish M1 first** (small scope: just adding step processing and symmetric synchronization)
+2. **Focus on M2** (the core of the project; proceed incrementally a → b → c → d)
+3. **M3 and M4 can run in parallel** (both can proceed independently once M2 is done)
+4. **M5 after everything else stabilizes**
 
-| 日付 | 変更内容 | spec.md反映 |
-|------|----------|-------------|
-| 2026-02-23 | Section 8〜11 追加（a11y, CSSカスタマイズ, 対応環境, ライセンス） | 済 |
+---
+
+## Progress Log
+
+| Date | Milestone | Details |
+|------|-----------|---------|
+| 2026-02-23 | M1 in progress | Core basic implementation done (types, state, validation, helpers, errors). 28 tests all green. Build succeeds. Step processing and symmetric synchronization not yet implemented. |
+| 2026-02-23 | M1 complete | Implemented step attribute snap processing (snapToStep function) and symmetric mode synchronization. 45 tests all green. Build succeeds (gzip 0.97KB). |
+| 2026-03-08 | M2 complete | Web Component implementation complete. 6 modules: dom-utils/attributes/styles/template/circa-input/index. Shadow DOM, click/keyboard/drag operations, symmetric/asymmetric margin, Controlled/Uncontrolled, form integration (ElementInternals), mobile support (pointercancel). 72 tests all green. Build succeeds (gzip 3.79KB, combined with core 4.76KB < 5KB). Coverage 91.2%. |
+| 2026-03-08 | M2 quality improvement | Fixed all CRITICAL/HIGH 6 issues and MEDIUM/LOW 8 issues found in code review. Added handle-low/high keyboard operations, disabled state blocking, validateConfig calls, valueToPercent division-by-zero guard, --circa-value-color CSS variable. lint/type-check all clear. 87 tests all green. Combined gzip 4.95KB < 5KB. |
+| 2026-03-08 | M3 complete | Demo site implementation complete. 5-section structure (basic operations, asymmetric mode, use case collection, playground, form integration). Modular section design (sections/ + utils/). Responsive support. Build succeeds. lint/type-check clear. All 132 tests green. |
+| 2026-03-15 | M4 complete | React adapter implementation complete. CircaInput component (forwardRef + useImperativeHandle), type definitions (CircaInputProps/CircaInputHandle), camelCase to kebab-case attribute mapping, CustomEvent to callback bridging, Controlled/Uncontrolled support. 25 tests all green. Build succeeds (ESM gzip 0.97KB / CJS gzip 0.83KB). lint/type-check all clear. All 188 tests green. |
+| 2026-03-15 | M5 complete | Publish preparation complete. package.json metadata (license, repository, keywords, sideEffects, version 0.1.0). GitHub Actions CI (Node 18/20 matrix). Source code comments translated to English (19 files across core/web-component/react). Demo site i18n (EN/JA toggle, data-i18n attributes, format.ts locale support). Documentation translated to English (spec.md, ROADMAP.md, CONTRIB.md). README for root + each package. CHANGELOG. LICENSE. All 224 tests green. lint/type-check all clear. npm pack verified. |
+
+---
+
+## Specification Change History
+
+Record specification changes and additions made during implementation here. Always reflect changes in `docs/spec.md`.
+
+| Date | Change | spec.md Updated |
+|------|--------|-----------------|
+| 2026-02-23 | Added Sections 8-11 (a11y, CSS customization, supported environments, license) | Done |

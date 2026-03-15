@@ -1,24 +1,24 @@
-# circa-input — 技術仕様書
+# circa-input — Technical Specification
 
 ---
 
-## 1. コンセプト
+## 1. Concept
 
-ユーザーが「値」と「その曖昧さ」を同時に入力できるUIプリミティブ。
+A UI primitive that allows users to input both a "value" and its "ambiguity" simultaneously.
 
-`circa`はラテン語由来で「約〜」を意味する。従来の入力UIが強制する「偽の精度」を解消し、人間の自然な曖昧さをそのままデータ化する。
+`circa` is derived from Latin, meaning "approximately." It eliminates the "false precision" forced by traditional input UIs, capturing the natural ambiguity of human intent as data.
 
-| 変数 | 意味 | 操作 |
-|------|------|------|
-| **value (μ)** | 中心値 | クリック/タップ位置 |
-| **marginLow** | 下側の許容幅 | 左/下方向へのドラッグ |
-| **marginHigh** | 上側の許容幅 | 右/上方向へのドラッグ |
+| Variable | Meaning | Operation |
+|----------|---------|-----------|
+| **value (μ)** | Center value | Click/tap position |
+| **marginLow** | Lower tolerance | Drag left/down |
+| **marginHigh** | Upper tolerance | Drag right/up |
 
 ---
 
-## 2. データ構造
+## 2. Data Structure
 
-### 出力型（CircaValue）
+### Output Type (CircaValue)
 
 ```typescript
 type Distribution = "normal" | "uniform" | "skewed";
@@ -32,7 +32,7 @@ interface CircaValue {
 }
 ```
 
-### 初期状態（未入力）
+### Initial State (No Input)
 
 ```json
 {
@@ -44,7 +44,7 @@ interface CircaValue {
 }
 ```
 
-### 入力済み例（対称）
+### Input Example (Symmetric)
 
 ```json
 {
@@ -56,7 +56,7 @@ interface CircaValue {
 }
 ```
 
-### 入力済み例（非対称）
+### Input Example (Asymmetric)
 
 ```json
 {
@@ -68,7 +68,7 @@ interface CircaValue {
 }
 ```
 
-### 入力済み例（片側無制限）
+### Input Example (One-Sided Unbounded)
 
 ```json
 {
@@ -82,61 +82,61 @@ interface CircaValue {
 
 ---
 
-## 3. 属性仕様
+## 3. Attribute Specification
 
-### 必須属性
+### Required Attributes
 
-| 属性 | 型 | 説明 |
-|------|----|------|
-| `min` | number | 選択可能な最小値 |
-| `max` | number | 選択可能な最大値 |
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `min` | number | Minimum selectable value |
+| `max` | number | Maximum selectable value |
 
-### Controlled用属性
+### Controlled Attributes
 
-外部から値を管理する場合に使用。指定した場合はコンポーネント内部の状態より優先される。
+Used when managing values externally. When specified, these take priority over the component's internal state.
 
-| 属性 | 型 | デフォルト | 説明 |
-|------|----|-----------|------|
-| `value` | number \| null | null | 中心値 |
-| `margin-low` | number \| null | null | 下側許容幅 |
-| `margin-high` | number \| null | null | 上側許容幅 |
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `value` | number \| null | null | Center value |
+| `margin-low` | number \| null | null | Lower tolerance |
+| `margin-high` | number \| null | null | Upper tolerance |
 
-### Uncontrolled用属性
+### Uncontrolled Attributes
 
-コンポーネント内部で状態を管理する場合に使用。
+Used when the component manages its own internal state.
 
-| 属性 | 型 | デフォルト | 説明 |
-|------|----|-----------|------|
-| `default-value` | number \| null | null | 初期中心値 |
-| `default-margin-low` | number \| null | null | 初期下側許容幅 |
-| `default-margin-high` | number \| null | null | 初期上側許容幅 |
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `default-value` | number \| null | null | Initial center value |
+| `default-margin-low` | number \| null | null | Initial lower tolerance |
+| `default-margin-high` | number \| null | null | Initial upper tolerance |
 
-### オプション属性
+### Optional Attributes
 
-| 属性 | 型 | デフォルト | 説明 |
-|------|----|-----------|------|
-| `margin-max` | number \| null | null | 許容幅の最大値（null=制限なし） |
-| `distribution` | string | "normal" | 分布の形状 |
-| `asymmetric` | boolean | false | trueで非対称UI開放 |
-| `step` | number \| "any" | "any" | 値の刻み幅 |
-| `name` | string \| null | null | フォーム統合用 |
-| `required` | boolean | false | 必須バリデーション |
-| `no-clear` | boolean | false | クリアボタンを非表示にする |
-| `tick-interval` | number \| null | null | 目盛りの間隔（設定時のみ目盛り線＋数値ラベルを表示） |
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `margin-max` | number \| null | null | Maximum margin value (null = no limit) |
+| `distribution` | string | "normal" | Distribution shape |
+| `asymmetric` | boolean | false | Enables asymmetric UI when true |
+| `step` | number \| "any" | "any" | Value step size |
+| `name` | string \| null | null | For form integration |
+| `required` | boolean | false | Required validation |
+| `no-clear` | boolean | false | Hides the clear button |
+| `tick-interval` | number \| null | null | Tick mark interval (displays tick lines + numeric labels only when set) |
 
-### スロット
+### Slots
 
-| スロット名 | デフォルト | 説明 |
-|-----------|-----------|------|
-| `clear` | `×` ボタン | クリアボタンを外部から差し替え可能。`<button slot="clear">リセット</button>` のように使用 |
+| Slot Name | Default | Description |
+|-----------|---------|-------------|
+| `clear` | `×` button | Allows replacing the clear button externally. Use as `<button slot="clear">Reset</button>` |
 
 ---
 
-## 4. イベント仕様
+## 4. Event Specification
 
 ### change
 
-操作完了時（mouseup / touchend）に発火。
+Fires on operation completion (mouseup / touchend).
 
 ```typescript
 element.addEventListener('change', (e: CustomEvent<CircaValue>) => {
@@ -147,31 +147,31 @@ element.addEventListener('change', (e: CustomEvent<CircaValue>) => {
 
 ### input
 
-操作中リアルタイムで発火（mousemove / touchmove）。
+Fires in real-time during operation (mousemove / touchmove).
 
 ```typescript
 element.addEventListener('input', (e: CustomEvent<CircaValue>) => {
-  console.log(e.detail); // changeと同じ型
+  console.log(e.detail); // Same type as change
 });
 ```
 
 ---
 
-## 5. バリデーション仕様
+## 5. Validation Specification
 
-| ケース | 対処 | 理由 |
-|--------|------|------|
-| `value < min` または `value > max` | エラーをthrow | 開発者のミス |
-| `marginLow` または `marginHigh` が負 | エラーをthrow | 意味をなさない |
-| margin適用後の値がmin/maxをはみ出す | クランプ（自動調整） | ユーザー操作で自然に発生する |
-| `margin-max`を超えるmargin | クランプ | ユーザー操作で自然に発生する |
-| `required=true` かつ `value=null` | バリデーションエラー | フォーム送信時に検出 |
+| Case | Action | Reason |
+|------|--------|--------|
+| `value < min` or `value > max` | Throw error | Developer mistake |
+| `marginLow` or `marginHigh` is negative | Throw error | Meaningless |
+| Value after margin application exceeds min/max | Clamp (auto-adjust) | Naturally occurs during user interaction |
+| Margin exceeds `margin-max` | Clamp | Naturally occurs during user interaction |
+| `required=true` and `value=null` | Validation error | Detected on form submission |
 
 ---
 
-## 6. フォーム統合
+## 6. Form Integration
 
-`name`属性を指定した場合、FormDataにJSON文字列として含まれる。
+When the `name` attribute is specified, the value is included in FormData as a JSON string.
 
 ```html
 <form>
@@ -180,13 +180,13 @@ element.addEventListener('input', (e: CustomEvent<CircaValue>) => {
 ```
 
 ```
-// FormData送信時
+// On FormData submission
 delivery_time={"value":14.0,"marginLow":0.5,"marginHigh":2.0,"distribution":"normal","distributionParams":{}}
 ```
 
-### 後方互換ヘルパー
+### Backward Compatibility Helper
 
-バックエンドがcirca-inputに未対応の場合、valueのみ取り出すヘルパーを提供する。
+For backends that do not yet support circa-input, a helper is provided to extract only the value.
 
 ```typescript
 import { toPlainValue } from "@circa-input/core";
@@ -196,166 +196,166 @@ const plain = toPlainValue(circaValue); // 14.0
 
 ---
 
-## 7. ユーザー操作仕様
+## 7. User Interaction Specification
 
-### 基本操作（対称モード）
+### Basic Operations (Symmetric Mode)
 
-| 操作 | 結果 |
-|------|------|
-| クリック / タップ | valueを設定 |
-| 上下ドラッグ | marginLow・marginHighを対称に拡張 |
-| ×ボタン / `Delete`キー | 値をクリアして未入力状態に戻す |
+| Operation | Result |
+|-----------|--------|
+| Click / Tap | Sets the value |
+| Vertical drag | Expands marginLow and marginHigh symmetrically |
+| × button / `Delete` key | Clears the value and returns to the no-input state |
 
-### 非対称操作（asymmetric=true時）
+### Asymmetric Operations (asymmetric=true)
 
-中央つまみの上下ドラッグと両端ハンドルで、marginLow・marginHighを個別に調整する。
+The center thumb's vertical drag and the edge handles allow individual adjustment of marginLow and marginHigh.
 
-| 操作 | 結果 |
-|------|------|
-| 中央つまみを上ドラッグ | marginLow（左側の許容幅）を拡大 |
-| 中央つまみを下ドラッグ | marginHigh（右側の許容幅）を拡大 |
-| handle-low（左端ハンドル）を左右ドラッグ | marginLowを個別に調整 |
-| handle-high（右端ハンドル）を左右ドラッグ | marginHighを個別に調整 |
+| Operation | Result |
+|-----------|--------|
+| Drag center thumb up | Increases marginLow (left tolerance) |
+| Drag center thumb down | Increases marginHigh (right tolerance) |
+| Drag handle-low (left edge handle) left/right | Adjusts marginLow individually |
+| Drag handle-high (right edge handle) left/right | Adjusts marginHigh individually |
 
-#### キーボード操作（非対称モード）
+#### Keyboard Operations (Asymmetric Mode)
 
-| キー | 動作 |
-|------|------|
-| `Shift + ↑` / `Shift + ←` | marginLowを1step拡大 |
-| `Shift + ↓` / `Shift + →` | marginHighを1step拡大 |
+| Key | Action |
+|-----|--------|
+| `Shift + ↑` / `Shift + ←` | Increases marginLow by 1 step |
+| `Shift + ↓` / `Shift + →` | Increases marginHigh by 1 step |
 
-### モバイル対応
+### Mobile Support
 
-- ハンドルはタップで選択状態にしてからドラッグ
-- デスクトップとモバイルで操作が異なるが、出力されるデータ構造は同一
+- Handles are selected by tapping, then dragged
+- Operations differ between desktop and mobile, but the output data structure is identical
 
 ---
 
-## 8. アクセシビリティ（a11y）
+## 8. Accessibility (a11y)
 
-最初からしっかり対応する。後付けは構造変更のリスクが高い。
+Properly supported from the start. Retrofitting carries a high risk of structural changes.
 
 ### ARIA
 
-- `<circa-input>` は `role="group"` で全体を囲む
-- 内部のvalue操作部分は `role="slider"` + `aria-valuenow` / `aria-valuemin` / `aria-valuemax`
-- margin操作ハンドル（非対称時）もそれぞれ `role="slider"`
-- `aria-label` で「中心値」「下側許容幅」「上側許容幅」を区別
+- `<circa-input>` wraps everything with `role="group"`
+- The internal value control uses `role="slider"` + `aria-valuenow` / `aria-valuemin` / `aria-valuemax`
+- Margin handles (in asymmetric mode) each have `role="slider"` as well
+- `aria-label` distinguishes "center value," "lower tolerance," and "upper tolerance"
 
-### キーボード操作
+### Keyboard Operations
 
-| キー | 動作 |
-|------|------|
-| `Tab` | コンポーネントにフォーカス移動 |
-| `←` / `→` | valueを1step増減（step="any"の場合は範囲の1%） |
-| `Shift + ←` / `Shift + →` | marginを対称に拡縮 |
-| `Home` / `End` | valueをmin / maxに設定 |
-| `Delete` / `Backspace` | 値をクリアして未入力状態に戻す |
+| Key | Action |
+|-----|--------|
+| `Tab` | Moves focus to the component |
+| `←` / `→` | Increments/decrements value by 1 step (1% of range when step="any") |
+| `Shift + ←` / `Shift + →` | Expands/contracts margin symmetrically |
+| `Home` / `End` | Sets value to min / max |
+| `Delete` / `Backspace` | Clears the value and returns to the no-input state |
 
-### スクリーンリーダー
+### Screen Reader
 
-- 値変更時に `aria-valuenow` を更新し、変更を通知する
-- 読み上げ例：「14、プラスマイナス1」
-
----
-
-## 9. CSSカスタマイズ
-
-Shadow DOM内部のスタイルはCSS Custom Propertiesで外部からカスタマイズ可能にする。
-
-### 提供するCSS変数（初期設計）
-
-| 変数名 | デフォルト | 説明 |
-|--------|-----------|------|
-| `--circa-track-height` | `8px` | トラックの高さ |
-| `--circa-track-color` | `#e0e0e0` | トラックの色 |
-| `--circa-track-radius` | `4px` | トラックの角丸 |
-| `--circa-value-color` | `#1976d2` | 値インジケータの色 |
-| `--circa-margin-color` | `rgba(25, 118, 210, 0.2)` | マージン領域の色 |
-| `--circa-handle-size` | `20px` | ハンドルのサイズ |
-| `--circa-handle-color` | `#1976d2` | ハンドルの色 |
-| `--circa-clear-color` | `#999` | クリアボタンの色 |
-| `--circa-clear-hover-color` | `#666` | クリアボタンのホバー色 |
-| `--circa-tick-color` | `#999` | 目盛り縦線の色 |
-| `--circa-tick-label-color` | `#666` | 目盛りラベルの色 |
-| `--circa-tick-height` | `6px` | 目盛り縦線の高さ |
-| `--circa-tick-width` | `1px` | 目盛り縦線の幅 |
-| `--circa-tick-label-size` | `10px` | 目盛りラベルのフォントサイズ |
-
-※ 実装中に必要に応じて変数を追加する。追加時はこの表も更新すること。
+- Updates `aria-valuenow` on value change and announces the change
+- Example readout: "14, plus or minus 1"
 
 ---
 
-## 10. 対応環境
+## 9. CSS Customization
 
-### ブラウザ
+Styles inside the Shadow DOM can be customized externally via CSS Custom Properties.
 
-モダンブラウザの最新2バージョンのみ。Polyfillは使用しない。
+### Provided CSS Variables (Initial Design)
 
-- Chrome / Edge（最新2バージョン）
-- Firefox（最新2バージョン）
-- Safari（最新2バージョン）
+| Variable Name | Default | Description |
+|---------------|---------|-------------|
+| `--circa-track-height` | `8px` | Track height |
+| `--circa-track-color` | `#e0e0e0` | Track color |
+| `--circa-track-radius` | `4px` | Track border radius |
+| `--circa-value-color` | `#1976d2` | Value indicator color |
+| `--circa-margin-color` | `rgba(25, 118, 210, 0.2)` | Margin area color |
+| `--circa-handle-size` | `20px` | Handle size |
+| `--circa-handle-color` | `#1976d2` | Handle color |
+| `--circa-clear-color` | `#999` | Clear button color |
+| `--circa-clear-hover-color` | `#666` | Clear button hover color |
+| `--circa-tick-color` | `#999` | Tick line color |
+| `--circa-tick-label-color` | `#666` | Tick label color |
+| `--circa-tick-height` | `6px` | Tick line height |
+| `--circa-tick-width` | `1px` | Tick line width |
+| `--circa-tick-label-size` | `10px` | Tick label font size |
 
-### バンドルサイズ目標
-
-| パッケージ | 目標（gzip） |
-|-----------|-------------|
-| @circa-input/core | 1KB以下 |
-| @circa-input/core + @circa-input/web-component | 5KB以下 |
+* Variables may be added as needed during implementation. Update this table when adding new variables.
 
 ---
 
-## 11. ライセンス
+## 10. Supported Environments
+
+### Browsers
+
+Latest 2 versions of modern browsers only. No polyfills are used.
+
+- Chrome / Edge (latest 2 versions)
+- Firefox (latest 2 versions)
+- Safari (latest 2 versions)
+
+### Bundle Size Targets
+
+| Package | Target (gzip) |
+|---------|---------------|
+| @circa-input/core | Under 2KB |
+| @circa-input/core + @circa-input/web-component | Under 8KB |
+
+---
+
+## 11. License
 
 MIT
 
 ---
 
-## 12. 実装優先順位
+## 12. Implementation Priority
 
-1. `packages/core` — ロジックとバリデーション
-2. `packages/web-component` — `<circa-input>`タグの実装
-3. `apps/demo` — 動作確認用デモ
-4. `packages/react` — Reactアダプター
-
----
-
-## 13. デモサイト国際化（i18n）仕様
-
-### 対応言語
-
-- 日本語 (ja)
-- 英語 (en)
-
-### 言語検出の優先順位
-
-1. URLパラメータ `?lang=en`
-2. `localStorage` の `circa-input-lang`
-3. `navigator.language` プレフィックス
-4. フォールバック: `en`
-
-### i18n アーキテクチャ
-
-- ライブラリ不使用、TypeScript オブジェクトベース
-- `Translations` 型で全キーを型安全に管理
-- `t()` 関数で現在ロケールの翻訳を取得
-- `data-i18n` 属性で HTML 要素を翻訳対象としてマーク
-
-### 翻訳対象の範囲
-
-- HTML の静的テキスト（見出し、説明、ラベル等）
-- format.ts のフォーマッター文字列（単位、区切り文字等）
-- セクションモジュールの動的文字列（プレースホルダー等）
-
-### スコープ
-
-デモサイト（`apps/demo/`）のみ。公開パッケージ（core, web-component, react）には影響しない。
+1. `packages/core` — Logic and validation
+2. `packages/web-component` — `<circa-input>` tag implementation
+3. `apps/demo` — Demo for testing and verification
+4. `packages/react` — React adapter
 
 ---
 
-## 14. 未解決・将来課題
+## 13. Demo Site Internationalization (i18n) Specification
 
-- [ ] `distribution: "skewed"` のUIをどう実現するか
-- [ ] `distributionParams`の具体的な中身の設計
-- [ ] 複数フィールド間の相関をどう扱うか
-- [ ] Vue・Svelteアダプターの実装
+### Supported Languages
+
+- Japanese (ja)
+- English (en)
+
+### Language Detection Priority
+
+1. URL parameter `?lang=en`
+2. `localStorage` key `circa-input-lang`
+3. `navigator.language` prefix
+4. Fallback: `en`
+
+### i18n Architecture
+
+- No external libraries; TypeScript object-based
+- `Translations` type for type-safe management of all keys
+- `t()` function to retrieve translations for the current locale
+- `data-i18n` attribute to mark HTML elements as translation targets
+
+### Translation Scope
+
+- Static text in HTML (headings, descriptions, labels, etc.)
+- Formatter strings in format.ts (units, separators, etc.)
+- Dynamic strings in section modules (placeholders, etc.)
+
+### Scope
+
+Demo site (`apps/demo/`) only. Does not affect published packages (core, web-component, react).
+
+---
+
+## 14. Open Issues & Future Work
+
+- [ ] How to implement the UI for `distribution: "skewed"`
+- [ ] Concrete design of `distributionParams` contents
+- [ ] How to handle correlations between multiple fields
+- [ ] Vue and Svelte adapter implementations
