@@ -14,7 +14,7 @@ A guide covering the procedures and rules for contributing to circa-input develo
 ## Setup
 
 ```bash
-git clone <repo>
+git clone https://github.com/imotako-pum/circa-input.git
 cd circa-input
 pnpm install
 pnpm build
@@ -111,7 +111,10 @@ Key rules:
 circa-input/
 ├── packages/
 │   ├── core/           # Pure TS logic (no DOM dependency)
-│   └── web-component/  # <circa-input> custom element
+│   ├── web-component/  # <circa-input> custom element
+│   └── react/          # React adapter (@circa-input/react)
+├── apps/
+│   └── demo/           # Interactive demo site
 ├── docs/
 │   ├── spec.md         # Technical specification (primary source of truth)
 │   ├── ROADMAP.md      # Roadmap and progress
@@ -137,7 +140,7 @@ core ← web-component ← react
 | Package | Target (gzip) |
 |---|---|
 | @circa-input/core | Under 2KB |
-| core + web-component combined | Under 8KB |
+| core + web-component combined | Under 5KB |
 
 Check the gzip size of `dist/index.js` after building.
 

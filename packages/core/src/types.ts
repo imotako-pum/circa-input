@@ -1,5 +1,6 @@
 /**
  * Type representing the shape of a distribution.
+ * Note: "skewed" is reserved for future use and has no special behavior in v0.1.x.
  */
 export type Distribution = "normal" | "uniform" | "skewed";
 
@@ -15,7 +16,7 @@ export interface CircaValue {
   marginHigh: number | null;
   /** Shape of the distribution */
   distribution: Distribution;
-  /** Distribution parameters (reserved for future extension) */
+  /** Distribution parameters (reserved for future extension; always {} in v0.1.x) */
   distributionParams: Record<string, unknown>;
 }
 

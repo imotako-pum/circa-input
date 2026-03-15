@@ -12,10 +12,13 @@
   },
   "keywords": [
     "circa-input",
+    "slider",
+    "tolerance",
     "ambiguity",
-    "fuzzy-input",
-    "range-input",
     "uncertainty",
+    "plus-minus",
+    "range-input",
+    "form-input",
     "ui-primitive"
   ],
   "sideEffects": false,
