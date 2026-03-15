@@ -161,6 +161,34 @@ export const STYLES = `
   cursor: pointer;
 }
 
+/* High contrast mode */
+@media (forced-colors: active) {
+  [part="track"] {
+    background: ButtonFace;
+    border: 1px solid ButtonText;
+  }
+  [part="margin"] {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+  [part="value"] { background: ButtonText; }
+  [part="handle-low"],
+  [part="handle-high"] { background: Highlight; }
+  [part="clear"] {
+    background: ButtonText;
+    color: ButtonFace;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Tick Marks */
 [part="ticks"] {
   position: relative;
