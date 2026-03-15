@@ -1,23 +1,23 @@
 import type { CircaValue } from "./types.js";
 
 /**
- * 値を[min, max]の範囲内にクランプする。
+ * Clamp a value within the [min, max] range.
  */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
 /**
- * CircaValueからvalueのみを取り出すヘルパー。
- * バックエンドがcirca-inputに未対応の場合に使用。
+ * Helper to extract only the value from a CircaValue.
+ * Used when the backend does not support circa-input.
  */
 export function toPlainValue(circaValue: CircaValue): number | null {
   return circaValue.value;
 }
 
 /**
- * 値をパーセント位置（0〜100）に変換する。
- * トラック上のインジケータ位置の計算に使う。
+ * Convert a value to a percentage position (0-100).
+ * Used to calculate indicator position on the track.
  */
 export function valueToPercent(
   value: number,
@@ -30,8 +30,8 @@ export function valueToPercent(
 }
 
 /**
- * パーセント位置（0〜100）を値に変換する。
- * クリック位置から値を算出するのに使う。
+ * Convert a percentage position (0-100) to a value.
+ * Used to calculate a value from a click position.
  */
 export function percentToValue(
   percent: number,
@@ -42,29 +42,29 @@ export function percentToValue(
 }
 
 /**
- * 目盛り位置の配列を生成する。
- * minからtickInterval刻みで目盛りを生成し、maxは常に含める。
+ * Generate an array of tick positions.
+ * Generates ticks at tickInterval increments starting from min, always including max.
  *
- * @param min - 範囲の最小値
- * @param max - 範囲の最大値
- * @param tickInterval - 目盛りの間隔
- * @returns 目盛り位置の配列（昇順）
+ * @param min - Minimum value of the range
+ * @param max - Maximum value of the range
+ * @param tickInterval - Interval between ticks
+ * @returns Array of tick positions (ascending order)
  */
 export function generateTicks(
   min: number,
   max: number,
   tickInterval: number,
 ): number[] {
-  // 無効な間隔の場合は空配列
+  // Return empty array for invalid intervals
   if (tickInterval <= 0 || !Number.isFinite(tickInterval)) return [];
   if (!Number.isFinite(min) || !Number.isFinite(max)) return [];
   if (min >= max) return [];
 
-  // 目盛り数が50を超える場合はパフォーマンス保護で空配列
+  // Performance guard: return empty array if tick count exceeds 50
   const count = Math.floor((max - min) / tickInterval) + 1;
   if (count > 50) return [];
 
-  // tickIntervalの小数桁数を求める（浮動小数点精度の丸めに使用）
+  // Determine decimal places of tickInterval (used for floating-point precision rounding)
   const intervalStr = String(tickInterval);
   const decimalIndex = intervalStr.indexOf(".");
   const decimals =
@@ -73,11 +73,11 @@ export function generateTicks(
 
   const ticks: number[] = [];
   for (let v = min; v <= max; v += tickInterval) {
-    // 浮動小数点誤差を丸める
+    // Round to mitigate floating-point errors
     ticks.push(Math.round(v * factor) / factor);
   }
 
-  // maxを常に含める（最後の目盛りがmaxでない場合）
+  // Always include max (if the last tick is not max)
   const last = ticks[ticks.length - 1];
   if (last !== undefined && Math.abs(last - max) > 1e-9) {
     ticks.push(max);

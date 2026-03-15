@@ -2,7 +2,7 @@ import { CircaInputError } from "./errors.js";
 import type { CircaInputConfig, CircaValue } from "./types.js";
 
 /**
- * 設定値のバリデーション。無効な場合はCircaInputErrorをthrow。
+ * Validate configuration values. Throws CircaInputError if invalid.
  */
 export function validateConfig(config: CircaInputConfig): void {
   if (config.min >= config.max) {
@@ -21,8 +21,8 @@ export function validateConfig(config: CircaInputConfig): void {
 }
 
 /**
- * CircaValueのバリデーション。開発者のミスに対してはthrow、
- * ユーザー操作による自然なはみ出しはクランプで対処。
+ * Validate a CircaValue. Throws for developer errors;
+ * natural overflows from user interaction are handled by clamping.
  */
 export function validateValue(
   circaValue: CircaValue,
@@ -50,7 +50,7 @@ export function validateValue(
 }
 
 /**
- * required=trueかつvalue=nullの場合にfalseを返す
+ * Return false if required=true and value is null.
  */
 export function checkRequired(
   circaValue: CircaValue,

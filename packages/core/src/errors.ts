@@ -1,5 +1,5 @@
 /**
- * circa-input固有のエラークラス
+ * Custom error class specific to circa-input.
  */
 export class CircaInputError extends Error {
   constructor(message: string) {

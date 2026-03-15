@@ -1,42 +1,42 @@
 /**
- * 分布の形状を表す型
+ * Type representing the shape of a distribution.
  */
 export type Distribution = "normal" | "uniform" | "skewed";
 
 /**
- * circa-inputの出力値。中心値と曖昧さを含むデータ構造。
+ * Output value of circa-input. A data structure containing a center value and its ambiguity.
  */
 export interface CircaValue {
-  /** 中心値（未入力時はnull） */
+  /** Center value (null when not entered) */
   value: number | null;
-  /** 下側の許容幅（未入力時はnull） */
+  /** Lower margin of tolerance (null when not entered) */
   marginLow: number | null;
-  /** 上側の許容幅（未入力時はnull） */
+  /** Upper margin of tolerance (null when not entered) */
   marginHigh: number | null;
-  /** 分布の形状 */
+  /** Shape of the distribution */
   distribution: Distribution;
-  /** 分布パラメータ（将来拡張用） */
+  /** Distribution parameters (reserved for future extension) */
   distributionParams: Record<string, unknown>;
 }
 
 /**
- * circa-inputの設定
+ * Configuration for circa-input.
  */
 export interface CircaInputConfig {
-  /** 選択可能な最小値 */
+  /** Minimum selectable value */
   min: number;
-  /** 選択可能な最大値 */
+  /** Maximum selectable value */
   max: number;
-  /** 許容幅の最大値（nullで制限なし） */
+  /** Maximum margin value (null for no limit) */
   marginMax: number | null;
-  /** 分布の形状 */
+  /** Shape of the distribution */
   distribution: Distribution;
-  /** 非対称UIの許可 */
+  /** Whether asymmetric UI is allowed */
   asymmetric: boolean;
-  /** 値の刻み幅 */
+  /** Step size for values */
   step: number | "any";
-  /** フォーム統合用の名前 */
+  /** Name for form integration */
   name: string | null;
-  /** 必須バリデーション */
+  /** Required validation */
   required: boolean;
 }

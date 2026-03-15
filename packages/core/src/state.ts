@@ -2,36 +2,36 @@ import { clamp } from "./helpers.js";
 import type { CircaInputConfig, CircaValue } from "./types.js";
 
 /**
- * 値をstep刻みにスナップ（丸め）する。
+ * Snap (round) a value to the nearest step increment.
  *
- * stepが"any"の場合はスナップしない。
- * 計算式: Math.round((value - min) / step) * step + min
- * → minを基準に、最も近いstepの倍数に丸める。
- * 結果は[min, max]の範囲にクランプされる。
+ * Does not snap when step is "any".
+ * Formula: Math.round((value - min) / step) * step + min
+ * Rounds to the nearest multiple of step relative to min.
+ * The result is clamped to the [min, max] range.
  */
 export function snapToStep(
   value: number,
   config: Pick<CircaInputConfig, "min" | "max" | "step">,
 ): number {
   if (config.step === "any") {
-    // step="any"でもmin/maxの範囲内にクランプする
+    // Even with step="any", clamp within the min/max range
     return clamp(value, config.min, config.max);
   }
 
   const snapped =
     Math.round((value - config.min) / config.step) * config.step + config.min;
 
-  // 浮動小数点誤差を抑えるため、stepの小数桁数で丸める
+  // Round to the decimal places of step to suppress floating-point errors
   const decimals = countDecimals(config.step);
   const rounded = parseFloat(snapped.toFixed(decimals));
 
-  // [min, max]にクランプ
+  // Clamp to [min, max]
   return clamp(rounded, config.min, config.max);
 }
 
 /**
- * 数値の小数桁数を返す（浮動小数点誤差対策用）。
- * 例: 0.5 → 1, 0.25 → 2, 5 → 0
+ * Return the number of decimal places of a number (for floating-point error mitigation).
+ * Examples: 0.5 -> 1, 0.25 -> 2, 5 -> 0
  */
 function countDecimals(num: number): number {
   const str = num.toString();
@@ -40,7 +40,7 @@ function countDecimals(num: number): number {
 }
 
 /**
- * 初期状態（未入力）のCircaValueを生成する
+ * Create an initial (empty) CircaValue.
  */
 export function createInitialValue(
   config: Pick<CircaInputConfig, "distribution">,
@@ -55,7 +55,7 @@ export function createInitialValue(
 }
 
 /**
- * デフォルトのCircaInputConfigを生成する
+ * Create a default CircaInputConfig.
  */
 export function createDefaultConfig(
   overrides: Pick<CircaInputConfig, "min" | "max"> &
@@ -73,7 +73,7 @@ export function createDefaultConfig(
 }
 
 /**
- * marginをmin/max/marginMaxの範囲内にクランプする
+ * Clamp margins within the min/max/marginMax range.
  */
 export function clampMargins(
   circaValue: CircaValue,
@@ -87,11 +87,11 @@ export function clampMargins(
   let marginHigh = circaValue.marginHigh;
 
   if (marginLow !== null) {
-    // margin適用後がminを下回らないようにクランプ
+    // Clamp so that applying the margin does not go below min
     const maxLow = circaValue.value - config.min;
     marginLow = Math.min(marginLow, maxLow);
 
-    // marginMaxによるクランプ
+    // Clamp by marginMax
     if (config.marginMax !== null) {
       marginLow = Math.min(marginLow, config.marginMax);
     }
@@ -100,11 +100,11 @@ export function clampMargins(
   }
 
   if (marginHigh !== null && marginHigh !== Infinity) {
-    // margin適用後がmaxを超えないようにクランプ
+    // Clamp so that applying the margin does not exceed max
     const maxHigh = config.max - circaValue.value;
     marginHigh = Math.min(marginHigh, maxHigh);
 
-    // marginMaxによるクランプ
+    // Clamp by marginMax
     if (config.marginMax !== null) {
       marginHigh = Math.min(marginHigh, config.marginMax);
     }
@@ -120,13 +120,13 @@ export function clampMargins(
 }
 
 /**
- * 値を更新し、必要に応じてスナップ・対称連動・クランプを適用する。
+ * Update the value, applying snap, symmetric sync, and clamping as needed.
  *
- * 処理の順序:
- * 1. updatesをマージ
- * 2. valueが更新された場合、stepスナップを適用
- * 3. asymmetric=falseの場合、marginLow/marginHighを同期
- * 4. clampMarginsで範囲内にクランプ
+ * Processing order:
+ * 1. Merge updates
+ * 2. If value was updated, apply step snapping
+ * 3. If asymmetric=false, sync marginLow/marginHigh
+ * 4. Clamp margins within range via clampMargins
  */
 export function updateValue(
   current: CircaValue,
@@ -138,26 +138,26 @@ export function updateValue(
     ...updates,
   };
 
-  // Step 1: valueのスナップ処理
+  // Step 1: Snap value to step
   if (next.value !== null && "value" in updates) {
     next.value = snapToStep(next.value, config);
   }
 
-  // Step 2: 対称モード連動
-  // asymmetric=false のとき、marginLowとmarginHighは常に同じ値になる。
-  // updatesで明示的に指定された方をもう片方にコピーする。
+  // Step 2: Symmetric mode sync
+  // When asymmetric=false, marginLow and marginHigh always have the same value.
+  // Copy the explicitly specified side to the other side.
   if (!config.asymmetric) {
     const hasLow = "marginLow" in updates;
     const hasHigh = "marginHigh" in updates;
 
     if (hasLow && !hasHigh && next.marginLow !== null) {
-      // marginLowだけが指定された → marginHighに同期
+      // Only marginLow was specified -> sync to marginHigh
       next.marginHigh = next.marginLow;
     } else if (hasHigh && !hasLow && next.marginHigh !== null) {
-      // marginHighだけが指定された → marginLowに同期
+      // Only marginHigh was specified -> sync to marginLow
       next.marginLow = next.marginHigh;
     } else if (hasLow && hasHigh) {
-      // 両方指定された場合、marginLowを優先（対称なので片方でいい）
+      // Both specified: prefer marginLow (symmetric, so one is enough)
       if (next.marginLow !== null) {
         next.marginHigh = next.marginLow;
       }

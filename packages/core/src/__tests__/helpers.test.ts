@@ -8,7 +8,7 @@ import {
 import type { CircaValue } from "../types.js";
 
 describe("toPlainValue", () => {
-  it("CircaValueからvalueのみを取り出す", () => {
+  it("extracts only the value from a CircaValue", () => {
     const circaValue: CircaValue = {
       value: 14.0,
       marginLow: 0.5,
@@ -19,7 +19,7 @@ describe("toPlainValue", () => {
     expect(toPlainValue(circaValue)).toBe(14.0);
   });
 
-  it("valueがnullの場合、nullを返す", () => {
+  it("returns null when value is null", () => {
     const circaValue: CircaValue = {
       value: null,
       marginLow: null,
@@ -32,96 +32,96 @@ describe("toPlainValue", () => {
 });
 
 describe("valueToPercent", () => {
-  it("minとmaxの中間値で50%を返す", () => {
+  it("returns 50% for the midpoint between min and max", () => {
     expect(valueToPercent(50, 0, 100)).toBe(50);
   });
 
-  it("min値で0%を返す", () => {
+  it("returns 0% for the min value", () => {
     expect(valueToPercent(0, 0, 100)).toBe(0);
   });
 
-  it("max値で100%を返す", () => {
+  it("returns 100% for the max value", () => {
     expect(valueToPercent(100, 0, 100)).toBe(100);
   });
 
-  it("min === maxの場合は0を返す", () => {
+  it("returns 0 when min === max", () => {
     expect(valueToPercent(5, 5, 5)).toBe(0);
   });
 
-  it("カスタム範囲で正しく計算する", () => {
+  it("calculates correctly for a custom range", () => {
     expect(valueToPercent(15, 10, 20)).toBe(50);
   });
 });
 
 describe("percentToValue", () => {
-  it("50%をmin-max範囲の中間値に変換する", () => {
+  it("converts 50% to the midpoint of the min-max range", () => {
     expect(percentToValue(50, 0, 100)).toBe(50);
   });
 
-  it("0%でminを返す", () => {
+  it("returns min for 0%", () => {
     expect(percentToValue(0, 0, 100)).toBe(0);
   });
 
-  it("100%でmaxを返す", () => {
+  it("returns max for 100%", () => {
     expect(percentToValue(100, 0, 100)).toBe(100);
   });
 
-  it("カスタム範囲で正しく計算する", () => {
+  it("calculates correctly for a custom range", () => {
     expect(percentToValue(50, 10, 20)).toBe(15);
   });
 });
 
 describe("generateTicks", () => {
-  it("基本的な目盛り生成（0〜100、間隔25）", () => {
+  it("generates basic ticks (0-100, interval 25)", () => {
     expect(generateTicks(0, 100, 25)).toEqual([0, 25, 50, 75, 100]);
   });
 
-  it("maxがtickIntervalの倍数でない場合、maxを追加する", () => {
+  it("appends max when it is not a multiple of tickInterval", () => {
     expect(generateTicks(0, 100, 30)).toEqual([0, 30, 60, 90, 100]);
   });
 
-  it("tickInterval <= 0 の場合は空配列", () => {
+  it("returns empty array when tickInterval <= 0", () => {
     expect(generateTicks(0, 100, 0)).toEqual([]);
     expect(generateTicks(0, 100, -10)).toEqual([]);
   });
 
-  it("tickIntervalが非有限値の場合は空配列", () => {
+  it("returns empty array when tickInterval is non-finite", () => {
     expect(generateTicks(0, 100, Infinity)).toEqual([]);
     expect(generateTicks(0, 100, NaN)).toEqual([]);
   });
 
-  it("min >= max の場合は空配列", () => {
+  it("returns empty array when min >= max", () => {
     expect(generateTicks(100, 0, 25)).toEqual([]);
     expect(generateTicks(50, 50, 10)).toEqual([]);
   });
 
-  it("目盛り数が50を超える場合は空配列（パフォーマンス保護）", () => {
-    // 0〜100, interval=1 → 101目盛り > 50
+  it("returns empty array when tick count exceeds 50 (performance guard)", () => {
+    // 0-100, interval=1 -> 101 ticks > 50
     expect(generateTicks(0, 100, 1)).toEqual([]);
   });
 
-  it("目盛り数がちょうど50の場合は生成する", () => {
-    // 0〜49, interval=1 → 50目盛り
+  it("generates ticks when count is exactly 50", () => {
+    // 0-49, interval=1 -> 50 ticks
     const ticks = generateTicks(0, 49, 1);
     expect(ticks.length).toBe(50);
     expect(ticks[0]).toBe(0);
     expect(ticks[49]).toBe(49);
   });
 
-  it("浮動小数点のtickIntervalで精度が保たれる", () => {
+  it("maintains precision with floating-point tickInterval", () => {
     expect(generateTicks(0, 1, 0.25)).toEqual([0, 0.25, 0.5, 0.75, 1]);
   });
 
-  it("min/maxが非有限値の場合は空配列", () => {
+  it("returns empty array when min/max is non-finite", () => {
     expect(generateTicks(NaN, 100, 25)).toEqual([]);
     expect(generateTicks(0, Infinity, 25)).toEqual([]);
   });
 
-  it("tickInterval == range の場合はminとmaxの2つ", () => {
+  it("returns min and max when tickInterval equals the range", () => {
     expect(generateTicks(0, 100, 100)).toEqual([0, 100]);
   });
 
-  it("tickInterval > range の場合はminとmaxの2つ", () => {
+  it("returns min and max when tickInterval exceeds the range", () => {
     expect(generateTicks(0, 100, 200)).toEqual([0, 100]);
   });
 });
