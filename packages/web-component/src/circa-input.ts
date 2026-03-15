@@ -8,6 +8,7 @@ import type { CircaInputConfig, CircaValue } from "@circa-input/core";
 import {
   CircaInputError,
   checkRequired,
+  clampMargins,
   createInitialValue,
   generateTicks,
   updateValue,
@@ -138,10 +139,13 @@ export class CircaInputElement extends HTMLElement {
   connectedCallback(): void {
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
-    this._circaValue = buildInitialValue(
-      (name) => this.getAttribute(name),
+    this._circaValue = clampMargins(
+      buildInitialValue(
+        (name) => this.getAttribute(name),
+        this._config,
+        this._isControlled,
+      ),
       this._config,
-      this._isControlled,
     );
     this._renderConfig();
     this._render();
@@ -221,10 +225,13 @@ export class CircaInputElement extends HTMLElement {
       _name === ATTR.MARGIN_HIGH
     ) {
       if (this._isControlled) {
-        this._circaValue = buildInitialValue(
-          (name) => this.getAttribute(name),
+        this._circaValue = clampMargins(
+          buildInitialValue(
+            (name) => this.getAttribute(name),
+            this._config,
+            true,
+          ),
           this._config,
-          true,
         );
       }
     }
