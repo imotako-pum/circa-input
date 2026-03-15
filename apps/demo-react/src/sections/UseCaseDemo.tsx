@@ -39,6 +39,7 @@ export function UseCaseDemo() {
             defaultMarginLow={1}
             defaultMarginHigh={2}
             onInput={(v) => setTimeDisplay(formatTimeRange(v))}
+            onChange={(v) => setTimeDisplay(formatTimeRange(v))}
           />
         </div>
 
