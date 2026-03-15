@@ -140,7 +140,7 @@ core ← web-component ← react
 | Package | Target (gzip) |
 |---|---|
 | @circa-input/core | Under 2KB |
-| core + web-component combined | Under 5KB |
+| @circa-input/web-component (includes core) | Under 8KB |
 
 Check the gzip size of `dist/index.js` after building.
 

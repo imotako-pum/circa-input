@@ -306,7 +306,7 @@ Latest 2 versions of modern browsers only. No polyfills are used.
 | Package | Target (gzip) |
 |---------|---------------|
 | @circa-input/core | Under 2KB |
-| @circa-input/core + @circa-input/web-component | Under 5KB |
+| @circa-input/web-component (includes core) | Under 8KB |
 
 ---
 

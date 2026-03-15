@@ -68,7 +68,7 @@ function App() {
     <CircaInput
       min={0}
       max={100}
-      onChange={(value) => console.log(value)}
+      onChange={(circaValue) => console.log(circaValue)}
     />
   );
 }
@@ -87,6 +87,9 @@ interface CircaValue {
   distributionParams: Record<string, unknown>;
 }
 ```
+
+> **注意:** `distribution` と `distributionParams` は将来の拡張用に予約されています。
+> v0.1.x では常にデフォルト値（`"normal"` と `{}`）が使用され、動作には影響しません。
 
 **例：** ユーザーが「14あたり」を±1の許容幅で選択した場合：
 
