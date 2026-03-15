@@ -237,6 +237,25 @@ export class CircaInputElement extends HTMLElement {
       }
     }
 
+    // Handle default-* attributes set after connectedCallback
+    // (e.g., React sets attributes after DOM insertion)
+    if (
+      (_name === ATTR.DEFAULT_VALUE ||
+        _name === ATTR.DEFAULT_MARGIN_LOW ||
+        _name === ATTR.DEFAULT_MARGIN_HIGH) &&
+      !this._isControlled &&
+      this._circaValue.value === null
+    ) {
+      this._circaValue = clampMargins(
+        buildInitialValue(
+          (name) => this.getAttribute(name),
+          this._config,
+          false,
+        ),
+        this._config,
+      );
+    }
+
     this._renderConfig();
     this._render();
   }

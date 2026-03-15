@@ -132,9 +132,9 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
 
     // On initial mount: re-trigger connectedCallback.
     // When React inserts <circa-input> into the DOM, connectedCallback fires immediately,
-    // but attributes are not yet set at that point. In particular, default-* attributes
-    // are only read during connectedCallback and won't take effect if set later.
-    // So on first mount only, we disconnect and reconnect to re-trigger connectedCallback.
+    // but attributes are not yet set at that point. The Web Component handles late
+    // default-* attributes via attributeChangedCallback, but in some DOM environments
+    // (e.g., happy-dom) the timing differs, so we keep this reconnect as a fallback.
     useLayoutEffect(() => {
       const el = elRef.current;
       if (!el) return;
