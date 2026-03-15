@@ -31,8 +31,7 @@ function parseDistribution(raw: string | null): Distribution {
 export function parseNumberAttr(value: string | null): number | null {
   if (value === null || value === "") return null;
   const num = Number(value);
-  if (Number.isNaN(num)) return null;
-  // Strings like "12px" are excluded: Number() returns NaN, already handled above
+  if (Number.isNaN(num) || !Number.isFinite(num)) return null;
   return num;
 }
 

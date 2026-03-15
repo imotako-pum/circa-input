@@ -80,8 +80,8 @@ export const STYLES = `
 [part="handle-high"] {
   position: absolute;
   top: 50%;
-  width: calc(var(--circa-handle-size, 20px) * 0.7);
-  height: calc(var(--circa-handle-size, 20px) * 0.7);
+  width: calc(var(--circa-handle-size, 20px) * 0.85);
+  height: calc(var(--circa-handle-size, 20px) * 0.85);
   background: var(--circa-handle-color, #1976d2);
   border-radius: 50%;
   transform: translate(-50%, -50%);
