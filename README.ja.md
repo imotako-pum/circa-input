@@ -1,5 +1,9 @@
 # circa-input
 
+[![npm](https://img.shields.io/npm/v/@circa-input/core)](https://www.npmjs.com/package/@circa-input/core)
+[![CI](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml/badge.svg)](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 [English](./README.md)
 
 **値**と**その曖昧さ**を同時に入力できるUIプリミティブです。
@@ -9,6 +13,10 @@
 > *circa*（ラテン語）：「約〜」「およそ」
 
 **[デモ](https://imotako-pum.github.io/circa-input/)** · **[Reactデモ](https://imotako-pum.github.io/circa-input/react/)**
+
+![circa-input デモ](./docs/assets/demo.gif)
+
+![circa-input ユースケース](./docs/assets/demo-use-cases.png)
 
 ## 特徴
 
@@ -68,7 +76,7 @@ function App() {
     <CircaInput
       min={0}
       max={100}
-      onChange={(value) => console.log(value)}
+      onChange={(circaValue) => console.log(circaValue)}
     />
   );
 }
@@ -87,6 +95,9 @@ interface CircaValue {
   distributionParams: Record<string, unknown>;
 }
 ```
+
+> **注意:** `distribution` と `distributionParams` は将来の拡張用に予約されています。
+> v0.1.x では常にデフォルト値（`"normal"` と `{}`）が使用され、動作には影響しません。
 
 **例：** ユーザーが「14あたり」を±1の許容幅で選択した場合：
 
@@ -133,6 +144,25 @@ interface CircaValue {
 
 ## CSSカスタマイズ
 
+全14個のCSS Custom Properties:
+
+| 変数名 | デフォルト | 説明 |
+|---|---|---|
+| `--circa-track-height` | `8px` | トラックの高さ |
+| `--circa-track-color` | `#e0e0e0` | トラックの背景色 |
+| `--circa-track-radius` | `4px` | トラックの角丸 |
+| `--circa-value-color` | `#1976d2` | 値インジケーターの色 |
+| `--circa-margin-color` | `rgba(25,118,210,0.2)` | マージンエリアの色 |
+| `--circa-handle-size` | `20px` | ハンドルの直径 |
+| `--circa-handle-color` | `#1976d2` | ハンドルの色 |
+| `--circa-clear-color` | `#bbb` | クリアボタンの色 |
+| `--circa-clear-hover-color` | `#888` | クリアボタンのhover色 |
+| `--circa-tick-height` | `6px` | 目盛り線の高さ |
+| `--circa-tick-width` | `1px` | 目盛り線の幅 |
+| `--circa-tick-color` | `#999` | 目盛り線の色 |
+| `--circa-tick-label-size` | `10px` | 目盛りラベルのフォントサイズ |
+| `--circa-tick-label-color` | `#666` | 目盛りラベルの色 |
+
 ```css
 circa-input {
   --circa-track-height: 8px;
@@ -144,8 +174,6 @@ circa-input {
   --circa-handle-color: #1976d2;
 }
 ```
-
-CSS変数の全リストは [spec.md](./docs/spec.md) を参照してください。
 
 ## フォーム連携
 
@@ -184,6 +212,9 @@ pnpm build      # 全パッケージのビルド
 pnpm test       # テスト実行
 pnpm dev        # ウォッチモード
 pnpm lint       # Biomeでリント
+
+# デモをローカルで起動
+pnpm --filter demo dev
 ```
 
 ## ライセンス

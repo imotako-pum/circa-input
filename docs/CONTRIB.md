@@ -114,7 +114,8 @@ circa-input/
 │   ├── web-component/  # <circa-input> custom element
 │   └── react/          # React adapter (@circa-input/react)
 ├── apps/
-│   └── demo/           # Interactive demo site
+│   ├── demo/           # Interactive demo site
+│   └── demo-react/     # React demo site
 ├── docs/
 │   ├── spec.md         # Technical specification (primary source of truth)
 │   ├── ROADMAP.md      # Roadmap and progress
@@ -140,7 +141,7 @@ core ← web-component ← react
 | Package | Target (gzip) |
 |---|---|
 | @circa-input/core | Under 2KB |
-| core + web-component combined | Under 5KB |
+| @circa-input/web-component (includes core) | Under 8KB |
 
 Check the gzip size of `dist/index.js` after building.
 

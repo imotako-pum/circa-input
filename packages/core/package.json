@@ -10,6 +10,9 @@
     "url": "https://github.com/imotako-pum/circa-input.git",
     "directory": "packages/core"
   },
+  "bugs": {
+    "url": "https://github.com/imotako-pum/circa-input/issues"
+  },
   "keywords": [
     "circa-input",
     "slider",

@@ -30,8 +30,8 @@ function App() {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `min` | number | Minimum value (defaults to 0) |
-| `max` | number | Maximum value (defaults to 100) |
+| `min` | number | Minimum value (required) |
+| `max` | number | Maximum value (required) |
 | `value` | number | Center value (controlled) |
 | `marginLow` | number | Lower margin (controlled) |
 | `marginHigh` | number | Upper margin (controlled) |

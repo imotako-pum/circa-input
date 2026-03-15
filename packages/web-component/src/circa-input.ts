@@ -72,39 +72,53 @@ const MARGIN_DRAG_SCALE_PX = 100;
 const ASYMMETRIC_LOCK_THRESHOLD_PX = 5;
 
 export class CircaInputElement extends HTMLElement {
-  /** Internal state */
+  /** @internal Internal state */
   private _circaValue!: CircaValue;
+  /** @internal */
   private _config!: CircaInputConfig;
 
-  /** References to Shadow DOM elements */
+  /** @internal References to Shadow DOM elements */
   private _trackArea!: HTMLElement;
+  /** @internal */
   private _track!: HTMLElement;
+  /** @internal */
   private _valueEl!: HTMLElement;
+  /** @internal */
   private _marginEl!: HTMLElement;
+  /** @internal */
   private _handleLow!: HTMLElement;
+  /** @internal */
   private _handleHigh!: HTMLElement;
+  /** @internal */
   private _clearArea!: HTMLElement;
 
-  /** Drag state */
+  /** @internal Drag state */
   private _isDragging = false;
+  /** @internal */
   private _dragStartY = 0;
+  /** @internal */
   private _dragStartX = 0;
+  /** @internal */
   private _dragStartMarginLow = 0;
+  /** @internal */
   private _dragStartMarginHigh = 0;
+  /** @internal */
   private _dragStartValue = 0;
 
-  /** Asymmetric mode center thumb drag: locked target */
+  /** @internal Asymmetric mode center thumb drag: locked target */
   private _asymmetricDragLocked: "low" | "high" | null = null;
 
-  /** Asymmetric handle drag state */
+  /** @internal Asymmetric handle drag state */
   private _handleDragTarget: "low" | "high" | null = null;
+  /** @internal */
   private _handleDragStartX = 0;
+  /** @internal */
   private _handleDragStartMargin = 0;
 
-  /** Cached track BoundingClientRect from drag start */
+  /** @internal Cached track BoundingClientRect from drag start */
   private _cachedTrackRect: { left: number; width: number } | null = null;
 
-  /** Form integration */
+  /** @internal Form integration */
   private _internals: ElementInternals | null = null;
 
   /** Register as a form-associated custom element */
@@ -296,17 +310,17 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** Check if in controlled mode */
+  /** @internal Check if in controlled mode */
   private get _isControlled(): boolean {
     return this.getAttribute("value") !== null;
   }
 
-  /** Check if disabled */
+  /** @internal Check if disabled */
   private get _isDisabled(): boolean {
     return this.hasAttribute("disabled");
   }
 
-  /** Step size (1% of range when step="any") */
+  /** @internal Step size (1% of range when step="any") */
   private get _stepSize(): number {
     if (this._config.step === "any") {
       return (this._config.max - this._config.min) * 0.01;
@@ -314,7 +328,7 @@ export class CircaInputElement extends HTMLElement {
     return this._config.step;
   }
 
-  /** Keyboard event handler for the value slider */
+  /** @internal Keyboard event handler for the value slider */
   private _onKeyDown = (e: Event): void => {
     if (this._isDisabled) return;
     const ke = e as KeyboardEvent;
@@ -422,7 +436,7 @@ export class CircaInputElement extends HTMLElement {
     }
   };
 
-  /** Set value on track click */
+  /** @internal Set value on track click */
   private _onTrackPointerDown = (e: Event): void => {
     if (this._isDisabled) return;
     // Skip clicks on the thumb as they are handled as drags
@@ -444,7 +458,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** Start drag on thumb pointerdown */
+  /** @internal Start drag on thumb pointerdown */
   private _onValuePointerDown = (e: Event): void => {
     if (this._isDisabled) return;
     const pe = e as PointerEvent;
@@ -478,7 +492,7 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.addEventListener("pointercancel", this._onValuePointerUp);
   };
 
-  /** Pointer move during drag */
+  /** @internal Pointer move during drag */
   private _onValuePointerMove = (e: Event): void => {
     if (!this._isDragging) return;
     const pe = e as PointerEvent;
@@ -545,7 +559,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitInput();
   };
 
-  /** Drag end */
+  /** @internal Drag end */
   private _onValuePointerUp = (e: Event): void => {
     if (!this._isDragging) return;
     const pe = e as PointerEvent;
@@ -567,17 +581,17 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** handle-low pointerdown */
+  /** @internal handle-low pointerdown */
   private _onHandleLowPointerDown = (e: Event): void => {
     this._startHandleDrag(e as PointerEvent, "low");
   };
 
-  /** handle-high pointerdown */
+  /** @internal handle-high pointerdown */
   private _onHandleHighPointerDown = (e: Event): void => {
     this._startHandleDrag(e as PointerEvent, "high");
   };
 
-  /** Start asymmetric handle drag */
+  /** @internal Start asymmetric handle drag */
   private _startHandleDrag(pe: PointerEvent, target: "low" | "high"): void {
     if (this._isDisabled) return;
     pe.stopPropagation();
@@ -607,7 +621,7 @@ export class CircaInputElement extends HTMLElement {
     handle.addEventListener("pointercancel", this._onHandlePointerUp);
   }
 
-  /** Asymmetric handle drag move */
+  /** @internal Asymmetric handle drag move */
   private _onHandlePointerMove = (e: Event): void => {
     if (!this._handleDragTarget) return;
     const pe = e as PointerEvent;
@@ -636,7 +650,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitInput();
   };
 
-  /** Asymmetric handle drag end */
+  /** @internal Asymmetric handle drag end */
   private _onHandlePointerUp = (e: Event): void => {
     if (!this._handleDragTarget) return;
     const pe = e as PointerEvent;
@@ -659,7 +673,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** Update internal state and render. Skips full rendering in controlled mode (rendered on attribute change). */
+  /** @internal Update internal state and render. Skips full rendering in controlled mode (rendered on attribute change). */
   private _setValue(newValue: CircaValue): void {
     this._circaValue = newValue;
     if (!this._isControlled) {
@@ -670,7 +684,7 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** Update ARIA value attributes (aria-valuenow / aria-valuetext). Single source of truth. */
+  /** @internal Update ARIA value attributes (aria-valuenow / aria-valuetext). Single source of truth. */
   private _updateAriaValues(): void {
     const { value, marginLow, marginHigh } = this._circaValue;
     if (value !== null) {
@@ -698,7 +712,7 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** Keyboard handler for asymmetric handles */
+  /** @internal Keyboard handler for asymmetric handles */
   private _onHandleLowKeyDown = (e: Event): void => {
     if (this._isDisabled) return;
     const ke = e as KeyboardEvent;
@@ -724,6 +738,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
+  /** @internal */
   private _onHandleHighKeyDown = (e: Event): void => {
     if (this._isDisabled) return;
     const ke = e as KeyboardEvent;
@@ -749,13 +764,14 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** Clear button click handler */
+  /** @internal Clear button click handler */
   private _onClearClick = (e: Event): void => {
     e.stopPropagation();
     this.clear();
   };
 
   /**
+   * @internal
    * Render tick marks based on the tick-interval attribute.
    * Recreates the tick container if one already exists.
    */
@@ -800,6 +816,7 @@ export class CircaInputElement extends HTMLElement {
   }
 
   /**
+   * @internal
    * Update static ARIA attributes that depend on config.
    * Only called from connectedCallback/attributeChangedCallback since these don't change during drag.
    */
@@ -850,7 +867,7 @@ export class CircaInputElement extends HTMLElement {
     );
   }
 
-  /** Update the DOM to reflect the current value (position and value only; safe to call during drag) */
+  /** @internal Update the DOM to reflect the current value (position and value only; safe to call during drag) */
   private _render(): void {
     if (!this._valueEl) return;
 
@@ -922,7 +939,7 @@ export class CircaInputElement extends HTMLElement {
     this._updateFormValue();
   }
 
-  /** Set JSON value in FormData via ElementInternals */
+  /** @internal Set JSON value in FormData via ElementInternals */
   private _updateFormValue(): void {
     if (!this._internals) return;
 
@@ -944,7 +961,7 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** Fire change event (on operation complete) */
+  /** @internal Fire change event (on operation complete) */
   private _emitChange(): void {
     this.dispatchEvent(
       new CustomEvent("change", {
@@ -955,7 +972,7 @@ export class CircaInputElement extends HTMLElement {
     );
   }
 
-  /** Fire input event (real-time during operation) */
+  /** @internal Fire input event (real-time during operation) */
   private _emitInput(): void {
     this.dispatchEvent(
       new CustomEvent("input", {

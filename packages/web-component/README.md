@@ -66,6 +66,23 @@ document.querySelector("circa-input")
 
 ## CSS Custom Properties
 
+| Variable | Default | Description |
+|---|---|---|
+| `--circa-track-height` | `8px` | Track height |
+| `--circa-track-color` | `#e0e0e0` | Track background color |
+| `--circa-track-radius` | `4px` | Track border radius |
+| `--circa-value-color` | `#1976d2` | Value indicator color |
+| `--circa-margin-color` | `rgba(25,118,210,0.2)` | Margin area color |
+| `--circa-handle-size` | `20px` | Handle diameter |
+| `--circa-handle-color` | `#1976d2` | Handle color |
+| `--circa-clear-color` | `#bbb` | Clear button color |
+| `--circa-clear-hover-color` | `#888` | Clear button hover color |
+| `--circa-tick-height` | `6px` | Tick line height |
+| `--circa-tick-width` | `1px` | Tick line width |
+| `--circa-tick-color` | `#999` | Tick line color |
+| `--circa-tick-label-size` | `10px` | Tick label font size |
+| `--circa-tick-label-color` | `#666` | Tick label color |
+
 ```css
 circa-input {
   --circa-track-height: 8px;

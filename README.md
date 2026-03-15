@@ -1,5 +1,9 @@
 # circa-input
 
+[![npm](https://img.shields.io/npm/v/@circa-input/core)](https://www.npmjs.com/package/@circa-input/core)
+[![CI](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml/badge.svg)](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 [日本語](./README.ja.md)
 
 A UI primitive for entering a **value** and its **ambiguity** at the same time.
@@ -9,6 +13,10 @@ Traditional UIs force users to pick a single precise value — but people really
 > *circa* (Latin): "approximately"
 
 **[Live Demo](https://imotako-pum.github.io/circa-input/)** · **[React Demo](https://imotako-pum.github.io/circa-input/react/)**
+
+![circa-input demo](./docs/assets/demo.gif)
+
+![circa-input use cases](./docs/assets/demo-use-cases.png)
 
 ## Features
 
@@ -68,7 +76,7 @@ function App() {
     <CircaInput
       min={0}
       max={100}
-      onChange={(value) => console.log(value)}
+      onChange={(circaValue) => console.log(circaValue)}
     />
   );
 }
@@ -87,6 +95,9 @@ interface CircaValue {
   distributionParams: Record<string, unknown>;
 }
 ```
+
+> **Note:** `distribution` and `distributionParams` are reserved for future use.
+> In v0.1.x, they always default to `"normal"` and `{}` respectively and have no effect on behavior.
 
 **Example:** A user selects "around 14" with ±1 tolerance:
 
@@ -133,6 +144,25 @@ interface CircaValue {
 
 ## CSS Customization
 
+All 14 CSS Custom Properties:
+
+| Variable | Default | Description |
+|---|---|---|
+| `--circa-track-height` | `8px` | Track height |
+| `--circa-track-color` | `#e0e0e0` | Track background color |
+| `--circa-track-radius` | `4px` | Track border radius |
+| `--circa-value-color` | `#1976d2` | Value indicator color |
+| `--circa-margin-color` | `rgba(25,118,210,0.2)` | Margin area color |
+| `--circa-handle-size` | `20px` | Handle diameter |
+| `--circa-handle-color` | `#1976d2` | Handle color |
+| `--circa-clear-color` | `#bbb` | Clear button color |
+| `--circa-clear-hover-color` | `#888` | Clear button hover color |
+| `--circa-tick-height` | `6px` | Tick line height |
+| `--circa-tick-width` | `1px` | Tick line width |
+| `--circa-tick-color` | `#999` | Tick line color |
+| `--circa-tick-label-size` | `10px` | Tick label font size |
+| `--circa-tick-label-color` | `#666` | Tick label color |
+
 ```css
 circa-input {
   --circa-track-height: 8px;
@@ -144,8 +174,6 @@ circa-input {
   --circa-handle-color: #1976d2;
 }
 ```
-
-See [spec.md](./docs/spec.md) for the full list of CSS variables.
 
 ## Form Integration
 
@@ -184,6 +212,9 @@ pnpm build      # Build all packages
 pnpm test       # Run tests
 pnpm dev        # Watch mode
 pnpm lint       # Lint with Biome
+
+# Run demo locally
+pnpm --filter demo dev
 ```
 
 ## License
