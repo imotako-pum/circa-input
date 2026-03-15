@@ -52,6 +52,7 @@ const ATTR = {
   DISABLED: "disabled",
   NO_CLEAR: "no-clear",
   TICK_INTERVAL: "tick-interval",
+  ARIA_LABEL: "aria-label",
 } as const;
 
 /** List of observed HTML attributes */
@@ -379,6 +380,18 @@ export class CircaInputElement extends HTMLElement {
         ),
       );
       handled = true;
+    } else if (key === "PageUp") {
+      const largeStep = (this._config.max - this._config.min) * 0.1;
+      this._setValue(
+        updateValue(this._circaValue, { value: cv + largeStep }, this._config),
+      );
+      handled = true;
+    } else if (key === "PageDown") {
+      const largeStep = (this._config.max - this._config.min) * 0.1;
+      this._setValue(
+        updateValue(this._circaValue, { value: cv - largeStep }, this._config),
+      );
+      handled = true;
     } else if (key === "Delete" || key === "Backspace") {
       this.clear();
       handled = true;
@@ -627,11 +640,37 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** Update internal state and render. Skips rendering in controlled mode (rendered on attribute change). */
+  /** Update internal state and render. Skips full rendering in controlled mode (rendered on attribute change). */
   private _setValue(newValue: CircaValue): void {
     this._circaValue = newValue;
     if (!this._isControlled) {
       this._render();
+    } else {
+      // In controlled mode, still update ARIA attributes live during drag
+      this._updateAriaValues();
+    }
+  }
+
+  /** Update only ARIA attributes (for controlled mode live updates during drag) */
+  private _updateAriaValues(): void {
+    const { value, marginLow, marginHigh } = this._circaValue;
+    const low = marginLow ?? 0;
+    const high = marginHigh ?? 0;
+    if (value !== null) {
+      this._valueEl.setAttribute("aria-valuenow", String(value));
+      if (marginLow !== null || marginHigh !== null) {
+        if (!this._config.asymmetric && low === high) {
+          this._valueEl.setAttribute(
+            "aria-valuetext",
+            `${value}, plus or minus ${low}`,
+          );
+        } else {
+          this._valueEl.setAttribute(
+            "aria-valuetext",
+            `${value}, minus ${low}, plus ${high}`,
+          );
+        }
+      }
     }
   }
 
@@ -751,6 +790,27 @@ export class CircaInputElement extends HTMLElement {
 
     // Render tick marks
     this._renderTicks();
+
+    // Propagate host's aria-label to the Shadow DOM group
+    const container = this.shadowRoot?.querySelector(
+      "[part='container']",
+    ) as HTMLElement | null;
+    if (container) {
+      const hostLabel = this.getAttribute("aria-label");
+      container.setAttribute("aria-label", hostLabel ?? "circa input");
+    }
+
+    // Sync disabled state to ARIA
+    const disabled = this._isDisabled;
+    this._valueEl.setAttribute("aria-disabled", String(disabled));
+    this._handleLow.setAttribute("aria-disabled", String(disabled));
+    this._handleHigh.setAttribute("aria-disabled", String(disabled));
+    const clearBtn = this._clearArea.querySelector(
+      "[part='clear']",
+    ) as HTMLButtonElement | null;
+    if (clearBtn) {
+      clearBtn.disabled = disabled;
+    }
 
     // Accessibility for asymmetric handles
     const isAsymmetric = this._config.asymmetric;
