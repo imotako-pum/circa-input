@@ -22,9 +22,6 @@ export function detectLocale(): Locale {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === "ja" || stored === "en") return stored;
 
-  const navLang = navigator.language.split("-")[0];
-  if (navLang === "ja") return "ja";
-
   return "en";
 }
 
