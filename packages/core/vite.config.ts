@@ -8,6 +8,7 @@ export default defineConfig({
       formats: ["es", "cjs"],
       fileName: "index",
     },
+    sourcemap: true,
   },
   plugins: [dts({ rollupTypes: true })],
   test: {

@@ -123,6 +123,11 @@ Used when the component manages its own internal state.
 | `required` | boolean | false | Required validation |
 | `no-clear` | boolean | false | Hides the clear button |
 | `tick-interval` | number \| null | null | Tick mark interval (displays tick lines + numeric labels only when set) |
+| `disabled` | boolean | false | Disables the component (pointer-events: none, opacity: 0.5, ARIA disabled) |
+
+### Controlled Mode
+
+Controlled mode is activated when the `value` attribute is present on the element. In controlled mode, the component does not update its internal state on user interaction; instead, it fires events and expects the external owner to update the attributes. Note: setting only `margin-low` or `margin-high` without `value` does NOT activate controlled mode.
 
 ### Slots
 
@@ -301,7 +306,7 @@ Latest 2 versions of modern browsers only. No polyfills are used.
 | Package | Target (gzip) |
 |---------|---------------|
 | @circa-input/core | Under 2KB |
-| @circa-input/core + @circa-input/web-component | Under 8KB |
+| @circa-input/core + @circa-input/web-component | Under 5KB |
 
 ---
 

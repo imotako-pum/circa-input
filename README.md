@@ -66,8 +66,8 @@ interface CircaValue {
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `min` | number | *required* | Minimum selectable value |
-| `max` | number | *required* | Maximum selectable value |
+| `min` | number | 0 | Minimum selectable value |
+| `max` | number | 100 | Maximum selectable value |
 | `value` | number | null | Center value (controlled) |
 | `margin-low` | number | null | Lower margin (controlled) |
 | `margin-high` | number | null | Upper margin (controlled) |

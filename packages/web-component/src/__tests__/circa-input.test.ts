@@ -62,9 +62,9 @@ describe("CircaInputElement", () => {
       expect(value?.getAttribute("aria-valuemax")).toBe("100");
     });
 
-    it("aria-valuenow is empty string in initial state", () => {
+    it("aria-valuenow is removed in initial state (no value set)", () => {
       const value = el.shadowRoot?.querySelector("[part='value']");
-      expect(value?.getAttribute("aria-valuenow")).toBe("");
+      expect(value?.getAttribute("aria-valuenow")).toBeNull();
     });
 
     it("when not in asymmetric mode, handle-low/high have aria-hidden='true' and tabindex='-1'", () => {
@@ -1260,6 +1260,143 @@ describe("CircaInputElement", () => {
       const style = el.shadowRoot?.querySelector("style");
       expect(style).not.toBeNull();
       expect(style?.textContent).toContain("touch-action: none");
+    });
+  });
+
+  describe("track click", () => {
+    it("sets value on track pointerdown", () => {
+      const track = el.shadowRoot?.querySelector(
+        "[part='track']",
+      ) as HTMLElement;
+      // Simulate getBoundingClientRect for positioning
+      track.getBoundingClientRect = () =>
+        ({
+          left: 0,
+          width: 200,
+          top: 0,
+          height: 8,
+          right: 200,
+          bottom: 8,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        }) as DOMRect;
+
+      // Click at 50% of track (x=100 of 200px width)
+      track.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          clientX: 100,
+          bubbles: true,
+        }),
+      );
+
+      const valuenow = el.shadowRoot
+        ?.querySelector("[part='value']")
+        ?.getAttribute("aria-valuenow");
+      expect(valuenow).toBe("50");
+    });
+  });
+
+  describe("clear", () => {
+    it("clears value in uncontrolled mode", () => {
+      // Set a value first via removing and re-adding with default-value
+      el.remove();
+      el = document.createElement("circa-input");
+      el.setAttribute("min", "0");
+      el.setAttribute("max", "100");
+      el.setAttribute("default-value", "50");
+      document.body.appendChild(el);
+
+      const circaEl = el as unknown as {
+        readonly circaValue: { value: number | null };
+        clear(): void;
+      };
+      expect(circaEl.circaValue.value).toBe(50);
+
+      circaEl.clear();
+      expect(circaEl.circaValue.value).toBeNull();
+    });
+
+    it("fires change event in controlled mode", () => {
+      el.setAttribute("value", "50");
+
+      let eventFired = false;
+      el.addEventListener("change", () => {
+        eventFired = true;
+      });
+
+      const circaEl = el as unknown as { clear(): void };
+      circaEl.clear();
+      expect(eventFired).toBe(true);
+    });
+  });
+
+  describe("keyboard — additional keys", () => {
+    beforeEach(() => {
+      el.remove();
+      el = document.createElement("circa-input");
+      el.setAttribute("min", "0");
+      el.setAttribute("max", "100");
+      el.setAttribute("default-value", "50");
+      document.body.appendChild(el);
+    });
+
+    it("ArrowUp increases value", () => {
+      const value = el.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      value.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      const valuenow = Number(value.getAttribute("aria-valuenow"));
+      expect(valuenow).toBeGreaterThan(50);
+    });
+
+    it("ArrowDown decreases value", () => {
+      const value = el.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      value.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      const valuenow = Number(value.getAttribute("aria-valuenow"));
+      expect(valuenow).toBeLessThan(50);
+    });
+
+    it("Delete clears value", () => {
+      const value = el.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      value.dispatchEvent(new KeyboardEvent("keydown", { key: "Delete" }));
+      const circaEl = el as unknown as {
+        readonly circaValue: { value: number | null };
+      };
+      expect(circaEl.circaValue.value).toBeNull();
+    });
+
+    it("Backspace clears value", () => {
+      const value = el.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      value.dispatchEvent(new KeyboardEvent("keydown", { key: "Backspace" }));
+      const circaEl = el as unknown as {
+        readonly circaValue: { value: number | null };
+      };
+      expect(circaEl.circaValue.value).toBeNull();
+    });
+
+    it("PageUp increases value by 10% of range", () => {
+      const value = el.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      value.dispatchEvent(new KeyboardEvent("keydown", { key: "PageUp" }));
+      const valuenow = Number(value.getAttribute("aria-valuenow"));
+      expect(valuenow).toBe(60);
+    });
+
+    it("PageDown decreases value by 10% of range", () => {
+      const value = el.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      value.dispatchEvent(new KeyboardEvent("keydown", { key: "PageDown" }));
+      const valuenow = Number(value.getAttribute("aria-valuenow"));
+      expect(valuenow).toBe(40);
     });
   });
 });

@@ -300,4 +300,25 @@ describe("updateValue", () => {
       expect(updated.marginHigh).toBe(5); // unchanged
     });
   });
+
+  describe("symmetric mode with both marginLow and marginHigh", () => {
+    it("prefers marginLow when both are specified", () => {
+      const config = createDefaultConfig({ min: 0, max: 100 });
+      const current: CircaValue = {
+        value: 50,
+        marginLow: 5,
+        marginHigh: 5,
+        distribution: "normal",
+        distributionParams: {},
+      };
+      const updated = updateValue(
+        current,
+        { marginLow: 10, marginHigh: 20 },
+        config,
+      );
+      // In symmetric mode, marginLow is preferred and mirrored to marginHigh
+      expect(updated.marginLow).toBe(10);
+      expect(updated.marginHigh).toBe(10);
+    });
+  });
 });

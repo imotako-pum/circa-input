@@ -12,18 +12,27 @@
   },
   "keywords": [
     "circa-input",
+    "slider",
     "web-component",
     "custom-element",
+    "tolerance",
     "ambiguity",
-    "fuzzy-input",
+    "uncertainty",
+    "plus-minus",
     "range-input",
+    "form-component",
     "ui-primitive"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "sideEffects": true,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.iife.js",
+  "jsdelivr": "./dist/index.iife.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -35,7 +44,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.config.iife.ts",
     "test": "vitest run",
     "dev": "vite build --watch",
     "type-check": "tsc --noEmit"

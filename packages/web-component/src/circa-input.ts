@@ -8,6 +8,7 @@ import type { CircaInputConfig, CircaValue } from "@circa-input/core";
 import {
   CircaInputError,
   checkRequired,
+  clampMargins,
   createInitialValue,
   generateTicks,
   updateValue,
@@ -51,6 +52,7 @@ const ATTR = {
   DISABLED: "disabled",
   NO_CLEAR: "no-clear",
   TICK_INTERVAL: "tick-interval",
+  ARIA_LABEL: "aria-label",
 } as const;
 
 /** List of observed HTML attributes */
@@ -138,10 +140,13 @@ export class CircaInputElement extends HTMLElement {
   connectedCallback(): void {
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
-    this._circaValue = buildInitialValue(
-      (name) => this.getAttribute(name),
+    this._circaValue = clampMargins(
+      buildInitialValue(
+        (name) => this.getAttribute(name),
+        this._config,
+        this._isControlled,
+      ),
       this._config,
-      this._isControlled,
     );
     this._renderConfig();
     this._render();
@@ -221,12 +226,34 @@ export class CircaInputElement extends HTMLElement {
       _name === ATTR.MARGIN_HIGH
     ) {
       if (this._isControlled) {
-        this._circaValue = buildInitialValue(
-          (name) => this.getAttribute(name),
+        this._circaValue = clampMargins(
+          buildInitialValue(
+            (name) => this.getAttribute(name),
+            this._config,
+            true,
+          ),
           this._config,
-          true,
         );
       }
+    }
+
+    // Handle default-* attributes set after connectedCallback
+    // (e.g., React sets attributes after DOM insertion)
+    if (
+      (_name === ATTR.DEFAULT_VALUE ||
+        _name === ATTR.DEFAULT_MARGIN_LOW ||
+        _name === ATTR.DEFAULT_MARGIN_HIGH) &&
+      !this._isControlled &&
+      this._circaValue.value === null
+    ) {
+      this._circaValue = clampMargins(
+        buildInitialValue(
+          (name) => this.getAttribute(name),
+          this._config,
+          false,
+        ),
+        this._config,
+      );
     }
 
     this._renderConfig();
@@ -370,6 +397,18 @@ export class CircaInputElement extends HTMLElement {
           { value: this._config.max },
           this._config,
         ),
+      );
+      handled = true;
+    } else if (key === "PageUp") {
+      const largeStep = (this._config.max - this._config.min) * 0.1;
+      this._setValue(
+        updateValue(this._circaValue, { value: cv + largeStep }, this._config),
+      );
+      handled = true;
+    } else if (key === "PageDown") {
+      const largeStep = (this._config.max - this._config.min) * 0.1;
+      this._setValue(
+        updateValue(this._circaValue, { value: cv - largeStep }, this._config),
       );
       handled = true;
     } else if (key === "Delete" || key === "Backspace") {
@@ -620,11 +659,42 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** Update internal state and render. Skips rendering in controlled mode (rendered on attribute change). */
+  /** Update internal state and render. Skips full rendering in controlled mode (rendered on attribute change). */
   private _setValue(newValue: CircaValue): void {
     this._circaValue = newValue;
     if (!this._isControlled) {
       this._render();
+    } else {
+      // In controlled mode, still update ARIA attributes live during drag
+      this._updateAriaValues();
+    }
+  }
+
+  /** Update ARIA value attributes (aria-valuenow / aria-valuetext). Single source of truth. */
+  private _updateAriaValues(): void {
+    const { value, marginLow, marginHigh } = this._circaValue;
+    if (value !== null) {
+      this._valueEl.setAttribute("aria-valuenow", String(value));
+      if (marginLow !== null || marginHigh !== null) {
+        const low = marginLow ?? 0;
+        const high = marginHigh ?? 0;
+        if (!this._config.asymmetric && low === high) {
+          this._valueEl.setAttribute(
+            "aria-valuetext",
+            `${value}, plus or minus ${low}`,
+          );
+        } else {
+          this._valueEl.setAttribute(
+            "aria-valuetext",
+            `${value}, minus ${low}, plus ${high}`,
+          );
+        }
+      } else {
+        this._valueEl.removeAttribute("aria-valuetext");
+      }
+    } else {
+      this._valueEl.removeAttribute("aria-valuenow");
+      this._valueEl.removeAttribute("aria-valuetext");
     }
   }
 
@@ -745,6 +815,27 @@ export class CircaInputElement extends HTMLElement {
     // Render tick marks
     this._renderTicks();
 
+    // Propagate host's aria-label to the Shadow DOM group
+    const container = this.shadowRoot?.querySelector(
+      "[part='container']",
+    ) as HTMLElement | null;
+    if (container) {
+      const hostLabel = this.getAttribute("aria-label");
+      container.setAttribute("aria-label", hostLabel ?? "circa input");
+    }
+
+    // Sync disabled state to ARIA
+    const disabled = this._isDisabled;
+    this._valueEl.setAttribute("aria-disabled", String(disabled));
+    this._handleLow.setAttribute("aria-disabled", String(disabled));
+    this._handleHigh.setAttribute("aria-disabled", String(disabled));
+    const clearBtn = this._clearArea.querySelector(
+      "[part='clear']",
+    ) as HTMLButtonElement | null;
+    if (clearBtn) {
+      clearBtn.disabled = disabled;
+    }
+
     // Accessibility for asymmetric handles
     const isAsymmetric = this._config.asymmetric;
     this._handleLow.setAttribute("tabindex", isAsymmetric ? "0" : "-1");
@@ -766,24 +857,23 @@ export class CircaInputElement extends HTMLElement {
     const { value, marginLow, marginHigh } = this._circaValue;
     const { min, max } = this._config;
 
-    // Update aria-valuenow
-    this._valueEl.setAttribute(
-      "aria-valuenow",
-      value !== null ? String(value) : "",
-    );
+    // Common margin calculations
+    const low = marginLow ?? 0;
+    const high = marginHigh ?? 0;
+
+    // Update ARIA attributes (single source of truth)
+    this._updateAriaValues();
 
     // Value indicator position
     if (value !== null) {
       const percent = valueToPercent(value, min, max);
       this._valueEl.style.left = `${percent}%`;
-      this._valueEl.style.display = "";
+      this._valueEl.classList.remove("unset");
     } else {
-      this._valueEl.style.display = "none";
+      // Show thumb at center even when unset so keyboard users can focus it
+      this._valueEl.style.left = "50%";
+      this._valueEl.classList.add("unset");
     }
-
-    // Common margin calculations
-    const low = marginLow ?? 0;
-    const high = marginHigh ?? 0;
 
     // Render margin band
     if (value !== null && (marginLow !== null || marginHigh !== null)) {

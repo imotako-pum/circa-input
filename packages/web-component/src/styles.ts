@@ -63,6 +63,11 @@ export const STYLES = `
   z-index: 2;
 }
 
+[part="value"].unset {
+  opacity: 0.4;
+  cursor: pointer;
+}
+
 [part="value"]:focus-visible {
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
 }
@@ -75,8 +80,8 @@ export const STYLES = `
 [part="handle-high"] {
   position: absolute;
   top: 50%;
-  width: calc(var(--circa-handle-size, 20px) * 0.7);
-  height: calc(var(--circa-handle-size, 20px) * 0.7);
+  width: calc(var(--circa-handle-size, 20px) * 0.85);
+  height: calc(var(--circa-handle-size, 20px) * 0.85);
   background: var(--circa-handle-color, #1976d2);
   border-radius: 50%;
   transform: translate(-50%, -50%);
@@ -154,6 +159,34 @@ export const STYLES = `
 /* Custom button passed via slot */
 ::slotted([slot="clear"]) {
   cursor: pointer;
+}
+
+/* High contrast mode */
+@media (forced-colors: active) {
+  [part="track"] {
+    background: ButtonFace;
+    border: 1px solid ButtonText;
+  }
+  [part="margin"] {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+  [part="value"] { background: ButtonText; }
+  [part="handle-low"],
+  [part="handle-high"] { background: Highlight; }
+  [part="clear"] {
+    background: ButtonText;
+    color: ButtonFace;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Tick Marks */

@@ -30,8 +30,8 @@ function App() {
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `min` | number | Minimum value (required) |
-| `max` | number | Maximum value (required) |
+| `min` | number | Minimum value (defaults to 0) |
+| `max` | number | Maximum value (defaults to 100) |
 | `value` | number | Center value (controlled) |
 | `marginLow` | number | Lower margin (controlled) |
 | `marginHigh` | number | Upper margin (controlled) |
@@ -48,6 +48,37 @@ function App() {
 | `disabled` | boolean | Disable interaction |
 | `onChange` | (value: CircaValue) => void | Change handler |
 | `onInput` | (value: CircaValue) => void | Input handler |
+
+## Controlled Mode
+
+```tsx
+import { useState } from "react";
+import { CircaInput, type CircaValue } from "@circa-input/react";
+
+function App() {
+  const [circa, setCirca] = useState<CircaValue | null>(null);
+
+  return (
+    <CircaInput
+      min={0}
+      max={100}
+      value={circa?.value ?? undefined}
+      marginLow={circa?.marginLow ?? undefined}
+      marginHigh={circa?.marginHigh ?? undefined}
+      onChange={setCirca}
+    />
+  );
+}
+```
+
+## SSR / Server Components
+
+This package imports `@circa-input/web-component`, which registers a custom element via `customElements.define()`. This runs only in browser environments. For Next.js App Router, ensure this component is used in a Client Component:
+
+```tsx
+"use client";
+import { CircaInput } from "@circa-input/react";
+```
 
 ## Ref API
 

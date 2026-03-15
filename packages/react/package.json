@@ -13,12 +13,20 @@
   "keywords": [
     "circa-input",
     "react",
+    "slider",
+    "tolerance",
     "ambiguity",
-    "fuzzy-input",
+    "uncertainty",
+    "plus-minus",
     "range-input",
+    "react-component",
+    "form-input",
     "ui-primitive"
   ],
-  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": true,
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

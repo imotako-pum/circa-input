@@ -12,10 +12,20 @@ npm install @circa-input/web-component
 
 ## Usage
 
+### With a bundler
+
 ```html
 <script type="module">
   import "@circa-input/web-component";
 </script>
+
+<circa-input min="0" max="100"></circa-input>
+```
+
+### Via CDN (no build tools)
+
+```html
+<script src="https://unpkg.com/@circa-input/web-component@0.1.0/dist/index.iife.js"></script>
 
 <circa-input min="0" max="100"></circa-input>
 ```
@@ -32,8 +42,8 @@ document.querySelector("circa-input")
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `min` | number | *required* | Minimum value |
-| `max` | number | *required* | Maximum value |
+| `min` | number | 0 | Minimum value |
+| `max` | number | 100 | Maximum value |
 | `value` | number | null | Center value (controlled) |
 | `margin-low` | number | null | Lower margin (controlled) |
 | `margin-high` | number | null | Upper margin (controlled) |

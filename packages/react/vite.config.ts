@@ -8,6 +8,7 @@ export default defineConfig({
       formats: ["es", "cjs"],
       fileName: "index",
     },
+    sourcemap: true,
     rollupOptions: {
       external: [
         "@circa-input/core",

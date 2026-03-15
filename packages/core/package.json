@@ -12,12 +12,18 @@
   },
   "keywords": [
     "circa-input",
+    "slider",
+    "tolerance",
     "ambiguity",
-    "fuzzy-input",
-    "range-input",
     "uncertainty",
+    "plus-minus",
+    "range-input",
+    "form-input",
     "ui-primitive"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.cjs",
