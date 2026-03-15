@@ -5,6 +5,7 @@ export { CircaInputError } from "./errors.js";
 // Helpers
 export {
   clamp,
+  generateTicks,
   percentToValue,
   toPlainValue,
   valueToPercent,

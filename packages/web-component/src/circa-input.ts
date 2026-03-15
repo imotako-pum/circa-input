@@ -9,6 +9,7 @@ import {
   CircaInputError,
   checkRequired,
   createInitialValue,
+  generateTicks,
   updateValue,
   validateConfig,
 } from "@circa-input/core";
@@ -49,6 +50,7 @@ const ATTR = {
   REQUIRED: "required",
   DISABLED: "disabled",
   NO_CLEAR: "no-clear",
+  TICK_INTERVAL: "tick-interval",
 } as const;
 
 /** 監視対象のHTML属性一覧 */
@@ -73,6 +75,7 @@ export class CircaInputElement extends HTMLElement {
   private _config!: CircaInputConfig;
 
   /** Shadow DOM要素への参照 */
+  private _trackArea!: HTMLElement;
   private _track!: HTMLElement;
   private _valueEl!: HTMLElement;
   private _marginEl!: HTMLElement;
@@ -123,6 +126,7 @@ export class CircaInputElement extends HTMLElement {
     shadow.appendChild(template.content.cloneNode(true));
 
     // 要素キャッシュ（見つからなければCircaInputErrorをthrow）
+    this._trackArea = queryRequired(shadow, "[part='track-area']");
     this._track = queryRequired(shadow, "[part='track']");
     this._valueEl = queryRequired(shadow, "[part='value']");
     this._marginEl = queryRequired(shadow, "[part='margin']");
@@ -682,6 +686,50 @@ export class CircaInputElement extends HTMLElement {
   };
 
   /**
+   * tick-interval属性に基づいて目盛りを描画する。
+   * 既存の目盛りコンテナがあれば再作成する。
+   */
+  private _renderTicks(): void {
+    // 既存の目盛りコンテナを削除
+    const existing = this._trackArea.querySelector("[part='ticks']");
+    if (existing) existing.remove();
+
+    // tick-interval属性をパース
+    const tickIntervalStr = this.getAttribute(ATTR.TICK_INTERVAL);
+    if (tickIntervalStr === null) return;
+
+    const tickInterval = Number(tickIntervalStr);
+    const { min, max } = this._config;
+    const ticks = generateTicks(min, max, tickInterval);
+    if (ticks.length === 0) return;
+
+    // 目盛りコンテナを作成
+    const container = document.createElement("div");
+    container.setAttribute("part", "ticks");
+    container.setAttribute("aria-hidden", "true");
+
+    for (const tick of ticks) {
+      const percent = valueToPercent(tick, min, max);
+      const tickEl = document.createElement("div");
+      tickEl.className = "circa-tick";
+      tickEl.style.left = `${percent}%`;
+
+      const line = document.createElement("div");
+      line.className = "circa-tick-line";
+
+      const label = document.createElement("span");
+      label.className = "circa-tick-label";
+      label.textContent = String(tick);
+
+      tickEl.appendChild(line);
+      tickEl.appendChild(label);
+      container.appendChild(tickEl);
+    }
+
+    this._trackArea.appendChild(container);
+  }
+
+  /**
    * config依存の静的ARIA属性を更新する。
    * ドラッグ中には変わらないため、connectedCallback/attributeChangedCallbackでのみ呼ぶ。
    */
@@ -693,6 +741,9 @@ export class CircaInputElement extends HTMLElement {
     // valueスライダーの範囲ARIA
     this._valueEl.setAttribute("aria-valuemin", String(min));
     this._valueEl.setAttribute("aria-valuemax", String(max));
+
+    // 目盛り描画
+    this._renderTicks();
 
     // 非対称ハンドルのアクセシビリティ
     const isAsymmetric = this._config.asymmetric;

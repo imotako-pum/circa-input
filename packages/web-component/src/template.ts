@@ -16,7 +16,8 @@ export function createTemplate(): HTMLTemplateElement {
 
   const template = document.createElement("template");
   // 静的な固定HTML文字列のみ使用（ユーザー入力は含まない）
-  template.innerHTML = `<div part="container" role="group" aria-label="circa input"><div part="track"><div part="margin" aria-hidden="true"></div><div part="value" role="slider" tabindex="0" aria-label="center value" aria-valuenow="" aria-valuemin="" aria-valuemax=""></div><div part="handle-low" role="slider" tabindex="-1" aria-label="lower margin" aria-hidden="true"></div><div part="handle-high" role="slider" tabindex="-1" aria-label="upper margin" aria-hidden="true"></div></div><div part="clear-area"><slot name="clear"><button part="clear" type="button" aria-label="clear value">\u00D7</button></slot></div></div>`;
+  // track-area は track と目盛り（ticks）のコンテナ。目盛りはJSで動的追加される。
+  template.innerHTML = `<div part="container" role="group" aria-label="circa input"><div part="track-area"><div part="track"><div part="margin" aria-hidden="true"></div><div part="value" role="slider" tabindex="0" aria-label="center value" aria-valuenow="" aria-valuemin="" aria-valuemax=""></div><div part="handle-low" role="slider" tabindex="-1" aria-label="lower margin" aria-hidden="true"></div><div part="handle-high" role="slider" tabindex="-1" aria-label="upper margin" aria-hidden="true"></div></div></div><div part="clear-area"><slot name="clear"><button part="clear" type="button" aria-label="clear value">\u00D7</button></slot></div></div>`;
 
   const style = document.createElement("style");
   style.textContent = STYLES;

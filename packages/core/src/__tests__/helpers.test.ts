@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { percentToValue, toPlainValue, valueToPercent } from "../helpers.js";
+import {
+  generateTicks,
+  percentToValue,
+  toPlainValue,
+  valueToPercent,
+} from "../helpers.js";
 import type { CircaValue } from "../types.js";
 
 describe("toPlainValue", () => {
@@ -63,5 +68,60 @@ describe("percentToValue", () => {
 
   it("カスタム範囲で正しく計算する", () => {
     expect(percentToValue(50, 10, 20)).toBe(15);
+  });
+});
+
+describe("generateTicks", () => {
+  it("基本的な目盛り生成（0〜100、間隔25）", () => {
+    expect(generateTicks(0, 100, 25)).toEqual([0, 25, 50, 75, 100]);
+  });
+
+  it("maxがtickIntervalの倍数でない場合、maxを追加する", () => {
+    expect(generateTicks(0, 100, 30)).toEqual([0, 30, 60, 90, 100]);
+  });
+
+  it("tickInterval <= 0 の場合は空配列", () => {
+    expect(generateTicks(0, 100, 0)).toEqual([]);
+    expect(generateTicks(0, 100, -10)).toEqual([]);
+  });
+
+  it("tickIntervalが非有限値の場合は空配列", () => {
+    expect(generateTicks(0, 100, Infinity)).toEqual([]);
+    expect(generateTicks(0, 100, NaN)).toEqual([]);
+  });
+
+  it("min >= max の場合は空配列", () => {
+    expect(generateTicks(100, 0, 25)).toEqual([]);
+    expect(generateTicks(50, 50, 10)).toEqual([]);
+  });
+
+  it("目盛り数が50を超える場合は空配列（パフォーマンス保護）", () => {
+    // 0〜100, interval=1 → 101目盛り > 50
+    expect(generateTicks(0, 100, 1)).toEqual([]);
+  });
+
+  it("目盛り数がちょうど50の場合は生成する", () => {
+    // 0〜49, interval=1 → 50目盛り
+    const ticks = generateTicks(0, 49, 1);
+    expect(ticks.length).toBe(50);
+    expect(ticks[0]).toBe(0);
+    expect(ticks[49]).toBe(49);
+  });
+
+  it("浮動小数点のtickIntervalで精度が保たれる", () => {
+    expect(generateTicks(0, 1, 0.25)).toEqual([0, 0.25, 0.5, 0.75, 1]);
+  });
+
+  it("min/maxが非有限値の場合は空配列", () => {
+    expect(generateTicks(NaN, 100, 25)).toEqual([]);
+    expect(generateTicks(0, Infinity, 25)).toEqual([]);
+  });
+
+  it("tickInterval == range の場合はminとmaxの2つ", () => {
+    expect(generateTicks(0, 100, 100)).toEqual([0, 100]);
+  });
+
+  it("tickInterval > range の場合はminとmaxの2つ", () => {
+    expect(generateTicks(0, 100, 200)).toEqual([0, 100]);
   });
 });

@@ -1105,6 +1105,85 @@ describe("CircaInputElement", () => {
     });
   });
 
+  describe("目盛り（tick-interval）", () => {
+    it("tick-interval未設定時は目盛りが表示されない", () => {
+      const ticks = el.shadowRoot?.querySelector("[part='ticks']");
+      expect(ticks).toBeNull();
+    });
+
+    it("tick-interval設定時に目盛りが表示される", () => {
+      el.setAttribute("tick-interval", "25");
+
+      const ticks = el.shadowRoot?.querySelector("[part='ticks']");
+      expect(ticks).not.toBeNull();
+      expect(ticks?.getAttribute("aria-hidden")).toBe("true");
+
+      // 0, 25, 50, 75, 100 → 5つの目盛り
+      const tickElements = ticks?.querySelectorAll(".circa-tick");
+      expect(tickElements?.length).toBe(5);
+    });
+
+    it("目盛りラベルに正しい値が表示される", () => {
+      el.setAttribute("tick-interval", "25");
+
+      const labels = el.shadowRoot?.querySelectorAll(".circa-tick-label");
+      const values = Array.from(labels ?? []).map((l) => l.textContent);
+      expect(values).toEqual(["0", "25", "50", "75", "100"]);
+    });
+
+    it("目盛り位置がパーセントで正しく設定される", () => {
+      el.setAttribute("tick-interval", "50");
+
+      const tickElements = el.shadowRoot?.querySelectorAll(".circa-tick");
+      const positions = Array.from(tickElements ?? []).map(
+        (t) => (t as HTMLElement).style.left,
+      );
+      expect(positions).toEqual(["0%", "50%", "100%"]);
+    });
+
+    it("tick-intervalを後から変更すると目盛りが更新される", () => {
+      el.setAttribute("tick-interval", "25");
+      let ticks = el.shadowRoot?.querySelectorAll(".circa-tick");
+      expect(ticks?.length).toBe(5);
+
+      el.setAttribute("tick-interval", "50");
+      ticks = el.shadowRoot?.querySelectorAll(".circa-tick");
+      expect(ticks?.length).toBe(3);
+    });
+
+    it("tick-intervalを削除すると目盛りが消える", () => {
+      el.setAttribute("tick-interval", "25");
+      expect(el.shadowRoot?.querySelector("[part='ticks']")).not.toBeNull();
+
+      el.removeAttribute("tick-interval");
+      expect(el.shadowRoot?.querySelector("[part='ticks']")).toBeNull();
+    });
+
+    it("無効なtick-interval（0以下）では目盛りが表示されない", () => {
+      el.setAttribute("tick-interval", "0");
+      expect(el.shadowRoot?.querySelector("[part='ticks']")).toBeNull();
+
+      el.setAttribute("tick-interval", "-10");
+      expect(el.shadowRoot?.querySelector("[part='ticks']")).toBeNull();
+    });
+
+    it("maxがtickIntervalの倍数でない場合、maxも目盛りに含まれる", () => {
+      el.setAttribute("tick-interval", "30");
+
+      const labels = el.shadowRoot?.querySelectorAll(".circa-tick-label");
+      const values = Array.from(labels ?? []).map((l) => l.textContent);
+      expect(values).toEqual(["0", "30", "60", "90", "100"]);
+    });
+
+    it("track-area内にtickコンテナが配置される", () => {
+      el.setAttribute("tick-interval", "25");
+
+      const trackArea = el.shadowRoot?.querySelector("[part='track-area']");
+      const ticks = trackArea?.querySelector("[part='ticks']");
+      expect(ticks).not.toBeNull();
+    });
+  });
+
   describe("バリデーション", () => {
     it("min >= max の場合にCircaInputErrorをthrowする", () => {
       const el2 = document.createElement("circa-input");

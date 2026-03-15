@@ -27,8 +27,13 @@ export const STYLES = `
   padding: calc(var(--circa-handle-size, 20px) / 2) 0;
 }
 
-[part="track"] {
+[part="track-area"] {
   flex: 1;
+  position: relative;
+}
+
+[part="track"] {
+  width: 100%;
   position: relative;
   height: var(--circa-track-height, 8px);
   background: var(--circa-track-color, #e0e0e0);
@@ -149,5 +154,36 @@ export const STYLES = `
 /* スロット経由で渡されたカスタムボタン */
 ::slotted([slot="clear"]) {
   cursor: pointer;
+}
+
+/* 目盛り（Tick Marks） */
+[part="ticks"] {
+  position: relative;
+  width: 100%;
+  height: calc(var(--circa-tick-height, 6px) + var(--circa-tick-label-size, 10px) + 4px);
+  pointer-events: none;
+  overflow: visible;
+}
+
+[part="ticks"] .circa-tick {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+[part="ticks"] .circa-tick-line {
+  width: var(--circa-tick-width, 1px);
+  height: var(--circa-tick-height, 6px);
+  background: var(--circa-tick-color, #999);
+}
+
+[part="ticks"] .circa-tick-label {
+  font-size: var(--circa-tick-label-size, 10px);
+  color: var(--circa-tick-label-color, #666);
+  line-height: 1;
+  margin-top: 2px;
+  white-space: nowrap;
 }
 `;

@@ -120,6 +120,16 @@ core完成  WC動作        デモ公開    React対応     npm公開準備
 - package.jsonのmetadata整備（license, repository, keywords等）
 - CHANGELOG / README
 - CI（lint + test + build）
+- [ ] デモサイト日英両対応
+  - i18n モジュール（言語切替、翻訳オブジェクト、`t()` 関数）
+  - HTML の `data-i18n` 属性化 + `translatePage()` 関数
+  - 言語切替 UI（EN / JA トグル）
+  - フォーマッター文字列のロケール対応（format.ts）
+  - セクションモジュールの動的文字列対応
+  - テスト更新（en ロケール用テスト追加）
+- [ ] ソースコードコメント英語化（JSDoc・インラインコメント・テスト description）
+- [ ] ドキュメント英語化（spec.md, ROADMAP.md, CONTRIB.md）
+  - CLAUDE.md は日本語のまま維持
 
 **完了条件**:
 - `pnpm build && pnpm test` が全パッケージで成功

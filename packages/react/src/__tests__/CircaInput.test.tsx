@@ -335,6 +335,33 @@ describe("CircaInput", () => {
     });
   });
 
+  describe("tickInterval", () => {
+    it("tickInterval が tick-interval 属性に変換される", () => {
+      const { container } = render(
+        <CircaInput min={0} max={100} tickInterval={25} />,
+      );
+      const el = container.querySelector("circa-input")!;
+      expect(el.getAttribute("tick-interval")).toBe("25");
+    });
+
+    it("tickInterval 未指定時は tick-interval 属性がない", () => {
+      const { container } = render(<CircaInput min={0} max={100} />);
+      const el = container.querySelector("circa-input")!;
+      expect(el.hasAttribute("tick-interval")).toBe(false);
+    });
+
+    it("tickInterval を動的に変更すると属性が更新される", () => {
+      const { container, rerender } = render(
+        <CircaInput min={0} max={100} tickInterval={25} />,
+      );
+      const el = container.querySelector("circa-input")!;
+      expect(el.getAttribute("tick-interval")).toBe("25");
+
+      rerender(<CircaInput min={0} max={100} tickInterval={50} />);
+      expect(el.getAttribute("tick-interval")).toBe("50");
+    });
+  });
+
   describe("props 更新", () => {
     it("min/max を動的に変更すると属性が更新される", () => {
       const { container, rerender } = render(<CircaInput min={0} max={100} />);

@@ -39,6 +39,7 @@ const PROP_TO_ATTR: Record<string, string> = {
   distribution: "distribution",
   step: "step",
   name: "name",
+  tickInterval: "tick-interval",
 };
 
 /** boolean属性のマッピング（true→属性あり、false/undefined→属性なし） */

@@ -47,6 +47,8 @@ export interface CircaInputProps {
   disabled?: boolean;
   /** クリアボタンを非表示にする */
   noClear?: boolean;
+  /** 目盛りの間隔（設定時のみ目盛りを表示） */
+  tickInterval?: number;
 
   // --- イベント ---
   /** 操作完了時に発火（CircaValueを直接受け取る） */
