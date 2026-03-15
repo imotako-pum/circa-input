@@ -3,32 +3,14 @@
  *
  * Web Component内でピクセル座標⇔値の変換を行う。
  * DOM要素には依存しない純粋関数として実装し、テスタビリティを確保する。
+ *
+ * valueToPercent / percentToValue は @circa-input/core に定義されており、
+ * ここからre-exportしている。
  */
 
-/**
- * 値をパーセント位置（0〜100）に変換する。
- * トラック上のインジケータ位置の計算に使う。
- */
-export function valueToPercent(
-  value: number,
-  min: number,
-  max: number,
-): number {
-  if (max === min) return 0;
-  return ((value - min) / (max - min)) * 100;
-}
+import { clamp } from "@circa-input/core";
 
-/**
- * パーセント位置（0〜100）を値に変換する。
- * クリック位置から値を算出するのに使う。
- */
-export function percentToValue(
-  percent: number,
-  min: number,
-  max: number,
-): number {
-  return (percent / 100) * (max - min) + min;
-}
+export { clamp, percentToValue, valueToPercent } from "@circa-input/core";
 
 /**
  * クライアントX座標をトラック上のパーセント位置に変換する。
@@ -41,5 +23,5 @@ export function clientXToPercent(
 ): number {
   if (trackWidth <= 0) return 0;
   const raw = ((clientX - trackLeft) / trackWidth) * 100;
-  return Math.min(Math.max(raw, 0), 100);
+  return clamp(raw, 0, 100);
 }

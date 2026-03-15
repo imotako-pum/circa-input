@@ -688,6 +688,118 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.marginLow).toBe(10);
       expect(circaEl.circaValue.marginHigh).toBe(20);
     });
+
+    // --- 中央つまみドラッグ（方向ロック）テスト用ヘルパー ---
+    function setupAsymmetric(
+      target: HTMLElement,
+      margins: { low: number; high: number },
+    ): void {
+      target.setAttribute("asymmetric", "");
+      target.setAttribute("default-value", "50");
+      target.setAttribute("default-margin-low", String(margins.low));
+      target.setAttribute("default-margin-high", String(margins.high));
+      target.remove();
+      document.body.appendChild(target);
+    }
+
+    function getValueSlider(target: HTMLElement): HTMLElement {
+      return target.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+    }
+
+    function pointerEvent(
+      type: string,
+      x: number,
+      y: number,
+    ): PointerEvent {
+      return new PointerEvent(type, {
+        clientX: x,
+        clientY: y,
+        pointerId: 1,
+        bubbles: true,
+      });
+    }
+
+    function getMargins(target: HTMLElement): {
+      marginLow: number | null;
+      marginHigh: number | null;
+    } {
+      return (
+        target as unknown as {
+          readonly circaValue: {
+            marginLow: number | null;
+            marginHigh: number | null;
+          };
+        }
+      ).circaValue;
+    }
+
+    it("中央つまみの下ドラッグでmarginHighのみ増加する（marginLowは変化しない）", () => {
+      setupAsymmetric(el, { low: 10, high: 20 });
+      const slider = getValueSlider(el);
+
+      slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 150));
+
+      const { marginLow, marginHigh } = getMargins(el);
+      expect(marginHigh).toBeGreaterThan(20);
+      expect(marginLow).toBe(10);
+    });
+
+    it("中央つまみの上ドラッグでmarginLowのみ増加する（marginHighは変化しない）", () => {
+      setupAsymmetric(el, { low: 10, high: 20 });
+      const slider = getValueSlider(el);
+
+      slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 50));
+
+      const { marginLow, marginHigh } = getMargins(el);
+      expect(marginLow).toBeGreaterThan(10);
+      expect(marginHigh).toBe(20);
+    });
+
+    it("下ドラッグ後に戻してmarginHighを縮小できる（0でクランプ）", () => {
+      setupAsymmetric(el, { low: 10, high: 3 });
+      const slider = getValueSlider(el);
+
+      slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
+      // まず下に動かしてmarginHighをロック
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 110));
+      // 大きく上に戻す（開始点を超えて上へ → marginHighが縮小、0でクランプ）
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 0));
+
+      const { marginLow, marginHigh } = getMargins(el);
+      expect(marginHigh).toBe(0);
+      expect(marginLow).toBe(10);
+    });
+
+    it("上ドラッグ後に戻してmarginLowを縮小できる（0でクランプ）", () => {
+      setupAsymmetric(el, { low: 3, high: 20 });
+      const slider = getValueSlider(el);
+
+      slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
+      // まず上に動かしてmarginLowをロック
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 90));
+      // 大きく下に戻す（開始点を超えて下へ → marginLowが縮小、0でクランプ）
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 200));
+
+      const { marginLow, marginHigh } = getMargins(el);
+      expect(marginLow).toBe(0);
+      expect(marginHigh).toBe(20);
+    });
+
+    it("閾値未満の縦移動ではマージンが変化しない", () => {
+      setupAsymmetric(el, { low: 10, high: 20 });
+      const slider = getValueSlider(el);
+
+      slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
+      slider.dispatchEvent(pointerEvent("pointermove", 100, 104));
+
+      const { marginLow, marginHigh } = getMargins(el);
+      expect(marginLow).toBe(10);
+      expect(marginHigh).toBe(20);
+    });
   });
 
   describe("非対称ハンドルのキーボード操作", () => {

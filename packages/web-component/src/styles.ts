@@ -22,10 +22,13 @@ export const STYLES = `
 
 [part="container"] {
   position: relative;
+  display: flex;
+  align-items: center;
   padding: calc(var(--circa-handle-size, 20px) / 2) 0;
 }
 
 [part="track"] {
+  flex: 1;
   position: relative;
   height: var(--circa-track-height, 8px);
   background: var(--circa-track-color, #e0e0e0);
@@ -74,7 +77,7 @@ export const STYLES = `
   transform: translate(-50%, -50%);
   cursor: ew-resize;
   outline: none;
-  z-index: 1;
+  z-index: 3;
   display: none;
 }
 
@@ -83,8 +86,68 @@ export const STYLES = `
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
 }
 
+/* ハンドルのヒットエリアを拡大。margin=0で値つまみと重なってもクリック可能にする */
+[part="handle-low"]::before,
+[part="handle-high"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--circa-handle-size, 20px) * 1.5);
+  height: calc(var(--circa-handle-size, 20px) * 1.5);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
 :host([asymmetric]) [part="handle-low"],
 :host([asymmetric]) [part="handle-high"] {
   display: block;
+}
+
+/* クリアエリア: slotのラッパー */
+[part="clear-area"] {
+  margin-left: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* 値がないとき（JSでクラス付与） */
+[part="clear-area"].inactive {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* no-clear属性でエリア全体を非表示 */
+:host([no-clear]) [part="clear-area"] {
+  display: none;
+}
+
+/* デフォルトの×ボタン（fallback slot内） */
+[part="clear"] {
+  width: calc(var(--circa-handle-size, 20px) * 0.8);
+  height: calc(var(--circa-handle-size, 20px) * 0.8);
+  border: none;
+  background: var(--circa-clear-color, #999);
+  color: #fff;
+  border-radius: 50%;
+  font-size: calc(var(--circa-handle-size, 20px) * 0.5);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+[part="clear"]:hover {
+  background: var(--circa-clear-hover-color, #666);
+}
+
+[part="clear"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
+  outline: none;
+}
+
+/* スロット経由で渡されたカスタムボタン */
+::slotted([slot="clear"]) {
+  cursor: pointer;
 }
 `;
