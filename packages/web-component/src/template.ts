@@ -1,22 +1,22 @@
 /**
- * Shadow DOM HTMLテンプレート構築
+ * Shadow DOM HTML template construction
  */
 import { STYLES } from "./styles.js";
 
 /**
- * キャッシュされたテンプレート。初回のみ生成し、以降はcloneNodeで再利用する。
- * NOTE: innerHTML は静的な固定文字列のみを使用しており、
- * ユーザー入力は含まれないためXSSリスクはない。
+ * Cached template. Created once on first use and reused via cloneNode.
+ * NOTE: innerHTML uses only static fixed strings and does not include
+ * user input, so there is no XSS risk.
  */
 let cachedTemplate: HTMLTemplateElement | null = null;
 
-/** Shadow DOMの初期HTMLテンプレートを返す。モジュールスコープでキャッシュし再利用する。 */
+/** Return the initial HTML template for the Shadow DOM. Cached at module scope for reuse. */
 export function createTemplate(): HTMLTemplateElement {
   if (cachedTemplate) return cachedTemplate;
 
   const template = document.createElement("template");
-  // 静的な固定HTML文字列のみ使用（ユーザー入力は含まない）
-  // track-area は track と目盛り（ticks）のコンテナ。目盛りはJSで動的追加される。
+  // Only static fixed HTML strings are used (no user input)
+  // track-area is a container for track and ticks. Ticks are dynamically added via JS.
   template.innerHTML = `<div part="container" role="group" aria-label="circa input"><div part="track-area"><div part="track"><div part="margin" aria-hidden="true"></div><div part="value" role="slider" tabindex="0" aria-label="center value" aria-valuenow="" aria-valuemin="" aria-valuemax=""></div><div part="handle-low" role="slider" tabindex="-1" aria-label="lower margin" aria-hidden="true"></div><div part="handle-high" role="slider" tabindex="-1" aria-label="upper margin" aria-hidden="true"></div></div></div><div part="clear-area"><slot name="clear"><button part="clear" type="button" aria-label="clear value">\u00D7</button></slot></div></div>`;
 
   const style = document.createElement("style");

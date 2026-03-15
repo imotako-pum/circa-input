@@ -1,8 +1,8 @@
 /**
- * <circa-input> カスタム要素
+ * <circa-input> custom element
  *
- * coreのロジックを使い、値と曖昧さを入力できるスライダーUI。
- * Shadow DOMで描画し、ARIA属性でアクセシビリティを確保する。
+ * A slider UI for inputting a value and its ambiguity, powered by core logic.
+ * Renders via Shadow DOM and ensures accessibility through ARIA attributes.
  */
 import type { CircaInputConfig, CircaValue } from "@circa-input/core";
 import {
@@ -21,7 +21,7 @@ import {
 } from "./dom-utils.js";
 import { createTemplate } from "./template.js";
 
-/** Shadow DOM内の必須要素を取得。見つからなければエラー。 */
+/** Retrieve a required element from the Shadow DOM. Throws if not found. */
 function queryRequired(root: ShadowRoot, selector: string): HTMLElement {
   const el = root.querySelector(selector);
   if (!el) {
@@ -32,7 +32,7 @@ function queryRequired(root: ShadowRoot, selector: string): HTMLElement {
   return el as HTMLElement;
 }
 
-/** HTML属性名の定数 */
+/** HTML attribute name constants */
 const ATTR = {
   MIN: "min",
   MAX: "max",
@@ -53,28 +53,28 @@ const ATTR = {
   TICK_INTERVAL: "tick-interval",
 } as const;
 
-/** 監視対象のHTML属性一覧 */
+/** List of observed HTML attributes */
 const OBSERVED_ATTRS = Object.values(ATTR);
 
 /**
- * マージンドラッグのスケールファクター。
- * 縦方向のピクセル移動量を、値の範囲に対する比率に変換する係数。
- * 例: 100pxドラッグ → (100/SCALE_PX) * range = margin変化量
+ * Scale factor for margin drag.
+ * Coefficient that converts vertical pixel movement to a ratio of the value range.
+ * e.g. 100px drag -> (100/SCALE_PX) * range = margin delta
  */
 const MARGIN_DRAG_SCALE_PX = 100;
 
 /**
- * 非対称モードの中央つまみドラッグで、操作対象マージンを確定するまでの閾値（px）。
- * この距離を超えた最初の縦方向移動で「low」か「high」がロックされる。
+ * Threshold (px) for locking the target margin during asymmetric center thumb drag.
+ * The first vertical movement exceeding this distance locks either "low" or "high".
  */
 const ASYMMETRIC_LOCK_THRESHOLD_PX = 5;
 
 export class CircaInputElement extends HTMLElement {
-  /** 内部状態 */
+  /** Internal state */
   private _circaValue!: CircaValue;
   private _config!: CircaInputConfig;
 
-  /** Shadow DOM要素への参照 */
+  /** References to Shadow DOM elements */
   private _trackArea!: HTMLElement;
   private _track!: HTMLElement;
   private _valueEl!: HTMLElement;
@@ -83,7 +83,7 @@ export class CircaInputElement extends HTMLElement {
   private _handleHigh!: HTMLElement;
   private _clearArea!: HTMLElement;
 
-  /** ドラッグ状態 */
+  /** Drag state */
   private _isDragging = false;
   private _dragStartY = 0;
   private _dragStartX = 0;
@@ -91,21 +91,21 @@ export class CircaInputElement extends HTMLElement {
   private _dragStartMarginHigh = 0;
   private _dragStartValue = 0;
 
-  /** 非対称モード中央つまみドラッグ: ロックされた操作対象 */
+  /** Asymmetric mode center thumb drag: locked target */
   private _asymmetricDragLocked: "low" | "high" | null = null;
 
-  /** 非対称ハンドルドラッグ状態 */
+  /** Asymmetric handle drag state */
   private _handleDragTarget: "low" | "high" | null = null;
   private _handleDragStartX = 0;
   private _handleDragStartMargin = 0;
 
-  /** ドラッグ開始時にキャッシュしたトラックのBoundingClientRect */
+  /** Cached track BoundingClientRect from drag start */
   private _cachedTrackRect: { left: number; width: number } | null = null;
 
-  /** フォーム連携 */
+  /** Form integration */
   private _internals: ElementInternals | null = null;
 
-  /** フォーム関連カスタム要素として登録 */
+  /** Register as a form-associated custom element */
   static formAssociated = true;
 
   static get observedAttributes(): readonly string[] {
@@ -116,16 +116,16 @@ export class CircaInputElement extends HTMLElement {
     super();
     const shadow = this.attachShadow({ mode: "open" });
 
-    // ElementInternals（フォーム連携用）
+    // ElementInternals (for form integration)
     try {
       this._internals = this.attachInternals();
     } catch {
-      // happy-dom では未サポートの場合がある
+      // May not be supported in happy-dom
     }
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
 
-    // 要素キャッシュ（見つからなければCircaInputErrorをthrow）
+    // Cache elements (throws CircaInputError if not found)
     this._trackArea = queryRequired(shadow, "[part='track-area']");
     this._track = queryRequired(shadow, "[part='track']");
     this._valueEl = queryRequired(shadow, "[part='value']");
@@ -146,7 +146,7 @@ export class CircaInputElement extends HTMLElement {
     this._renderConfig();
     this._render();
 
-    // connectedCallback時にリスナーを登録（disconnectedCallbackで解除）
+    // Register listeners on connectedCallback (removed in disconnectedCallback)
     this._valueEl.addEventListener("keydown", this._onKeyDown);
     this._track.addEventListener("pointerdown", this._onTrackPointerDown);
     this._valueEl.addEventListener("pointerdown", this._onValuePointerDown);
@@ -164,7 +164,7 @@ export class CircaInputElement extends HTMLElement {
   }
 
   disconnectedCallback(): void {
-    // リスナー解除
+    // Remove listeners
     this._valueEl.removeEventListener("keydown", this._onKeyDown);
     this._track.removeEventListener("pointerdown", this._onTrackPointerDown);
     this._valueEl.removeEventListener("pointerdown", this._onValuePointerDown);
@@ -180,7 +180,7 @@ export class CircaInputElement extends HTMLElement {
     this._handleHigh.removeEventListener("keydown", this._onHandleHighKeyDown);
     this._clearArea.removeEventListener("click", this._onClearClick);
 
-    // 進行中のドラッグをクリーンアップ
+    // Clean up any in-progress drag
     if (this._isDragging) {
       this._isDragging = false;
       this._valueEl.removeEventListener(
@@ -208,13 +208,13 @@ export class CircaInputElement extends HTMLElement {
     _oldValue: string | null,
     _newValue: string | null,
   ): void {
-    // connectedCallback前はスキップ
+    // Skip if called before connectedCallback
     if (!this._config) return;
 
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
 
-    // Controlled属性が変更された場合は値も再構築
+    // Rebuild value when controlled attributes change
     if (
       _name === ATTR.VALUE ||
       _name === ATTR.MARGIN_LOW ||
@@ -233,12 +233,12 @@ export class CircaInputElement extends HTMLElement {
     this._render();
   }
 
-  /** 現在のCircaValueを読み取り専用プロパティとして公開 */
+  /** Expose the current CircaValue as a read-only property */
   get circaValue(): CircaValue {
     return { ...this._circaValue };
   }
 
-  /** フォーム送信用のJSON値 */
+  /** JSON value for form submission */
   get formValue(): string | null {
     if (this._circaValue.value !== null) {
       return JSON.stringify(this._circaValue);
@@ -247,14 +247,14 @@ export class CircaInputElement extends HTMLElement {
   }
 
   /**
-   * 値をクリアして未入力状態に戻す。
-   * Controlledモードではchangeイベントのみ発火し、内部状態は変更しない。
+   * Clear the value and reset to the unset state.
+   * In controlled mode, only fires the change event without modifying internal state.
    */
   clear(): void {
     if (this._isDisabled) return;
     const initial = createInitialValue(this._config);
     if (this._isControlled) {
-      // Controlledモードではイベントだけ発火し、外部に判断を委ねる
+      // In controlled mode, only fire the event and let the external owner decide
       this.dispatchEvent(
         new CustomEvent("change", {
           detail: { ...initial },
@@ -269,17 +269,17 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** Controlled モードか判定 */
+  /** Check if in controlled mode */
   private get _isControlled(): boolean {
     return this.getAttribute("value") !== null;
   }
 
-  /** disabled状態か判定 */
+  /** Check if disabled */
   private get _isDisabled(): boolean {
     return this.hasAttribute("disabled");
   }
 
-  /** step刻み（step="any"なら範囲の1%） */
+  /** Step size (1% of range when step="any") */
   private get _stepSize(): number {
     if (this._config.step === "any") {
       return (this._config.max - this._config.min) * 0.01;
@@ -287,7 +287,7 @@ export class CircaInputElement extends HTMLElement {
     return this._config.step;
   }
 
-  /** valueスライダーのキーボードイベント処理 */
+  /** Keyboard event handler for the value slider */
   private _onKeyDown = (e: Event): void => {
     if (this._isDisabled) return;
     const ke = e as KeyboardEvent;
@@ -308,7 +308,7 @@ export class CircaInputElement extends HTMLElement {
       };
 
       if (this._config.asymmetric) {
-        // 非対称モード: Up/Left→marginLow調整、Down/Right→marginHigh調整
+        // Asymmetric mode: Up/Left adjusts marginLow, Down/Right adjusts marginHigh
         if (key === "ArrowUp" || key === "ArrowLeft") {
           this._setValue(
             updateValue(base, { marginLow: ml + step }, this._config),
@@ -321,7 +321,7 @@ export class CircaInputElement extends HTMLElement {
           handled = true;
         }
       } else {
-        // 対称モード: 上下左右でmarginLow/Highを同時に拡縮
+        // Symmetric mode: all arrow keys expand/shrink marginLow/High together
         if (key === "ArrowRight" || key === "ArrowUp") {
           const newM = ml + step;
           this._setValue(
@@ -383,13 +383,13 @@ export class CircaInputElement extends HTMLElement {
     }
   };
 
-  /** トラッククリックで値を設定 */
+  /** Set value on track click */
   private _onTrackPointerDown = (e: Event): void => {
     if (this._isDisabled) return;
-    // つまみ上のクリックはドラッグとして扱うのでスキップ
+    // Skip clicks on the thumb as they are handled as drags
     if (this._isDragging) return;
     const pe = e as PointerEvent;
-    // valueEl上のイベントはバブリングで来るのでスキップ
+    // Skip events bubbling up from valueEl
     if (pe.target === this._valueEl) return;
 
     const rect = this._track.getBoundingClientRect();
@@ -405,11 +405,11 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** つまみのpointerdownでドラッグ開始 */
+  /** Start drag on thumb pointerdown */
   private _onValuePointerDown = (e: Event): void => {
     if (this._isDisabled) return;
     const pe = e as PointerEvent;
-    pe.stopPropagation(); // トラッククリックへのバブリングを防止
+    pe.stopPropagation(); // Prevent bubbling to track click handler
     pe.preventDefault();
 
     this._isDragging = true;
@@ -417,7 +417,7 @@ export class CircaInputElement extends HTMLElement {
     this._dragStartY = pe.clientY;
     this._dragStartX = pe.clientX;
 
-    // ドラッグ開始時にトラックのrectをキャッシュ（moveハンドラで毎フレーム呼ばないため）
+    // Cache track rect at drag start (to avoid calling per frame in move handler)
     const rect = this._track.getBoundingClientRect();
     this._cachedTrackRect = { left: rect.left, width: rect.width };
 
@@ -427,11 +427,11 @@ export class CircaInputElement extends HTMLElement {
     this._dragStartMarginLow = this._circaValue.marginLow ?? 0;
     this._dragStartMarginHigh = this._circaValue.marginHigh ?? 0;
 
-    // setPointerCapture でドラッグ中のイベント漏れ防止
+    // setPointerCapture to prevent event leakage during drag
     try {
       this._valueEl.setPointerCapture(pe.pointerId);
     } catch {
-      // happy-dom ではサポートされない場合がある
+      // May not be supported in happy-dom
     }
 
     this._valueEl.addEventListener("pointermove", this._onValuePointerMove);
@@ -439,7 +439,7 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.addEventListener("pointercancel", this._onValuePointerUp);
   };
 
-  /** ドラッグ中のポインター移動 */
+  /** Pointer move during drag */
   private _onValuePointerMove = (e: Event): void => {
     if (!this._isDragging) return;
     const pe = e as PointerEvent;
@@ -447,7 +447,7 @@ export class CircaInputElement extends HTMLElement {
     const range = this._config.max - this._config.min;
     const deltaY = pe.clientY - this._dragStartY;
 
-    // 水平方向: value移動（キャッシュされたrectを使用）
+    // Horizontal: move value (using cached rect)
     const rect = this._cachedTrackRect;
     let newValue = this._dragStartValue;
     if (rect && rect.width > 0) {
@@ -456,17 +456,17 @@ export class CircaInputElement extends HTMLElement {
       newValue = this._dragStartValue + (deltaPercent / 100) * range;
     }
 
-    // 縦方向: margin操作
+    // Vertical: margin adjustment
     let newMarginLow: number;
     let newMarginHigh: number;
 
     if (this._config.asymmetric) {
-      // 非対称モード: 最初の縦方向移動で操作対象マージンをロック
-      // 上ドラッグ → marginLow、下ドラッグ → marginHigh
-      // ロック後は上下でそのマージンを自由に増減（もう片方は変化しない）
+      // Asymmetric mode: lock the target margin on the first vertical movement
+      // Drag up -> marginLow, drag down -> marginHigh
+      // After locking, freely increase/decrease that margin (the other stays unchanged)
       const absDeltaY = Math.abs(deltaY);
 
-      // 閾値を超えたら方向をロック
+      // Lock direction once threshold is exceeded
       if (
         this._asymmetricDragLocked === null &&
         absDeltaY >= ASYMMETRIC_LOCK_THRESHOLD_PX
@@ -475,22 +475,22 @@ export class CircaInputElement extends HTMLElement {
       }
 
       if (this._asymmetricDragLocked === "low") {
-        // marginLow を操作: 上(deltaY<0)で増加、下(deltaY>0)で減少
+        // Adjust marginLow: up (deltaY<0) increases, down (deltaY>0) decreases
         const marginDelta = (-deltaY / MARGIN_DRAG_SCALE_PX) * range;
         newMarginLow = Math.max(this._dragStartMarginLow + marginDelta, 0);
         newMarginHigh = this._dragStartMarginHigh;
       } else if (this._asymmetricDragLocked === "high") {
-        // marginHigh を操作: 下(deltaY>0)で増加、上(deltaY<0)で減少
+        // Adjust marginHigh: down (deltaY>0) increases, up (deltaY<0) decreases
         const marginDelta = (deltaY / MARGIN_DRAG_SCALE_PX) * range;
         newMarginLow = this._dragStartMarginLow;
         newMarginHigh = Math.max(this._dragStartMarginHigh + marginDelta, 0);
       } else {
-        // 閾値未満: マージン変化なし
+        // Below threshold: no margin change
         newMarginLow = this._dragStartMarginLow;
         newMarginHigh = this._dragStartMarginHigh;
       }
     } else {
-      // 対称モード: 下で拡大、上で縮小（従来通り）
+      // Symmetric mode: down expands, up shrinks (same as before)
       const newMarginRaw =
         this._dragStartMarginLow + (deltaY / MARGIN_DRAG_SCALE_PX) * range;
       newMarginLow = Math.max(newMarginRaw, 0);
@@ -506,7 +506,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitInput();
   };
 
-  /** ドラッグ終了 */
+  /** Drag end */
   private _onValuePointerUp = (e: Event): void => {
     if (!this._isDragging) return;
     const pe = e as PointerEvent;
@@ -518,7 +518,7 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._valueEl.releasePointerCapture(pe.pointerId);
     } catch {
-      // happy-dom ではサポートされない場合がある
+      // May not be supported in happy-dom
     }
 
     this._valueEl.removeEventListener("pointermove", this._onValuePointerMove);
@@ -528,17 +528,17 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** handle-low の pointerdown */
+  /** handle-low pointerdown */
   private _onHandleLowPointerDown = (e: Event): void => {
     this._startHandleDrag(e as PointerEvent, "low");
   };
 
-  /** handle-high の pointerdown */
+  /** handle-high pointerdown */
   private _onHandleHighPointerDown = (e: Event): void => {
     this._startHandleDrag(e as PointerEvent, "high");
   };
 
-  /** 非対称ハンドルのドラッグ開始 */
+  /** Start asymmetric handle drag */
   private _startHandleDrag(pe: PointerEvent, target: "low" | "high"): void {
     if (this._isDisabled) return;
     pe.stopPropagation();
@@ -551,7 +551,7 @@ export class CircaInputElement extends HTMLElement {
         ? (this._circaValue.marginLow ?? 0)
         : (this._circaValue.marginHigh ?? 0);
 
-    // ドラッグ開始時にトラックのrectをキャッシュ
+    // Cache track rect at drag start
     const trackRect = this._track.getBoundingClientRect();
     this._cachedTrackRect = { left: trackRect.left, width: trackRect.width };
 
@@ -560,7 +560,7 @@ export class CircaInputElement extends HTMLElement {
     try {
       handle.setPointerCapture(pe.pointerId);
     } catch {
-      // happy-dom ではサポートされない場合がある
+      // May not be supported in happy-dom
     }
 
     handle.addEventListener("pointermove", this._onHandlePointerMove);
@@ -568,7 +568,7 @@ export class CircaInputElement extends HTMLElement {
     handle.addEventListener("pointercancel", this._onHandlePointerUp);
   }
 
-  /** 非対称ハンドルのドラッグ中 */
+  /** Asymmetric handle drag move */
   private _onHandlePointerMove = (e: Event): void => {
     if (!this._handleDragTarget) return;
     const pe = e as PointerEvent;
@@ -581,8 +581,8 @@ export class CircaInputElement extends HTMLElement {
     const deltaPercent = trackWidth > 0 ? (deltaX / trackWidth) * 100 : 0;
     const deltaValue = (deltaPercent / 100) * range;
 
-    // handle-low: 左に動かすとmarginLow増加（sign=-1）
-    // handle-high: 右に動かすとmarginHigh増加（sign=+1）
+    // handle-low: moving left increases marginLow (sign=-1)
+    // handle-high: moving right increases marginHigh (sign=+1)
     const sign = this._handleDragTarget === "low" ? -1 : 1;
     const newMargin = Math.max(
       this._handleDragStartMargin + sign * deltaValue,
@@ -597,7 +597,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitInput();
   };
 
-  /** 非対称ハンドルのドラッグ終了 */
+  /** Asymmetric handle drag end */
   private _onHandlePointerUp = (e: Event): void => {
     if (!this._handleDragTarget) return;
     const pe = e as PointerEvent;
@@ -610,7 +610,7 @@ export class CircaInputElement extends HTMLElement {
     try {
       handle.releasePointerCapture(pe.pointerId);
     } catch {
-      // happy-dom ではサポートされない場合がある
+      // May not be supported in happy-dom
     }
 
     handle.removeEventListener("pointermove", this._onHandlePointerMove);
@@ -620,7 +620,7 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** 内部状態を更新し描画する。Controlledモードでは描画をスキップ（属性変更で描画される） */
+  /** Update internal state and render. Skips rendering in controlled mode (rendered on attribute change). */
   private _setValue(newValue: CircaValue): void {
     this._circaValue = newValue;
     if (!this._isControlled) {
@@ -628,13 +628,13 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** 非対称ハンドルのキーボード操作 */
+  /** Keyboard handler for asymmetric handles */
   private _onHandleLowKeyDown = (e: Event): void => {
     if (this._isDisabled) return;
     const ke = e as KeyboardEvent;
     const s = this._stepSize,
       c = this._circaValue.marginLow ?? 0;
-    // handle-low: Left/Up=拡大、Right/Down=縮小
+    // handle-low: Left/Up=expand, Right/Down=shrink
     const d =
       ke.key === "ArrowLeft" || ke.key === "ArrowUp"
         ? 1
@@ -659,7 +659,7 @@ export class CircaInputElement extends HTMLElement {
     const ke = e as KeyboardEvent;
     const s = this._stepSize,
       c = this._circaValue.marginHigh ?? 0;
-    // handle-high: Right/Up=拡大、Left/Down=縮小
+    // handle-high: Right/Up=expand, Left/Down=shrink
     const d =
       ke.key === "ArrowRight" || ke.key === "ArrowUp"
         ? 1
@@ -679,22 +679,22 @@ export class CircaInputElement extends HTMLElement {
     this._emitChange();
   };
 
-  /** クリアボタンのクリックハンドラ */
+  /** Clear button click handler */
   private _onClearClick = (e: Event): void => {
     e.stopPropagation();
     this.clear();
   };
 
   /**
-   * tick-interval属性に基づいて目盛りを描画する。
-   * 既存の目盛りコンテナがあれば再作成する。
+   * Render tick marks based on the tick-interval attribute.
+   * Recreates the tick container if one already exists.
    */
   private _renderTicks(): void {
-    // 既存の目盛りコンテナを削除
+    // Remove existing tick container
     const existing = this._trackArea.querySelector("[part='ticks']");
     if (existing) existing.remove();
 
-    // tick-interval属性をパース
+    // Parse tick-interval attribute
     const tickIntervalStr = this.getAttribute(ATTR.TICK_INTERVAL);
     if (tickIntervalStr === null) return;
 
@@ -703,7 +703,7 @@ export class CircaInputElement extends HTMLElement {
     const ticks = generateTicks(min, max, tickInterval);
     if (ticks.length === 0) return;
 
-    // 目盛りコンテナを作成
+    // Create tick container
     const container = document.createElement("div");
     container.setAttribute("part", "ticks");
     container.setAttribute("aria-hidden", "true");
@@ -730,22 +730,22 @@ export class CircaInputElement extends HTMLElement {
   }
 
   /**
-   * config依存の静的ARIA属性を更新する。
-   * ドラッグ中には変わらないため、connectedCallback/attributeChangedCallbackでのみ呼ぶ。
+   * Update static ARIA attributes that depend on config.
+   * Only called from connectedCallback/attributeChangedCallback since these don't change during drag.
    */
   private _renderConfig(): void {
     if (!this._valueEl) return;
 
     const { min, max } = this._config;
 
-    // valueスライダーの範囲ARIA
+    // Value slider range ARIA
     this._valueEl.setAttribute("aria-valuemin", String(min));
     this._valueEl.setAttribute("aria-valuemax", String(max));
 
-    // 目盛り描画
+    // Render tick marks
     this._renderTicks();
 
-    // 非対称ハンドルのアクセシビリティ
+    // Accessibility for asymmetric handles
     const isAsymmetric = this._config.asymmetric;
     this._handleLow.setAttribute("tabindex", isAsymmetric ? "0" : "-1");
     this._handleLow.setAttribute(
@@ -759,20 +759,20 @@ export class CircaInputElement extends HTMLElement {
     );
   }
 
-  /** DOMを現在の値に合わせて更新する（位置・値のみ。ドラッグ中にも安全に呼べる） */
+  /** Update the DOM to reflect the current value (position and value only; safe to call during drag) */
   private _render(): void {
     if (!this._valueEl) return;
 
     const { value, marginLow, marginHigh } = this._circaValue;
     const { min, max } = this._config;
 
-    // aria-valuenow の更新
+    // Update aria-valuenow
     this._valueEl.setAttribute(
       "aria-valuenow",
       value !== null ? String(value) : "",
     );
 
-    // 値インジケータの位置
+    // Value indicator position
     if (value !== null) {
       const percent = valueToPercent(value, min, max);
       this._valueEl.style.left = `${percent}%`;
@@ -781,11 +781,11 @@ export class CircaInputElement extends HTMLElement {
       this._valueEl.style.display = "none";
     }
 
-    // マージン関連の共通計算
+    // Common margin calculations
     const low = marginLow ?? 0;
     const high = marginHigh ?? 0;
 
-    // マージン帯の描画
+    // Render margin band
     if (value !== null && (marginLow !== null || marginHigh !== null)) {
       const lowPercent = valueToPercent(value - low, min, max);
       const highPercent = valueToPercent(value + high, min, max);
@@ -796,7 +796,7 @@ export class CircaInputElement extends HTMLElement {
       this._marginEl.style.display = "none";
     }
 
-    // ハンドル位置とARIA値の更新
+    // Update handle positions and ARIA values
     if (value !== null) {
       const lowPercent = valueToPercent(value - low, min, max);
       this._handleLow.style.left = `${lowPercent}%`;
@@ -819,14 +819,14 @@ export class CircaInputElement extends HTMLElement {
       }
     }
 
-    // クリアエリアの活性/非活性切り替え
+    // Toggle clear area active/inactive state
     this._clearArea.classList.toggle("inactive", value === null);
 
-    // フォーム値の更新
+    // Update form value
     this._updateFormValue();
   }
 
-  /** ElementInternals経由でFormDataにJSON値を設定 */
+  /** Set JSON value in FormData via ElementInternals */
   private _updateFormValue(): void {
     if (!this._internals) return;
 
@@ -836,7 +836,7 @@ export class CircaInputElement extends HTMLElement {
       this._internals.setFormValue(null);
     }
 
-    // requiredバリデーション（checkRequired内部でconfig.requiredもチェックする）
+    // Required validation (checkRequired also checks config.required internally)
     if (!checkRequired(this._circaValue, this._config)) {
       this._internals.setValidity(
         { valueMissing: true },
@@ -848,7 +848,7 @@ export class CircaInputElement extends HTMLElement {
     }
   }
 
-  /** changeイベントを発火（操作完了時） */
+  /** Fire change event (on operation complete) */
   private _emitChange(): void {
     this.dispatchEvent(
       new CustomEvent("change", {
@@ -859,7 +859,7 @@ export class CircaInputElement extends HTMLElement {
     );
   }
 
-  /** inputイベントを発火（操作中リアルタイム） */
+  /** Fire input event (real-time during operation) */
   private _emitInput(): void {
     this.dispatchEvent(
       new CustomEvent("input", {

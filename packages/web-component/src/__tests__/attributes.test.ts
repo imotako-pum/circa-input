@@ -7,42 +7,42 @@ import {
 } from "../attributes";
 
 describe("parseNumberAttr", () => {
-  it("数値文字列をnumberに変換する", () => {
+  it("converts numeric strings to numbers", () => {
     expect(parseNumberAttr("42")).toBe(42);
     expect(parseNumberAttr("3.14")).toBe(3.14);
     expect(parseNumberAttr("-10")).toBe(-10);
   });
 
-  it("nullを返す: null入力", () => {
+  it("returns null for null input", () => {
     expect(parseNumberAttr(null)).toBeNull();
   });
 
-  it("nullを返す: 空文字列", () => {
+  it("returns null for empty string", () => {
     expect(parseNumberAttr("")).toBeNull();
   });
 
-  it("nullを返す: 数値でない文字列", () => {
+  it("returns null for non-numeric strings", () => {
     expect(parseNumberAttr("abc")).toBeNull();
     expect(parseNumberAttr("12px")).toBeNull();
   });
 
-  it("0を正しく数値として扱う", () => {
+  it("correctly handles 0 as a number", () => {
     expect(parseNumberAttr("0")).toBe(0);
   });
 });
 
 describe("parseBooleanAttr", () => {
-  it("nullでfalseを返す（属性なし）", () => {
+  it("returns false for null (attribute absent)", () => {
     expect(parseBooleanAttr(null)).toBe(false);
   });
 
-  it("空文字列でtrueを返す（属性存在、値なし）", () => {
+  it("returns true for empty string (attribute present, no value)", () => {
     expect(parseBooleanAttr("")).toBe(true);
   });
 
-  it("任意の文字列でtrueを返す", () => {
+  it("returns true for any string", () => {
     expect(parseBooleanAttr("true")).toBe(true);
-    expect(parseBooleanAttr("false")).toBe(true); // HTML仕様: 属性が存在すればtrue
+    expect(parseBooleanAttr("false")).toBe(true); // HTML spec: true if attribute exists
     expect(parseBooleanAttr("asymmetric")).toBe(true);
   });
 });
@@ -52,19 +52,19 @@ describe("buildConfig", () => {
     return (name: string) => attrs[name] ?? null;
   };
 
-  it("min/maxを正しく読み取る", () => {
+  it("correctly reads min/max", () => {
     const config = buildConfig(makeGetAttr({ min: "0", max: "100" }));
     expect(config.min).toBe(0);
     expect(config.max).toBe(100);
   });
 
-  it("min/max未指定時にデフォルト値（0, 100）を使う", () => {
+  it("uses default values (0, 100) when min/max are not specified", () => {
     const config = buildConfig(makeGetAttr({}));
     expect(config.min).toBe(0);
     expect(config.max).toBe(100);
   });
 
-  it("すべてのオプション属性を読み取る", () => {
+  it("reads all optional attributes", () => {
     const config = buildConfig(
       makeGetAttr({
         min: "10",
@@ -87,19 +87,19 @@ describe("buildConfig", () => {
     expect(config.required).toBe(true);
   });
 
-  it("step未指定時は'any'を使う", () => {
+  it("uses 'any' when step is not specified", () => {
     const config = buildConfig(makeGetAttr({ min: "0", max: "100" }));
     expect(config.step).toBe("any");
   });
 
-  it("不正なdistribution値はデフォルト'normal'にフォールバックする", () => {
+  it("invalid distribution value falls back to default 'normal'", () => {
     const config = buildConfig(
       makeGetAttr({ min: "0", max: "100", distribution: "invalid" }),
     );
     expect(config.distribution).toBe("normal");
   });
 
-  it("有効なdistribution値はそのまま採用する", () => {
+  it("valid distribution values are used as-is", () => {
     expect(
       buildConfig(makeGetAttr({ distribution: "normal" })).distribution,
     ).toBe("normal");
@@ -111,7 +111,7 @@ describe("buildConfig", () => {
     ).toBe("skewed");
   });
 
-  it("margin-max未指定時はnullを使う", () => {
+  it("uses null when margin-max is not specified", () => {
     const config = buildConfig(makeGetAttr({ min: "0", max: "100" }));
     expect(config.marginMax).toBeNull();
   });
@@ -133,7 +133,7 @@ describe("buildInitialValue", () => {
     required: false,
   };
 
-  it("属性なしで未入力状態を返す", () => {
+  it("returns unset state when no attributes are provided", () => {
     const val = buildInitialValue(makeGetAttr({}), defaultConfig);
     expect(val.value).toBeNull();
     expect(val.marginLow).toBeNull();
@@ -141,7 +141,7 @@ describe("buildInitialValue", () => {
     expect(val.distribution).toBe("normal");
   });
 
-  it("default-* 属性で初期値を設定する", () => {
+  it("sets initial values via default-* attributes", () => {
     const val = buildInitialValue(
       makeGetAttr({
         "default-value": "50",
@@ -155,7 +155,7 @@ describe("buildInitialValue", () => {
     expect(val.marginHigh).toBe(10);
   });
 
-  it("value属性（controlled）がある場合はdefault-*より優先する", () => {
+  it("value attribute (controlled) takes priority over default-*", () => {
     const val = buildInitialValue(
       makeGetAttr({
         value: "75",
@@ -170,7 +170,7 @@ describe("buildInitialValue", () => {
     expect(val.marginHigh).toBe(7);
   });
 
-  it("configのdistributionを使用する", () => {
+  it("uses the distribution from config", () => {
     const uniformConfig = {
       ...defaultConfig,
       distribution: "uniform" as const,

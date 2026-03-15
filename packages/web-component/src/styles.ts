@@ -1,8 +1,8 @@
 /**
- * Shadow DOM用CSSテンプレート
+ * CSS template for Shadow DOM
  *
- * CSS Custom Propertiesを使い、外部からスタイルをカスタマイズ可能にする。
- * すべてのCSS変数には --circa- プレフィックスを付ける。
+ * Uses CSS Custom Properties to allow external style customization.
+ * All CSS variables are prefixed with --circa-.
  */
 
 export const STYLES = `
@@ -91,7 +91,7 @@ export const STYLES = `
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
 }
 
-/* ハンドルのヒットエリアを拡大。margin=0で値つまみと重なってもクリック可能にする */
+/* Expand the handle hit area. Makes it clickable even when overlapping the value thumb at margin=0 */
 [part="handle-low"]::before,
 [part="handle-high"]::before {
   content: "";
@@ -109,7 +109,7 @@ export const STYLES = `
   display: block;
 }
 
-/* クリアエリア: slotのラッパー */
+/* Clear area: wrapper for the slot */
 [part="clear-area"] {
   margin-left: 8px;
   flex-shrink: 0;
@@ -117,18 +117,18 @@ export const STYLES = `
   align-items: center;
 }
 
-/* 値がないとき（JSでクラス付与） */
+/* When no value is set (class added via JS) */
 [part="clear-area"].inactive {
   opacity: 0.3;
   pointer-events: none;
 }
 
-/* no-clear属性でエリア全体を非表示 */
+/* Hide entire area with no-clear attribute */
 :host([no-clear]) [part="clear-area"] {
   display: none;
 }
 
-/* デフォルトの×ボタン（fallback slot内） */
+/* Default close button (inside fallback slot) */
 [part="clear"] {
   width: calc(var(--circa-handle-size, 20px) * 0.8);
   height: calc(var(--circa-handle-size, 20px) * 0.8);
@@ -151,12 +151,12 @@ export const STYLES = `
   outline: none;
 }
 
-/* スロット経由で渡されたカスタムボタン */
+/* Custom button passed via slot */
 ::slotted([slot="clear"]) {
   cursor: pointer;
 }
 
-/* 目盛り（Tick Marks） */
+/* Tick Marks */
 [part="ticks"] {
   position: relative;
   width: 100%;

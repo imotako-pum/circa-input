@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-// カスタム要素の登録
+// Register custom element
 import "../index.js";
 
 describe("CircaInputElement", () => {
@@ -17,27 +17,27 @@ describe("CircaInputElement", () => {
     el.remove();
   });
 
-  describe("Shadow DOM 構造", () => {
-    it("Shadow Root が存在する", () => {
+  describe("Shadow DOM structure", () => {
+    it("Shadow Root exists", () => {
       expect(el.shadowRoot).not.toBeNull();
     });
 
-    it("track 要素が存在する", () => {
+    it("track element exists", () => {
       const track = el.shadowRoot?.querySelector("[part='track']");
       expect(track).not.toBeNull();
     });
 
-    it("value スライダーが存在する", () => {
+    it("value slider exists", () => {
       const value = el.shadowRoot?.querySelector("[part='value']");
       expect(value).not.toBeNull();
     });
 
-    it("margin 帯が存在する", () => {
+    it("margin band exists", () => {
       const margin = el.shadowRoot?.querySelector("[part='margin']");
       expect(margin).not.toBeNull();
     });
 
-    it("handle-low/high が存在する", () => {
+    it("handle-low/high exist", () => {
       const low = el.shadowRoot?.querySelector("[part='handle-low']");
       const high = el.shadowRoot?.querySelector("[part='handle-high']");
       expect(low).not.toBeNull();
@@ -45,29 +45,29 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("ARIA 属性", () => {
-    it("container に role='group' がある", () => {
+  describe("ARIA attributes", () => {
+    it("container has role='group'", () => {
       const container = el.shadowRoot?.querySelector("[part='container']");
       expect(container?.getAttribute("role")).toBe("group");
     });
 
-    it("value に role='slider' がある", () => {
+    it("value has role='slider'", () => {
       const value = el.shadowRoot?.querySelector("[part='value']");
       expect(value?.getAttribute("role")).toBe("slider");
     });
 
-    it("aria-valuemin/max が min/max 属性に一致する", () => {
+    it("aria-valuemin/max match min/max attributes", () => {
       const value = el.shadowRoot?.querySelector("[part='value']");
       expect(value?.getAttribute("aria-valuemin")).toBe("0");
       expect(value?.getAttribute("aria-valuemax")).toBe("100");
     });
 
-    it("初期状態で aria-valuenow が空文字列", () => {
+    it("aria-valuenow is empty string in initial state", () => {
       const value = el.shadowRoot?.querySelector("[part='value']");
       expect(value?.getAttribute("aria-valuenow")).toBe("");
     });
 
-    it("非対称モードでない場合、handle-low/highは aria-hidden='true' かつ tabindex='-1'", () => {
+    it("when not in asymmetric mode, handle-low/high have aria-hidden='true' and tabindex='-1'", () => {
       const low = el.shadowRoot?.querySelector("[part='handle-low']");
       const high = el.shadowRoot?.querySelector("[part='handle-high']");
       expect(low?.getAttribute("aria-hidden")).toBe("true");
@@ -76,7 +76,7 @@ describe("CircaInputElement", () => {
       expect(high?.getAttribute("tabindex")).toBe("-1");
     });
 
-    it("非対称モードの場合、handle-low/highは aria-hidden='false' かつ tabindex='0'", () => {
+    it("in asymmetric mode, handle-low/high have aria-hidden='false' and tabindex='0'", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "5");
@@ -92,7 +92,7 @@ describe("CircaInputElement", () => {
       expect(high?.getAttribute("tabindex")).toBe("0");
     });
 
-    it("非対称ハンドルに aria-valuenow/min/max が設定される", () => {
+    it("asymmetric handles have aria-valuenow/min/max set", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "5");
@@ -109,8 +109,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("属性変更", () => {
-    it("min/max の変更が反映される", () => {
+  describe("attribute changes", () => {
+    it("min/max changes are reflected", () => {
       el.setAttribute("min", "10");
       el.setAttribute("max", "50");
       const value = el.shadowRoot?.querySelector("[part='value']");
@@ -118,7 +118,7 @@ describe("CircaInputElement", () => {
       expect(value?.getAttribute("aria-valuemax")).toBe("50");
     });
 
-    it("default-value 属性で初期値を設定できる", () => {
+    it("default-value attribute sets the initial value", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -132,11 +132,11 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("キーボード操作", () => {
-    it("ArrowRight で value が増加する", () => {
-      // まず値を設定
+  describe("keyboard interaction", () => {
+    it("ArrowRight increases value", () => {
+      // First set the value
       el.setAttribute("default-value", "50");
-      // DOMに再追加して反映
+      // Re-append to DOM to apply
       el.remove();
       document.body.appendChild(el);
 
@@ -144,7 +144,7 @@ describe("CircaInputElement", () => {
         "[part='value']",
       ) as HTMLElement;
 
-      // step="any" の場合は範囲の1% = 1
+      // When step="any", step size is 1% of range = 1
       slider.dispatchEvent(
         new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
       );
@@ -152,7 +152,7 @@ describe("CircaInputElement", () => {
       expect(slider.getAttribute("aria-valuenow")).toBe("51");
     });
 
-    it("ArrowLeft で value が減少する", () => {
+    it("ArrowLeft decreases value", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -167,7 +167,7 @@ describe("CircaInputElement", () => {
       expect(slider.getAttribute("aria-valuenow")).toBe("49");
     });
 
-    it("Home で value が min になる", () => {
+    it("Home sets value to min", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -182,7 +182,7 @@ describe("CircaInputElement", () => {
       expect(slider.getAttribute("aria-valuenow")).toBe("0");
     });
 
-    it("End で value が max になる", () => {
+    it("End sets value to max", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -197,7 +197,7 @@ describe("CircaInputElement", () => {
       expect(slider.getAttribute("aria-valuenow")).toBe("100");
     });
 
-    it("値が未設定の場合、ArrowRightで中央値から開始する", () => {
+    it("when value is unset, ArrowRight starts from the center value", () => {
       const slider = el.shadowRoot?.querySelector(
         "[part='value']",
       ) as HTMLElement;
@@ -205,11 +205,11 @@ describe("CircaInputElement", () => {
         new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
       );
 
-      // 中央値 50 + 1 = 51
+      // Center value 50 + 1 = 51
       expect(slider.getAttribute("aria-valuenow")).toBe("51");
     });
 
-    it("step属性が設定されている場合、step刻みで移動する", () => {
+    it("moves in step increments when step attribute is set", () => {
       el.setAttribute("step", "5");
       el.setAttribute("default-value", "50");
       el.remove();
@@ -225,7 +225,7 @@ describe("CircaInputElement", () => {
       expect(slider.getAttribute("aria-valuenow")).toBe("55");
     });
 
-    it("Shift+ArrowRight で margin が拡大する", () => {
+    it("Shift+ArrowRight expands margin", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -241,8 +241,8 @@ describe("CircaInputElement", () => {
         }),
       );
 
-      // margin が 1 増える（対称モードなので marginLow/High両方）
-      // changeイベントで確認する代わりに、circaValueプロパティで確認
+      // Margin increases by 1 (both marginLow/High in symmetric mode)
+      // Verify via circaValue property instead of change event
       const circaEl = el as unknown as {
         readonly circaValue: {
           marginLow: number | null;
@@ -253,7 +253,7 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.marginHigh).toBe(1);
     });
 
-    it("Shift+ArrowLeft で margin が縮小する（0未満にならない）", () => {
+    it("Shift+ArrowLeft shrinks margin (does not go below 0)", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -261,7 +261,7 @@ describe("CircaInputElement", () => {
       const slider = el.shadowRoot?.querySelector(
         "[part='value']",
       ) as HTMLElement;
-      // marginが0の状態で縮小しようとしても0のまま
+      // Attempting to shrink when margin is 0 keeps it at 0
       slider.dispatchEvent(
         new KeyboardEvent("keydown", {
           key: "ArrowLeft",
@@ -281,8 +281,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("circaValue プロパティ", () => {
-    it("初期状態では全てnull", () => {
+  describe("circaValue property", () => {
+    it("all values are null in initial state", () => {
       const circaEl = el as unknown as {
         readonly circaValue: {
           value: number | null;
@@ -295,7 +295,7 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.marginHigh).toBeNull();
     });
 
-    it("default-value設定時にvalueが反映される", () => {
+    it("value is reflected when default-value is set", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -311,8 +311,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("change イベント", () => {
-    it("キーボード操作で change イベントが発火する", () => {
+  describe("change event", () => {
+    it("change event fires on keyboard interaction", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -334,8 +334,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("マージンドラッグ（M2-b）", () => {
-    it("つまみの縦ドラッグでmarginが拡大する（pointerdown → pointermove → pointerup）", () => {
+  describe("margin drag (M2-b)", () => {
+    it("vertical drag on thumb expands margin (pointerdown -> pointermove -> pointerup)", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -344,7 +344,7 @@ describe("CircaInputElement", () => {
         "[part='value']",
       ) as HTMLElement;
 
-      // pointerdown でドラッグ開始
+      // Start drag with pointerdown
       slider.dispatchEvent(
         new PointerEvent("pointerdown", {
           clientX: 100,
@@ -354,7 +354,7 @@ describe("CircaInputElement", () => {
         }),
       );
 
-      // 下方向にドラッグ（deltaY=50 → margin拡大）
+      // Drag downward (deltaY=50 -> margin expands)
       slider.dispatchEvent(
         new PointerEvent("pointermove", {
           clientX: 100,
@@ -370,14 +370,14 @@ describe("CircaInputElement", () => {
           marginHigh: number | null;
         };
       };
-      // margin が設定されている（具体的な値はscaleFactorに依存）
+      // Margin is set (exact value depends on scaleFactor)
       expect(circaEl.circaValue.marginLow).not.toBeNull();
       expect(circaEl.circaValue.marginLow).toBeGreaterThan(0);
-      // 対称モードなので marginHigh も同じ
+      // marginHigh is the same in symmetric mode
       expect(circaEl.circaValue.marginHigh).toBe(circaEl.circaValue.marginLow);
     });
 
-    it("上方向ドラッグでmarginが縮小する（0未満にならない）", () => {
+    it("upward drag shrinks margin (does not go below 0)", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -386,7 +386,7 @@ describe("CircaInputElement", () => {
         "[part='value']",
       ) as HTMLElement;
 
-      // marginが0の状態で上にドラッグ
+      // Drag upward with margin at 0
       slider.dispatchEvent(
         new PointerEvent("pointerdown", {
           clientX: 100,
@@ -410,13 +410,13 @@ describe("CircaInputElement", () => {
           marginHigh: number | null;
         };
       };
-      // margin は 0 以上
+      // Margin is >= 0
       if (circaEl.circaValue.marginLow !== null) {
         expect(circaEl.circaValue.marginLow).toBeGreaterThanOrEqual(0);
       }
     });
 
-    it("pointerup でドラッグが終了し change イベントが発火する", () => {
+    it("pointerup ends drag and fires change event", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -458,7 +458,7 @@ describe("CircaInputElement", () => {
       expect(changeDetail).not.toBeNull();
     });
 
-    it("ドラッグ中に input イベントがリアルタイム発火する", () => {
+    it("input event fires in real-time during drag", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -497,11 +497,11 @@ describe("CircaInputElement", () => {
         }),
       );
 
-      // 各pointermoveでinputイベントが発火
+      // Input event fires on each pointermove
       expect(inputEvents.length).toBeGreaterThanOrEqual(2);
     });
 
-    it("水平ドラッグでvalueも同時に移動する", () => {
+    it("horizontal drag also moves value simultaneously", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -510,7 +510,7 @@ describe("CircaInputElement", () => {
         "[part='value']",
       ) as HTMLElement;
 
-      // トラックの getBoundingClientRect をモック
+      // Mock track's getBoundingClientRect
       const track = el.shadowRoot?.querySelector(
         "[part='track']",
       ) as HTMLElement;
@@ -534,7 +534,7 @@ describe("CircaInputElement", () => {
         }),
       );
 
-      // 右に30pxドラッグ（200pxトラックの15% → value +15）
+      // Drag 30px right (15% of 200px track -> value +15)
       slider.dispatchEvent(
         new PointerEvent("pointermove", {
           clientX: 130,
@@ -551,17 +551,17 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("非対称モード（M2-c）", () => {
-    it("asymmetric属性がない場合、handle-low/highは非表示のまま（CSSで制御）", () => {
+  describe("asymmetric mode (M2-c)", () => {
+    it("without asymmetric attribute, handle-low/high remain hidden (controlled via CSS)", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
 
-      // asymmetric属性がないことを確認
+      // Confirm asymmetric attribute is absent
       expect(el.hasAttribute("asymmetric")).toBe(false);
     });
 
-    it("asymmetric属性がある場合、configに反映される", () => {
+    it("asymmetric attribute is reflected in config", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "5");
@@ -579,7 +579,7 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.marginHigh).toBe(10);
     });
 
-    it("非対称ハンドルのドラッグでmarginLowが個別に変更できる", () => {
+    it("dragging the asymmetric handle changes marginLow independently", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "10");
@@ -613,7 +613,7 @@ describe("CircaInputElement", () => {
           bubbles: true,
         }),
       );
-      // 左に20px移動（10%追加 → marginLow +10）
+      // Move 20px left (10% added -> marginLow +10)
       handleLow.dispatchEvent(
         new PointerEvent("pointermove", {
           clientX: 60,
@@ -630,11 +630,11 @@ describe("CircaInputElement", () => {
         };
       };
       expect(circaEl.circaValue.marginLow).toBe(20);
-      // marginHighは変わらない
+      // marginHigh remains unchanged
       expect(circaEl.circaValue.marginHigh).toBe(10);
     });
 
-    it("非対称ハンドルのドラッグでmarginHighが個別に変更できる", () => {
+    it("dragging the asymmetric handle changes marginHigh independently", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "10");
@@ -668,7 +668,7 @@ describe("CircaInputElement", () => {
           bubbles: true,
         }),
       );
-      // 右に20px移動（10%追加 → marginHigh +10）
+      // Move 20px right (10% added -> marginHigh +10)
       handleHigh.dispatchEvent(
         new PointerEvent("pointermove", {
           clientX: 140,
@@ -684,12 +684,12 @@ describe("CircaInputElement", () => {
           marginHigh: number | null;
         };
       };
-      // marginLowは変わらない
+      // marginLow remains unchanged
       expect(circaEl.circaValue.marginLow).toBe(10);
       expect(circaEl.circaValue.marginHigh).toBe(20);
     });
 
-    // --- 中央つまみドラッグ（方向ロック）テスト用ヘルパー ---
+    // --- Helper functions for center thumb drag (direction lock) tests ---
     function setupAsymmetric(
       target: HTMLElement,
       margins: { low: number; high: number },
@@ -729,7 +729,7 @@ describe("CircaInputElement", () => {
       ).circaValue;
     }
 
-    it("中央つまみの下ドラッグでmarginHighのみ増加する（marginLowは変化しない）", () => {
+    it("downward drag on center thumb increases only marginHigh (marginLow unchanged)", () => {
       setupAsymmetric(el, { low: 10, high: 20 });
       const slider = getValueSlider(el);
 
@@ -741,7 +741,7 @@ describe("CircaInputElement", () => {
       expect(marginLow).toBe(10);
     });
 
-    it("中央つまみの上ドラッグでmarginLowのみ増加する（marginHighは変化しない）", () => {
+    it("upward drag on center thumb increases only marginLow (marginHigh unchanged)", () => {
       setupAsymmetric(el, { low: 10, high: 20 });
       const slider = getValueSlider(el);
 
@@ -753,14 +753,14 @@ describe("CircaInputElement", () => {
       expect(marginHigh).toBe(20);
     });
 
-    it("下ドラッグ後に戻してmarginHighを縮小できる（0でクランプ）", () => {
+    it("can shrink marginHigh by reversing after downward drag (clamped at 0)", () => {
       setupAsymmetric(el, { low: 10, high: 3 });
       const slider = getValueSlider(el);
 
       slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
-      // まず下に動かしてmarginHighをロック
+      // First move down to lock marginHigh
       slider.dispatchEvent(pointerEvent("pointermove", 100, 110));
-      // 大きく上に戻す（開始点を超えて上へ → marginHighが縮小、0でクランプ）
+      // Move far back up (past start point -> marginHigh shrinks, clamped at 0)
       slider.dispatchEvent(pointerEvent("pointermove", 100, 0));
 
       const { marginLow, marginHigh } = getMargins(el);
@@ -768,14 +768,14 @@ describe("CircaInputElement", () => {
       expect(marginLow).toBe(10);
     });
 
-    it("上ドラッグ後に戻してmarginLowを縮小できる（0でクランプ）", () => {
+    it("can shrink marginLow by reversing after upward drag (clamped at 0)", () => {
       setupAsymmetric(el, { low: 3, high: 20 });
       const slider = getValueSlider(el);
 
       slider.dispatchEvent(pointerEvent("pointerdown", 100, 100));
-      // まず上に動かしてmarginLowをロック
+      // First move up to lock marginLow
       slider.dispatchEvent(pointerEvent("pointermove", 100, 90));
-      // 大きく下に戻す（開始点を超えて下へ → marginLowが縮小、0でクランプ）
+      // Move far back down (past start point -> marginLow shrinks, clamped at 0)
       slider.dispatchEvent(pointerEvent("pointermove", 100, 200));
 
       const { marginLow, marginHigh } = getMargins(el);
@@ -783,7 +783,7 @@ describe("CircaInputElement", () => {
       expect(marginHigh).toBe(20);
     });
 
-    it("閾値未満の縦移動ではマージンが変化しない", () => {
+    it("vertical movement below threshold does not change margin", () => {
       setupAsymmetric(el, { low: 10, high: 20 });
       const slider = getValueSlider(el);
 
@@ -796,8 +796,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("非対称ハンドルのキーボード操作", () => {
-    it("handle-lowにフォーカスしてArrowLeftでmarginLowが増加する", () => {
+  describe("asymmetric handle keyboard interaction", () => {
+    it("ArrowLeft on focused handle-low increases marginLow", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "5");
@@ -819,11 +819,11 @@ describe("CircaInputElement", () => {
         };
       };
       expect(circaEl.circaValue.marginLow).toBe(6);
-      // marginHighは変わらない
+      // marginHigh remains unchanged
       expect(circaEl.circaValue.marginHigh).toBe(10);
     });
 
-    it("handle-highにフォーカスしてArrowRightでmarginHighが増加する", () => {
+    it("ArrowRight on focused handle-high increases marginHigh", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "5");
@@ -848,7 +848,7 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.marginHigh).toBe(11);
     });
 
-    it("handle-lowでArrowRightするとmarginLowが縮小する（0未満にならない）", () => {
+    it("ArrowRight on handle-low shrinks marginLow (does not go below 0)", () => {
       el.setAttribute("asymmetric", "");
       el.setAttribute("default-value", "50");
       el.setAttribute("default-margin-low", "0");
@@ -871,7 +871,7 @@ describe("CircaInputElement", () => {
   });
 
   describe("Controlled/Uncontrolled（M2-c）", () => {
-    it("Uncontrolled: 操作で内部状態が変わる", () => {
+    it("Uncontrolled: interaction changes internal state", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -888,11 +888,11 @@ describe("CircaInputElement", () => {
       };
       expect(circaEl.circaValue.value).toBe(51);
 
-      // ARIA属性も更新されている
+      // ARIA attribute is also updated
       expect(slider.getAttribute("aria-valuenow")).toBe("51");
     });
 
-    it("Controlled: value属性が存在する場合、外部から更新しないと表示が変わらない", () => {
+    it("Controlled: display does not change unless externally updated when value attribute exists", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -903,7 +903,7 @@ describe("CircaInputElement", () => {
         "[part='value']",
       ) as HTMLElement;
 
-      // changeイベントは発火するが…
+      // Change event fires, but...
       let detail: unknown = null;
       el2.addEventListener("change", ((e: CustomEvent) => {
         detail = e.detail;
@@ -913,18 +913,18 @@ describe("CircaInputElement", () => {
         new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
       );
 
-      // イベントは発火する
+      // Event is fired
       expect(detail).not.toBeNull();
       expect((detail as { value: number }).value).toBe(51);
 
-      // value属性を外部から更新すれば表示が変わる
+      // Display changes when value attribute is updated externally
       el2.setAttribute("value", "51");
       expect(slider.getAttribute("aria-valuenow")).toBe("51");
 
       el2.remove();
     });
 
-    it("Controlled: value属性を動的に変更すると描画が更新される", () => {
+    it("Controlled: dynamically changing value attribute updates rendering", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -943,8 +943,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("disconnectedCallback（リソース解放）", () => {
-    it("DOMから除去後にキーボード操作が無効になる", () => {
+  describe("disconnectedCallback (resource cleanup)", () => {
+    it("keyboard interaction is disabled after removal from DOM", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -954,7 +954,7 @@ describe("CircaInputElement", () => {
       ) as HTMLElement;
       el.remove();
 
-      // 除去後のキー操作で状態が変わらないことを確認
+      // Confirm key operations after removal do not change state
       slider.dispatchEvent(
         new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
       );
@@ -965,7 +965,7 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.value).toBe(50);
     });
 
-    it("ドラッグ中にDOMから除去されてもクラッシュしない", () => {
+    it("does not crash when removed from DOM during drag", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -983,13 +983,13 @@ describe("CircaInputElement", () => {
         }),
       );
 
-      // ドラッグ中に除去
+      // Remove during drag
       expect(() => el.remove()).not.toThrow();
     });
   });
 
-  describe("フォーム統合（M2-d）", () => {
-    it("name属性が設定されている場合、formAssociatedがtrue", () => {
+  describe("form integration (M2-d)", () => {
+    it("formAssociated is true when name attribute is set", () => {
       // CircaInputElement.formAssociated should be true
       const CircaInputCtor = customElements.get("circa-input") as {
         formAssociated?: boolean;
@@ -997,7 +997,7 @@ describe("CircaInputElement", () => {
       expect(CircaInputCtor.formAssociated).toBe(true);
     });
 
-    it("name属性でフォームに関連付けられる", () => {
+    it("associates with form via name attribute", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -1005,13 +1005,13 @@ describe("CircaInputElement", () => {
       el2.setAttribute("default-value", "14");
       document.body.appendChild(el2);
 
-      // name属性が設定されていることを確認
+      // Confirm name attribute is set
       expect(el2.getAttribute("name")).toBe("delivery_time");
 
       el2.remove();
     });
 
-    it("circaValueをJSON文字列としてフォーム値を設定する", () => {
+    it("sets form value as JSON string of circaValue", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "9");
       el2.setAttribute("max", "21");
@@ -1021,7 +1021,7 @@ describe("CircaInputElement", () => {
       el2.setAttribute("default-margin-high", "2");
       document.body.appendChild(el2);
 
-      // formValue が JSON 文字列として設定されていることを確認
+      // Confirm formValue is set as a JSON string
       const circaEl = el2 as unknown as { readonly formValue: string | null };
       if (circaEl.formValue !== undefined) {
         const parsed = JSON.parse(circaEl.formValue as string);
@@ -1033,7 +1033,7 @@ describe("CircaInputElement", () => {
       el2.remove();
     });
 
-    it("required=trueかつ未入力時にバリデーションエラーを示す", () => {
+    it("indicates validation error when required=true and no value is set", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -1041,7 +1041,7 @@ describe("CircaInputElement", () => {
       el2.setAttribute("required", "");
       document.body.appendChild(el2);
 
-      // value未設定 → required違反
+      // No value set -> required violation
       const circaEl = el2 as unknown as {
         readonly circaValue: { value: number | null };
       };
@@ -1051,8 +1051,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("disabled状態", () => {
-    it("disabled時にキーボード操作が無視される", () => {
+  describe("disabled state", () => {
+    it("keyboard interaction is ignored when disabled", () => {
       el.setAttribute("default-value", "50");
       el.setAttribute("disabled", "");
       el.remove();
@@ -1071,7 +1071,7 @@ describe("CircaInputElement", () => {
       expect(circaEl.circaValue.value).toBe(50);
     });
 
-    it("disabled時にポインター操作が無視される", () => {
+    it("pointer interaction is ignored when disabled", () => {
       el.setAttribute("default-value", "50");
       el.setAttribute("disabled", "");
       el.remove();
@@ -1100,30 +1100,30 @@ describe("CircaInputElement", () => {
       const circaEl = el as unknown as {
         readonly circaValue: { marginLow: number | null };
       };
-      // マージンが変化しない
+      // Margin does not change
       expect(circaEl.circaValue.marginLow).toBeNull();
     });
   });
 
-  describe("目盛り（tick-interval）", () => {
-    it("tick-interval未設定時は目盛りが表示されない", () => {
+  describe("tick marks (tick-interval)", () => {
+    it("no tick marks displayed when tick-interval is not set", () => {
       const ticks = el.shadowRoot?.querySelector("[part='ticks']");
       expect(ticks).toBeNull();
     });
 
-    it("tick-interval設定時に目盛りが表示される", () => {
+    it("tick marks are displayed when tick-interval is set", () => {
       el.setAttribute("tick-interval", "25");
 
       const ticks = el.shadowRoot?.querySelector("[part='ticks']");
       expect(ticks).not.toBeNull();
       expect(ticks?.getAttribute("aria-hidden")).toBe("true");
 
-      // 0, 25, 50, 75, 100 → 5つの目盛り
+      // 0, 25, 50, 75, 100 -> 5 tick marks
       const tickElements = ticks?.querySelectorAll(".circa-tick");
       expect(tickElements?.length).toBe(5);
     });
 
-    it("目盛りラベルに正しい値が表示される", () => {
+    it("tick labels display correct values", () => {
       el.setAttribute("tick-interval", "25");
 
       const labels = el.shadowRoot?.querySelectorAll(".circa-tick-label");
@@ -1131,7 +1131,7 @@ describe("CircaInputElement", () => {
       expect(values).toEqual(["0", "25", "50", "75", "100"]);
     });
 
-    it("目盛り位置がパーセントで正しく設定される", () => {
+    it("tick positions are correctly set as percentages", () => {
       el.setAttribute("tick-interval", "50");
 
       const tickElements = el.shadowRoot?.querySelectorAll(".circa-tick");
@@ -1141,7 +1141,7 @@ describe("CircaInputElement", () => {
       expect(positions).toEqual(["0%", "50%", "100%"]);
     });
 
-    it("tick-intervalを後から変更すると目盛りが更新される", () => {
+    it("tick marks update when tick-interval is changed later", () => {
       el.setAttribute("tick-interval", "25");
       let ticks = el.shadowRoot?.querySelectorAll(".circa-tick");
       expect(ticks?.length).toBe(5);
@@ -1151,7 +1151,7 @@ describe("CircaInputElement", () => {
       expect(ticks?.length).toBe(3);
     });
 
-    it("tick-intervalを削除すると目盛りが消える", () => {
+    it("tick marks disappear when tick-interval is removed", () => {
       el.setAttribute("tick-interval", "25");
       expect(el.shadowRoot?.querySelector("[part='ticks']")).not.toBeNull();
 
@@ -1159,7 +1159,7 @@ describe("CircaInputElement", () => {
       expect(el.shadowRoot?.querySelector("[part='ticks']")).toBeNull();
     });
 
-    it("無効なtick-interval（0以下）では目盛りが表示されない", () => {
+    it("no tick marks displayed with invalid tick-interval (0 or less)", () => {
       el.setAttribute("tick-interval", "0");
       expect(el.shadowRoot?.querySelector("[part='ticks']")).toBeNull();
 
@@ -1167,7 +1167,7 @@ describe("CircaInputElement", () => {
       expect(el.shadowRoot?.querySelector("[part='ticks']")).toBeNull();
     });
 
-    it("maxがtickIntervalの倍数でない場合、maxも目盛りに含まれる", () => {
+    it("max is included in tick marks when max is not a multiple of tickInterval", () => {
       el.setAttribute("tick-interval", "30");
 
       const labels = el.shadowRoot?.querySelectorAll(".circa-tick-label");
@@ -1175,7 +1175,7 @@ describe("CircaInputElement", () => {
       expect(values).toEqual(["0", "30", "60", "90", "100"]);
     });
 
-    it("track-area内にtickコンテナが配置される", () => {
+    it("tick container is placed inside track-area", () => {
       el.setAttribute("tick-interval", "25");
 
       const trackArea = el.shadowRoot?.querySelector("[part='track-area']");
@@ -1184,15 +1184,15 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("バリデーション", () => {
-    it("min >= max の場合にCircaInputErrorをthrowする", () => {
+  describe("validation", () => {
+    it("throws CircaInputError when min >= max", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "100");
       el2.setAttribute("max", "0");
       expect(() => document.body.appendChild(el2)).toThrow();
     });
 
-    it("margin-max が負の場合にCircaInputErrorをthrowする", () => {
+    it("throws CircaInputError when margin-max is negative", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
       el2.setAttribute("max", "100");
@@ -1201,8 +1201,8 @@ describe("CircaInputElement", () => {
     });
   });
 
-  describe("モバイル対応（M2-d）", () => {
-    it("pointercancel でドラッグが安全にキャンセルされる", () => {
+  describe("mobile support (M2-d)", () => {
+    it("pointercancel safely cancels drag", () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -1211,7 +1211,7 @@ describe("CircaInputElement", () => {
         "[part='value']",
       ) as HTMLElement;
 
-      // ドラッグ開始
+      // Start drag
       slider.dispatchEvent(
         new PointerEvent("pointerdown", {
           clientX: 100,
@@ -1229,12 +1229,12 @@ describe("CircaInputElement", () => {
         }),
       );
 
-      // pointercancel 発生
+      // pointercancel occurs
       slider.dispatchEvent(
         new PointerEvent("pointercancel", { pointerId: 1, bubbles: true }),
       );
 
-      // ドラッグが終了していることを確認（追加のpointermoveが影響しない）
+      // Confirm drag has ended (additional pointermove has no effect)
       const marginBefore = (
         el as unknown as { readonly circaValue: { marginLow: number | null } }
       ).circaValue.marginLow;
@@ -1254,9 +1254,9 @@ describe("CircaInputElement", () => {
       expect(marginAfter).toBe(marginBefore);
     });
 
-    it("touch-action: none がhost要素に設定されている（CSSで管理）", () => {
-      // styles.ts で :host に touch-action: none が設定されていることを確認
-      // Shadow DOM内のスタイルとして存在する
+    it("touch-action: none is set on host element (managed via CSS)", () => {
+      // Confirm touch-action: none is set on :host in styles.ts
+      // Exists as a style within Shadow DOM
       const style = el.shadowRoot?.querySelector("style");
       expect(style).not.toBeNull();
       expect(style?.textContent).toContain("touch-action: none");

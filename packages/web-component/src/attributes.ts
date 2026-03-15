@@ -1,8 +1,8 @@
 /**
- * HTML属性のパースとconfig構築（純粋関数）
+ * HTML attribute parsing and config construction (pure functions)
  *
- * <circa-input> の HTML属性を読み取り、coreの CircaInputConfig に変換する。
- * DOM操作はせず、文字列→型変換のみを行う。
+ * Reads <circa-input> HTML attributes and converts them to core's CircaInputConfig.
+ * Performs only string-to-type conversions without any DOM manipulation.
  */
 import type {
   CircaInputConfig,
@@ -11,11 +11,11 @@ import type {
 } from "@circa-input/core";
 import { createDefaultConfig, createInitialValue } from "@circa-input/core";
 
-/** 有効なdistribution値 */
+/** Valid distribution values */
 const VALID_DISTRIBUTIONS: readonly string[] = ["normal", "uniform", "skewed"];
 
 /**
- * distribution属性をパースし、無効な値は"normal"にフォールバックする。
+ * Parse the distribution attribute, falling back to "normal" for invalid values.
  */
 function parseDistribution(raw: string | null): Distribution {
   if (raw !== null && VALID_DISTRIBUTIONS.includes(raw)) {
@@ -25,28 +25,28 @@ function parseDistribution(raw: string | null): Distribution {
 }
 
 /**
- * 文字列をnumber | nullに変換する。
- * 空文字やnullはnullを返す。数値として不正な文字列もnullを返す。
+ * Convert a string to number | null.
+ * Returns null for empty strings, null, or invalid numeric strings.
  */
 export function parseNumberAttr(value: string | null): number | null {
   if (value === null || value === "") return null;
   const num = Number(value);
   if (Number.isNaN(num)) return null;
-  // "12px" のような文字列を除外: Number()はNaNを返すので上で除外済み
+  // Strings like "12px" are excluded: Number() returns NaN, already handled above
   return num;
 }
 
 /**
- * boolean属性のパース。
- * HTML仕様に従い、属性が存在すればtrue（値は関係ない）。
+ * Parse a boolean attribute.
+ * Per HTML spec, the attribute is true if it exists (regardless of value).
  */
 export function parseBooleanAttr(value: string | null): boolean {
   return value !== null;
 }
 
 /**
- * HTML属性からCircaInputConfigを構築する。
- * min/maxが未指定の場合はデフォルト値（0, 100）を使用する。
+ * Build a CircaInputConfig from HTML attributes.
+ * Uses default values (0, 100) when min/max are not specified.
  */
 export function buildConfig(
   getAttr: (name: string) => string | null,
@@ -74,10 +74,10 @@ export function buildConfig(
 }
 
 /**
- * default-* 属性またはcontrolled属性から初期CircaValueを構築する。
- * controlled（value属性が存在する）の場合はcontrolled属性を優先。
+ * Build the initial CircaValue from default-* or controlled attributes.
+ * When controlled (value attribute exists), controlled attributes take priority.
  *
- * @param isControlled 外部から渡すことで判定ロジックの重複を防ぐ。省略時はvalue属性の有無で判定。
+ * @param isControlled Passed externally to avoid duplicating detection logic. Defaults to checking the value attribute.
  */
 export function buildInitialValue(
   getAttr: (name: string) => string | null,

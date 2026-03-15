@@ -1,11 +1,11 @@
 /**
- * 座標変換ユーティリティ（純粋関数）
+ * Coordinate conversion utilities (pure functions)
  *
- * Web Component内でピクセル座標⇔値の変換を行う。
- * DOM要素には依存しない純粋関数として実装し、テスタビリティを確保する。
+ * Converts between pixel coordinates and values within the Web Component.
+ * Implemented as pure functions independent of DOM elements to ensure testability.
  *
- * valueToPercent / percentToValue は @circa-input/core に定義されており、
- * ここからre-exportしている。
+ * valueToPercent / percentToValue are defined in @circa-input/core
+ * and re-exported from here.
  */
 
 import { clamp } from "@circa-input/core";
@@ -13,8 +13,8 @@ import { clamp } from "@circa-input/core";
 export { clamp, percentToValue, valueToPercent } from "@circa-input/core";
 
 /**
- * クライアントX座標をトラック上のパーセント位置に変換する。
- * トラックの左端=0%, 右端=100%。範囲外は0〜100にクランプ。
+ * Convert a client X coordinate to a percent position on the track.
+ * Track left edge = 0%, right edge = 100%. Out-of-range values are clamped to 0-100.
  */
 export function clientXToPercent(
   clientX: number,
