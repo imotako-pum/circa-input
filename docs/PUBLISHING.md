@@ -234,7 +234,32 @@ npm info @circa-input/core
 
 ## CI Automated Publish (GitHub Actions)
 
-For future reference, here is a minimal workflow for automated publishing on git tag push:
+Publishing is automated via `.github/workflows/publish.yml`. When a version tag (`v*`) is pushed, GitHub Actions automatically builds, tests, and publishes all three packages to npm.
+
+### Authentication: OIDC Trusted Publishing
+
+This project uses [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) instead of long-lived NPM_TOKEN secrets. GitHub Actions authenticates directly with npm via OIDC — no tokens to manage or rotate.
+
+**How it works:**
+1. GitHub Actions generates a short-lived OIDC token for the workflow run
+2. npm verifies the token matches the trusted publisher configuration
+3. The package is published with provenance attestation automatically
+
+### Trusted Publisher Setup (already configured)
+
+Each package has a trusted publisher configured on npmjs.com:
+
+- https://www.npmjs.com/package/@circa-input/core/settings
+- https://www.npmjs.com/package/@circa-input/web-component/settings
+- https://www.npmjs.com/package/@circa-input/react/settings
+
+Settings:
+- **Publisher**: GitHub Actions
+- **Username**: `imotako-pum`
+- **Repository**: `circa-input`
+- **Workflow filename**: `publish.yml`
+
+### Workflow
 
 ```yaml
 # .github/workflows/publish.yml
@@ -250,7 +275,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write   # Required for provenance
+      id-token: write   # Required for OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -264,23 +289,31 @@ jobs:
       - run: pnpm build
       - run: pnpm test
 
-      - run: npm publish --provenance --access public
+      - name: Publish @circa-input/core
+        run: npm publish --provenance --access public
         working-directory: packages/core
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - run: npm publish --provenance --access public
+      - name: Publish @circa-input/web-component
+        run: npm publish --provenance --access public
         working-directory: packages/web-component
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - run: npm publish --provenance --access public
+      - name: Publish @circa-input/react
+        run: npm publish --provenance --access public
         working-directory: packages/react
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
-**Setup:** Add your npm access token as `NPM_TOKEN` in GitHub repository Settings > Secrets and variables > Actions.
+> **Note:** `NODE_AUTH_TOKEN` is intentionally absent. OIDC trusted publishing activates only when this variable is not set.
+
+### How to Release
+
+```bash
+# 1. Bump versions in package.json files
+# 2. Commit and tag
+git tag -a v0.2.0 -m "v0.2.0"
+git push origin main --tags
+
+# GitHub Actions handles the rest automatically
+```
 
 ---
 
