@@ -1,6 +1,6 @@
 {
   "name": "@circa-input/react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React adapter for circa-input — use <CircaInput> in React apps",
   "license": "MIT",
   "author": "imotako-pum",

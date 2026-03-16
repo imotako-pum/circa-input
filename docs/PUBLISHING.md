@@ -75,15 +75,15 @@ core (no deps) → web-component (depends on core) → react (depends on web-com
 ```bash
 # 1. core first
 cd packages/core
-npm publish --access public
+pnpm publish --access public
 
 # 2. web-component second
 cd ../web-component
-npm publish --access public
+pnpm publish --access public
 
 # 3. react last
 cd ../react
-npm publish --access public
+pnpm publish --access public
 ```
 
 ### Step 4: Verify on npm
@@ -120,7 +120,7 @@ cd packages/core
 npm version patch   # or minor / major
 
 # 3. Publish
-npm publish
+pnpm publish
 
 # 4. Push the commit and tag to GitHub
 git push && git push --tags
@@ -139,12 +139,12 @@ When changes span multiple packages, update and publish them in dependency order
 # Example: core and web-component both changed
 cd packages/core
 npm version patch
-npm publish
+pnpm publish
 
 cd ../web-component
 # Update the core dependency version in package.json if needed
 npm version patch
-npm publish
+pnpm publish
 
 git push && git push --tags
 ```
@@ -212,7 +212,7 @@ npm unpublish @circa-input/core@0.1.0
 When publishing from GitHub Actions, add `--provenance` to certify that the package was built from the repository's CI:
 
 ```bash
-npm publish --provenance --access public
+pnpm publish --provenance --access public
 ```
 
 This adds a verified build badge on the npm package page.
@@ -290,15 +290,15 @@ jobs:
       - run: pnpm test
 
       - name: Publish @circa-input/core
-        run: npm publish --provenance --access public
+        run: pnpm publish --provenance --access public --no-git-checks
         working-directory: packages/core
 
       - name: Publish @circa-input/web-component
-        run: npm publish --provenance --access public
+        run: pnpm publish --provenance --access public --no-git-checks
         working-directory: packages/web-component
 
       - name: Publish @circa-input/react
-        run: npm publish --provenance --access public
+        run: pnpm publish --provenance --access public --no-git-checks
         working-directory: packages/react
 ```
 
@@ -324,7 +324,7 @@ git push origin main --tags
 | Log in to npm | `npm login` |
 | Check login | `npm whoami` |
 | Preview package contents | `npm pack --dry-run` |
-| Publish | `npm publish --access public` |
+| Publish | `pnpm publish --access public` |
 | Bump patch version | `npm version patch` |
 | Bump minor version | `npm version minor` |
 | Bump major version | `npm version major` |
