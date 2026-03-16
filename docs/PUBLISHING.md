@@ -281,7 +281,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
@@ -302,7 +302,7 @@ jobs:
         working-directory: packages/react
 ```
 
-> **Note:** `NODE_AUTH_TOKEN` is intentionally absent. OIDC trusted publishing activates only when this variable is not set.
+> **Note:** Node.js 24 is required for npm OIDC trusted publishing (npm >= 11.5.1). `NODE_AUTH_TOKEN` is intentionally absent — OIDC trusted publishing activates only when this variable is not set. `pnpm publish` automatically converts `workspace:*` to real version numbers.
 
 ### How to Release
 
