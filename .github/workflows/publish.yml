@@ -27,17 +27,11 @@ jobs:
       - name: Publish @circa-input/core
         run: npm publish --provenance --access public
         working-directory: packages/core
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @circa-input/web-component
         run: npm publish --provenance --access public
         working-directory: packages/web-component
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @circa-input/react
         run: npm publish --provenance --access public
         working-directory: packages/react
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
