@@ -7,7 +7,7 @@
   "homepage": "https://github.com/imotako-pum/circa-input/tree/main/packages/core",
   "repository": {
     "type": "git",
-    "url": "https://github.com/imotako-pum/circa-input.git",
+    "url": "git+https://github.com/imotako-pum/circa-input.git",
     "directory": "packages/core"
   },
   "bugs": {
