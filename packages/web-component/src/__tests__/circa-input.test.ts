@@ -1443,4 +1443,90 @@ describe("CircaInputElement", () => {
       expect(valuenow).toBe(40);
     });
   });
+
+  describe("default-* attribute late initialization (React compat)", () => {
+    it("default-margin-low/high are applied when set after connectedCallback", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      document.body.appendChild(el2);
+
+      // Set default-* attributes after connectedCallback (simulates React useLayoutEffect)
+      el2.setAttribute("default-value", "50");
+      el2.setAttribute("default-margin-low", "5");
+      el2.setAttribute("default-margin-high", "10");
+
+      const circaEl = el2 as unknown as {
+        readonly circaValue: {
+          value: number | null;
+          marginLow: number | null;
+          marginHigh: number | null;
+        };
+      };
+      expect(circaEl.circaValue.value).toBe(50);
+      expect(circaEl.circaValue.marginLow).toBe(5);
+      expect(circaEl.circaValue.marginHigh).toBe(10);
+
+      el2.remove();
+    });
+
+    it("default-* attributes are ignored after user interaction", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("default-value", "50");
+      document.body.appendChild(el2);
+
+      // Use keyboard to change value (simulates user interaction)
+      const valueEl = el2.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      valueEl.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight" }),
+      );
+
+      const circaEl = el2 as unknown as {
+        readonly circaValue: { value: number | null };
+      };
+      const valueAfterInteraction = circaEl.circaValue.value;
+      expect(valueAfterInteraction).not.toBe(50);
+
+      // Changing default-value should NOT re-initialize
+      el2.setAttribute("default-value", "70");
+      expect(circaEl.circaValue.value).toBe(valueAfterInteraction);
+
+      el2.remove();
+    });
+
+    it("default-* attributes re-apply after clear()", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("default-value", "50");
+      document.body.appendChild(el2);
+
+      // Simulate user interaction
+      const valueEl = el2.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      valueEl.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight" }),
+      );
+
+      const circaEl = el2 as unknown as {
+        readonly circaValue: { value: number | null };
+        clear(): void;
+      };
+
+      // Clear resets the value
+      circaEl.clear();
+      expect(circaEl.circaValue.value).toBeNull();
+
+      // After clear, default-value should be re-applicable
+      el2.setAttribute("default-value", "70");
+      expect(circaEl.circaValue.value).toBe(70);
+
+      el2.remove();
+    });
+  });
 });
