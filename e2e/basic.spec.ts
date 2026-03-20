@@ -137,7 +137,8 @@ test.describe("circa-input E2E", () => {
         (el as HTMLElement & { circaValue: { marginLow: number | null } })
           .circaValue.marginLow,
     );
-    expect(marginBefore).toBeNull();
+    // initialMargin auto-applies a default margin on first value set
+    expect(marginBefore).toBeGreaterThanOrEqual(0);
 
     // Focus and press Shift+ArrowRight to expand margin
     const thumb = circaInput.locator("[part='value']");
@@ -149,7 +150,7 @@ test.describe("circa-input E2E", () => {
         (el as HTMLElement & { circaValue: { marginLow: number } }).circaValue
           .marginLow,
     );
-    expect(marginAfter).toBeGreaterThan(0);
+    expect(marginAfter).toBeGreaterThan(marginBefore ?? 0);
   });
 
   test("form submission includes JSON in FormData", async ({ page }) => {
