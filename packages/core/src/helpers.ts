@@ -24,6 +24,8 @@ export function valueToPercent(
   min: number,
   max: number,
 ): number {
+  // Defensive guard: validateConfig rejects min >= max, but this prevents
+  // division by zero if the function is ever called without prior validation.
   if (max === min) return 0;
   const raw = ((value - min) / (max - min)) * 100;
   return clamp(raw, 0, 100);
@@ -84,4 +86,29 @@ export function generateTicks(
   }
 
   return ticks;
+}
+
+/**
+ * Serialize a CircaValue to JSON, preserving Infinity values.
+ *
+ * Standard `JSON.stringify` converts `Infinity` to `null`, making it
+ * impossible to distinguish "no margin set" from "unlimited margin".
+ * This function encodes `Infinity` as the string `"Infinity"` and
+ * `-Infinity` as `"-Infinity"`.
+ */
+export function serializeCircaValue(value: CircaValue): string {
+  return JSON.stringify(value, (_key, v) =>
+    v === Infinity ? "Infinity" : v === -Infinity ? "-Infinity" : v,
+  );
+}
+
+/**
+ * Deserialize a JSON string back to a CircaValue, restoring Infinity values.
+ *
+ * Reverses the encoding performed by `serializeCircaValue`.
+ */
+export function deserializeCircaValue(json: string): CircaValue {
+  return JSON.parse(json, (_key, v) =>
+    v === "Infinity" ? Infinity : v === "-Infinity" ? -Infinity : v,
+  );
 }

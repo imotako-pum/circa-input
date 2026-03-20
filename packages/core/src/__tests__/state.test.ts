@@ -89,6 +89,17 @@ describe("snapToStep", () => {
     expect(snapToStep(0.15, { min: 0, max: 1, step: 0.1 })).toBe(0.1);
     expect(snapToStep(0.16, { min: 0, max: 1, step: 0.1 })).toBe(0.2);
   });
+
+  it("handles scientific notation step values correctly", () => {
+    // 1e-7 has 7 decimal places
+    expect(snapToStep(3e-7, { min: 0, max: 1e-5, step: 1e-7 })).toBe(3e-7);
+    // 1.5e-10 has 11 decimal places (10 from exponent + 1 from mantissa ".5")
+    expect(snapToStep(1.5e-10, { min: 0, max: 1e-8, step: 1.5e-10 })).toBe(
+      1.5e-10,
+    );
+    // 2.5e-3 has 4 decimal places (3 from exponent + 1 from mantissa ".5")
+    expect(snapToStep(0.005, { min: 0, max: 1, step: 2.5e-3 })).toBe(0.005);
+  });
 });
 
 describe("clampMargins", () => {

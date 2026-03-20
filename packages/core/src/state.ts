@@ -35,10 +35,15 @@ export function snapToStep(
  */
 function countDecimals(num: number): number {
   const str = num.toString();
-  // Handle scientific notation (e.g., "1e-7" → 7 decimal places)
+  // Handle scientific notation (e.g., "1e-7" → 7, "1.5e-10" → 11)
   const eIndex = str.indexOf("e-");
   if (eIndex !== -1) {
-    return parseInt(str.slice(eIndex + 2), 10);
+    const exponent = parseInt(str.slice(eIndex + 2), 10);
+    const mantissa = str.slice(0, eIndex);
+    const dotIndex = mantissa.indexOf(".");
+    const mantissaDecimals =
+      dotIndex === -1 ? 0 : mantissa.length - dotIndex - 1;
+    return exponent + mantissaDecimals;
   }
   const dotIndex = str.indexOf(".");
   return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
