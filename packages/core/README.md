@@ -35,8 +35,12 @@ console.log(updated);
 ### Types
 
 - `CircaValue` — Output data structure with value, margins, and distribution
-- `CircaInputConfig` — Configuration (min, max, step, marginMax, etc.)
+- `CircaInputConfig` — Configuration (min, max, step, marginMax, initialMargin, etc.)
 - `Distribution` — `"normal" | "uniform"`
+
+#### `initialMargin`
+
+The `initialMargin` field in `CircaInputConfig` controls the margin automatically applied when a value transitions from `null` to non-null (i.e., the user's first click). When set to `null` (the default), it auto-calculates as `(max - min) / 10`. Set to `0` to disable auto-margin. If `step` is configured, the value is snapped to the nearest step size.
 
 ### Functions
 
