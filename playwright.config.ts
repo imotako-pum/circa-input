@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 30_000,
   retries: 0,
   use: {
-    baseURL: "http://localhost:4173",
+    baseURL: "http://localhost:4173/circa-input/",
     headless: true,
   },
   projects: [
