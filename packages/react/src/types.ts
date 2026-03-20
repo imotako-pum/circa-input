@@ -1,4 +1,4 @@
-import type { CircaValue, Distribution } from "@circa-input/core";
+import type { CircaValue, Distribution, GradientMode } from "@circa-input/core";
 import type { CSSProperties, ReactNode } from "react";
 
 /**
@@ -50,6 +50,12 @@ export interface CircaInputProps {
   tickInterval?: number;
   /** Default margin width applied when value is first set (null → value) */
   initialMargin?: number | null;
+  /** Gradient mode for margin band opacity falloff (null = disabled) */
+  gradient?: GradientMode | null;
+  /** Gradient intensity exponent (default: 1.5) */
+  gradientIntensity?: number;
+  /** Range-only mode: hides center value emphasis, shows edge handles */
+  rangeOnly?: boolean;
 
   // --- Events ---
   /** Fires on interaction complete (receives CircaValue directly) */

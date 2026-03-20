@@ -8,11 +8,45 @@ import type {
   CircaInputConfig,
   CircaValue,
   Distribution,
+  GradientMode,
 } from "@circa-input/core";
 import { createDefaultConfig, createInitialValue } from "@circa-input/core";
 
 /** Valid distribution values */
 const VALID_DISTRIBUTIONS: readonly string[] = ["normal", "uniform"];
+
+/** Valid gradient mode values */
+const VALID_GRADIENT_MODES: readonly string[] = ["relative", "absolute"];
+
+/**
+ * Parsed gradient configuration from HTML attributes.
+ */
+export interface GradientConfig {
+  /** Gradient mode, or null if gradient is disabled */
+  mode: GradientMode | null;
+  /** Falloff exponent (1 = linear, >1 = steeper, <1 = gentler). Default 1.5. */
+  intensity: number;
+}
+
+/**
+ * Build a GradientConfig from the `gradient` and `gradient-intensity` attributes.
+ *
+ * - `gradient` attribute: `"relative"` or `"absolute"`. Omitted or invalid → gradient disabled.
+ * - `gradient-intensity` attribute: Positive number. Defaults to 1.5.
+ */
+export function buildGradientConfig(
+  getAttr: (name: string) => string | null,
+): GradientConfig {
+  const raw = getAttr("gradient");
+  const mode =
+    raw !== null && VALID_GRADIENT_MODES.includes(raw)
+      ? (raw as GradientMode)
+      : null;
+  const intensityRaw = parseNumberAttr(getAttr("gradient-intensity"));
+  const intensity =
+    intensityRaw !== null && intensityRaw > 0 ? intensityRaw : 1.5;
+  return { mode, intensity };
+}
 
 /**
  * Parse the distribution attribute, falling back to "normal" for invalid values.

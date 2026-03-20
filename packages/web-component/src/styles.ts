@@ -13,6 +13,8 @@ export const STYLES = `
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
+  --circa-margin-color-rgb: 25, 118, 210;
+  --circa-margin-border-color: transparent;
 }
 
 :host([disabled]) {
@@ -47,7 +49,9 @@ export const STYLES = `
   height: 100%;
   background: var(--circa-margin-color, rgba(25, 118, 210, 0.2));
   border-radius: var(--circa-track-radius, 4px);
+  border: 1px solid var(--circa-margin-border-color, transparent);
   pointer-events: none;
+  box-sizing: border-box;
 }
 
 [part="value"] {
@@ -117,6 +121,24 @@ export const STYLES = `
 :host([asymmetric]) [part="handle-low"].unset,
 :host([asymmetric]) [part="handle-high"].unset {
   display: none;
+}
+
+/* range-only: show edge handles */
+:host([range-only]) [part="handle-low"],
+:host([range-only]) [part="handle-high"] {
+  display: block;
+}
+:host([range-only]) [part="handle-low"].unset,
+:host([range-only]) [part="handle-high"].unset {
+  display: none;
+}
+
+/* range-only: value thumb becomes a bar spanning the margin area */
+:host([range-only]) [part="value"] {
+  height: var(--circa-track-height, 8px);
+  border-radius: var(--circa-track-radius, 4px);
+  /* width and left are set dynamically in _render() */
+  transform: translate(0, -50%);
 }
 
 /* Clear area: wrapper for the slot */

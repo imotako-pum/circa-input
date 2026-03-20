@@ -41,6 +41,8 @@ const PROP_TO_ATTR: Record<string, string> = {
   name: "name",
   tickInterval: "tick-interval",
   initialMargin: "initial-margin",
+  gradient: "gradient",
+  gradientIntensity: "gradient-intensity",
 };
 
 /** Boolean attribute mapping (true -> attribute present, false/undefined -> attribute absent) */
@@ -49,6 +51,7 @@ const BOOLEAN_ATTRS: Record<string, string> = {
   required: "required",
   disabled: "disabled",
   noClear: "no-clear",
+  rangeOnly: "range-only",
 };
 
 /**

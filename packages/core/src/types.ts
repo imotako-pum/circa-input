@@ -1,17 +1,47 @@
 /**
+ * Mode for gradient opacity calculation across the margin band.
+ *
+ * - `"relative"`: Each side (low/high) is independently normalized so that the edge always reaches opacity 0.
+ *   Even if marginLow ≠ marginHigh, both edges fade to transparent.
+ * - `"absolute"`: Both sides share the same distance scale (the larger margin).
+ *   Equal distances from center always produce equal opacity, so the shorter side may not fully fade out.
+ */
+export type GradientMode = "relative" | "absolute";
+
+/**
+ * A single color stop used to build a CSS linear-gradient for the margin band.
+ */
+export interface GradientStop {
+  /** Position within the margin band (0 = left edge, 1 = right edge) */
+  position: number;
+  /** Opacity at this position (0 = fully transparent, 1 = maximum intensity) */
+  opacity: number;
+}
+
+/**
  * Type representing the shape of a distribution.
  */
 export type Distribution = "normal" | "uniform";
 
 /**
+ * Base distribution parameters shared by all distribution types.
+ * Contains gradient metadata that describes the confidence shape within the margin.
+ */
+export interface BaseDistributionParams {
+  /** Gradient mode applied to this value's margin (undefined when no gradient is set) */
+  gradientMode?: GradientMode;
+  /** Gradient intensity exponent (undefined when no gradient is set) */
+  gradientIntensity?: number;
+}
+
+/**
  * Distribution-specific parameters.
- * Currently reserved for future use — all distributions use empty objects.
  *
  * When adding a new distribution (e.g., "skewed"), define its parameter type here
  * and add it to DistributionParamsMap.
  */
-export type NormalDistributionParams = Record<string, never>;
-export type UniformDistributionParams = Record<string, never>;
+export interface NormalDistributionParams extends BaseDistributionParams {}
+export interface UniformDistributionParams extends BaseDistributionParams {}
 
 /** Map from distribution name to its parameter type. */
 export interface DistributionParamsMap {
