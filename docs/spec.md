@@ -22,10 +22,21 @@ A UI primitive that allows users to input both a "value" and its "ambiguity" sim
 
 ```typescript
 type Distribution = "normal" | "uniform";
+type GradientMode = "relative" | "absolute";
 
-/** Distribution-specific parameters (reserved for future extension; always {} in v0.1.x) */
-type NormalDistributionParams = Record<string, never>;
-type UniformDistributionParams = Record<string, never>;
+/** Gradient rendering parameters (present when gradient attribute is set) */
+interface GradientParams {
+  mode: GradientMode;
+  intensity: number;
+}
+
+/** Base distribution parameters shared by all distribution types */
+interface BaseDistributionParams {
+  gradient?: GradientParams;
+}
+
+interface NormalDistributionParams extends BaseDistributionParams {}
+interface UniformDistributionParams extends BaseDistributionParams {}
 
 interface DistributionParamsMap {
   normal: NormalDistributionParams;
@@ -76,6 +87,23 @@ interface CircaValue {
   "marginHigh": 2.0,
   "distribution": "normal",
   "distributionParams": {}
+}
+```
+
+### Input Example (With Gradient)
+
+```json
+{
+  "value": 50,
+  "marginLow": 15,
+  "marginHigh": 30,
+  "distribution": "normal",
+  "distributionParams": {
+    "gradient": {
+      "mode": "relative",
+      "intensity": 1.5
+    }
+  }
 }
 ```
 
@@ -131,6 +159,9 @@ Used when the component manages its own internal state.
 | `tick-interval` | number \| null | null | Tick mark interval (displays tick lines + numeric labels only when set) |
 | `initial-margin` | number \| null | null | Default margin width applied when value is first set (null → value). When null, defaults to (max - min) / 10. Snapped to step if step is set. |
 | `disabled` | boolean | false | Disables the component (pointer-events: none, opacity: 0.5, ARIA disabled) |
+| `gradient` | "relative" \| "absolute" \| null | null | Gradient mode for margin band opacity. `relative` fades each side independently; `absolute` uses a shared scale. When set, gradient info is included in `distributionParams`. |
+| `gradient-intensity` | number | 1.5 | Exponent controlling gradient falloff curve. Higher = steeper fade. Only effective when `gradient` is set. |
+| `range-only` | boolean | false | Hides center value emphasis, shows edge handles. The value bar spans the entire margin band. Center drag adjusts both margins symmetrically; edge handles adjust individually. |
 
 ### Controlled Mode
 
