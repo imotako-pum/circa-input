@@ -10,10 +10,11 @@ import type {
   Distribution,
   GradientMode,
 } from "@circa-input/core";
-import { createDefaultConfig, createInitialValue } from "@circa-input/core";
-
-/** Valid distribution values */
-const VALID_DISTRIBUTIONS: readonly string[] = ["normal", "uniform"];
+import {
+  createDefaultConfig,
+  createInitialValue,
+  DISTRIBUTIONS,
+} from "@circa-input/core";
 
 /** Valid gradient mode values */
 const VALID_GRADIENT_MODES: readonly string[] = ["relative", "absolute"];
@@ -52,7 +53,7 @@ export function buildGradientConfig(
  * Parse the distribution attribute, falling back to "normal" for invalid values.
  */
 function parseDistribution(raw: string | null): Distribution {
-  if (raw !== null && VALID_DISTRIBUTIONS.includes(raw)) {
+  if (raw !== null && (DISTRIBUTIONS as readonly string[]).includes(raw)) {
     return raw as Distribution;
   }
   return "normal";

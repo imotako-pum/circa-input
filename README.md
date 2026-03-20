@@ -120,11 +120,32 @@ interface CircaValue {
 | `step` | number \| `"any"` | `"any"` | Value granularity |
 | `margin-max` | number | — | Maximum margin size |
 | `asymmetric` | boolean | `false` | Enable independent low/high margins |
+| `initial-margin` | number \| null | `null` | Margin automatically applied on first value set (see [Auto-margin](#auto-margin)) |
 | `name` | string | — | Form field name |
 | `required` | boolean | `false` | Form validation |
 | `disabled` | boolean | `false` | Disable the component |
 | `no-clear` | boolean | `false` | Hide the clear button |
 | `tick-interval` | number | — | Tick mark interval |
+
+### Auto-margin
+
+By default, when a user first clicks the track to set a value, circa-input automatically applies a margin of `(max - min) / 10` to both sides. This reflects circa-input's core philosophy: human input is inherently approximate, so the initial selection should convey that ambiguity rather than false precision.
+
+- **Default behavior:** `initial-margin` is `null`, which auto-calculates as `(max - min) / 10`. For a 0–100 range this means ±10.
+- **Custom value:** Set `initial-margin="5"` to always apply a margin of 5 on first click.
+- **Opt out:** Set `initial-margin="0"` to get a point value with no automatic margin.
+- **Step interaction:** When `step` is configured, the auto-margin is snapped to the nearest step size.
+
+```html
+<!-- Default: auto-margin of (100-0)/10 = 10 -->
+<circa-input min="0" max="100"></circa-input>
+
+<!-- No auto-margin: first click gives a precise point value -->
+<circa-input min="0" max="100" initial-margin="0"></circa-input>
+
+<!-- Custom auto-margin of 5 -->
+<circa-input min="0" max="100" initial-margin="5"></circa-input>
+```
 
 ## Events
 

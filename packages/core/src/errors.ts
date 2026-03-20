@@ -25,6 +25,8 @@ export const CircaErrorCode = {
   INVALID_MARGIN_HIGH: "INVALID_MARGIN_HIGH",
   /** Internal shadow DOM element missing (library bug) */
   DOM_ELEMENT_NOT_FOUND: "DOM_ELEMENT_NOT_FOUND",
+  /** Deserialized CircaValue has invalid shape or values */
+  INVALID_CIRCA_VALUE: "INVALID_CIRCA_VALUE",
 } as const;
 
 export type CircaErrorCode =

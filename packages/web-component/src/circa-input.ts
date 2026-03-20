@@ -9,6 +9,7 @@ import {
   CircaErrorCode,
   CircaInputError,
   checkRequired,
+  clamp,
   clampMargins,
   createInitialValue,
   generateGradientStops,
@@ -84,6 +85,8 @@ const MARGIN_DRAG_SCALE_PX = 100;
  */
 const ASYMMETRIC_LOCK_THRESHOLD_PX = 5;
 
+let _warnedInternals = false;
+
 export class CircaInputElement extends HTMLElement {
   /** @internal Internal state */
   private _circaValue!: CircaValue;
@@ -128,6 +131,9 @@ export class CircaInputElement extends HTMLElement {
   /** @internal */
   private _handleDragStartMargin = 0;
 
+  /** @internal rAF id for throttled input events */
+  private _inputRafId: number | null = null;
+
   /** @internal Cached track BoundingClientRect from drag start */
   private _cachedTrackRect: { left: number; width: number } | null = null;
 
@@ -159,9 +165,12 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._internals = this.attachInternals();
     } catch {
-      console.warn(
-        "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
-      );
+      if (!_warnedInternals) {
+        console.warn(
+          "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
+        );
+        _warnedInternals = true;
+      }
     }
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
@@ -214,6 +223,12 @@ export class CircaInputElement extends HTMLElement {
   }
 
   disconnectedCallback(): void {
+    // Cancel any pending rAF
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
+
     // Remove listeners
     this._valueEl.removeEventListener("keydown", this._onKeyDown);
     this._track.removeEventListener("pointerdown", this._onTrackPointerDown);
@@ -644,7 +659,7 @@ export class CircaInputElement extends HTMLElement {
       this._config,
     );
     this._setValue(newCirca);
-    this._emitInput();
+    this._scheduleEmitInput();
   };
 
   /** @internal Drag end */
@@ -667,6 +682,10 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
     this._valueEl.removeEventListener("pointercancel", this._onValuePointerUp);
 
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
     this._applyPendingAttributeUpdate();
     this._emitChange();
   };
@@ -675,12 +694,14 @@ export class CircaInputElement extends HTMLElement {
   private _applyPendingAttributeUpdate(): void {
     if (!this._pendingAttributeUpdate) return;
     this._pendingAttributeUpdate = false;
+    // Config rebuild is common to both modes
+    this._config = buildConfig((name) => this.getAttribute(name));
+    validateConfig(this._config);
+    this._gradientConfig = buildGradientConfig((name) =>
+      this.getAttribute(name),
+    );
     if (this._isControlled) {
-      this._config = buildConfig((name) => this.getAttribute(name));
-      validateConfig(this._config);
-      this._gradientConfig = buildGradientConfig((name) =>
-        this.getAttribute(name),
-      );
+      // Controlled: re-read value/margin attributes
       this._circaValue = clampMargins(
         buildInitialValue(
           (name) => this.getAttribute(name),
@@ -689,10 +710,20 @@ export class CircaInputElement extends HTMLElement {
         ),
         this._config,
       );
-      this._syncDistributionParams();
-      this._renderConfig();
-      this._render();
+    } else {
+      // Uncontrolled: keep current value, re-clamp to new config
+      const clampedValue =
+        this._circaValue.value !== null
+          ? clamp(this._circaValue.value, this._config.min, this._config.max)
+          : null;
+      this._circaValue = clampMargins(
+        { ...this._circaValue, value: clampedValue },
+        this._config,
+      );
     }
+    this._syncDistributionParams();
+    this._renderConfig();
+    this._render();
   }
 
   /** @internal handle-low pointerdown */
@@ -762,7 +793,7 @@ export class CircaInputElement extends HTMLElement {
         : { marginHigh: newMargin };
     this._setValue(updateValue(this._circaValue, marginUpdate, this._config));
 
-    this._emitInput();
+    this._scheduleEmitInput();
   };
 
   /** @internal Asymmetric handle drag end */
@@ -786,6 +817,10 @@ export class CircaInputElement extends HTMLElement {
     handle.removeEventListener("pointerup", this._onHandlePointerUp);
     handle.removeEventListener("pointercancel", this._onHandlePointerUp);
 
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
     this._applyPendingAttributeUpdate();
     this._emitChange();
   };
@@ -1121,6 +1156,15 @@ export class CircaInputElement extends HTMLElement {
         composed: true,
       }),
     );
+  }
+
+  /** @internal Schedule input event emission via rAF (throttle to display refresh rate) */
+  private _scheduleEmitInput(): void {
+    if (this._inputRafId !== null) return;
+    this._inputRafId = requestAnimationFrame(() => {
+      this._inputRafId = null;
+      this._emitInput();
+    });
   }
 
   /** @internal Fire input event (real-time during operation) */

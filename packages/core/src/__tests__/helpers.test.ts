@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CircaInputError } from "../errors.js";
 import {
   clamp,
   deserializeCircaValue,
@@ -203,5 +204,45 @@ describe("serializeCircaValue / deserializeCircaValue", () => {
       label: "Infinity",
       note: "-Infinity",
     });
+  });
+
+  it("throws on non-object input", () => {
+    expect(() => deserializeCircaValue('"hello"')).toThrow(CircaInputError);
+  });
+
+  it("throws on invalid value type", () => {
+    expect(() =>
+      deserializeCircaValue(
+        '{"value":"not a number","marginLow":null,"marginHigh":null,"distribution":"normal"}',
+      ),
+    ).toThrow(CircaInputError);
+  });
+
+  it("throws on invalid marginLow type", () => {
+    expect(() =>
+      deserializeCircaValue(
+        '{"value":50,"marginLow":"bad","marginHigh":null,"distribution":"normal"}',
+      ),
+    ).toThrow(CircaInputError);
+  });
+
+  it("throws on invalid distribution", () => {
+    expect(() =>
+      deserializeCircaValue(
+        '{"value":50,"marginLow":null,"marginHigh":null,"distribution":"invalid"}',
+      ),
+    ).toThrow(CircaInputError);
+  });
+
+  it("throws on array input", () => {
+    expect(() => deserializeCircaValue("[]")).toThrow(CircaInputError);
+  });
+
+  it("throws on invalid marginHigh type", () => {
+    expect(() =>
+      deserializeCircaValue(
+        '{"value":50,"marginLow":null,"marginHigh":"bad","distribution":"normal"}',
+      ),
+    ).toThrow(CircaInputError);
   });
 });

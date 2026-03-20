@@ -358,7 +358,7 @@ Latest 2 versions of modern browsers. No polyfills are used. Specific minimum ve
 |---------|----------------|-------|
 | Chrome | 131+ | |
 | Edge | 131+ | Chromium-based, same engine as Chrome |
-| Firefox | 133+ | ElementInternals unsupported; form integration uses graceful degradation |
+| Firefox | 133+ | |
 | Safari | 18+ | |
 
 See `.browserslistrc` in the repository root for tooling integration.

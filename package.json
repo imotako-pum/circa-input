@@ -10,7 +10,10 @@
     "format": "biome format --write .",
     "type-check": "pnpm -r run type-check",
     "test:e2e": "playwright test",
-    "size": "size-limit"
+    "size": "size-limit",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish --access public --provenance"
   },
   "packageManager": "pnpm@10.32.1",
   "engines": {
@@ -18,6 +21,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.30.0",
     "@playwright/test": "^1.58.2",
     "@size-limit/file": "^12.0.1",
     "size-limit": "^12.0.1"

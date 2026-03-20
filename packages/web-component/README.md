@@ -53,6 +53,7 @@ document.querySelector("circa-input")
 | `step` | number \| "any" | "any" | Value granularity |
 | `margin-max` | number | null | Max margin size |
 | `asymmetric` | boolean | false | Independent low/high margins |
+| `initial-margin` | number \| null | null | Margin applied on first value set. Default auto-calculates as `(max - min) / 10`. Set to `0` to disable. |
 | `name` | string | null | Form field name |
 | `required` | boolean | false | Form validation |
 | `tick-interval` | number | null | Tick mark interval |

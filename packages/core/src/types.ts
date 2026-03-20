@@ -21,7 +21,8 @@ export interface GradientStop {
 /**
  * Type representing the shape of a distribution.
  */
-export type Distribution = "normal" | "uniform";
+export const DISTRIBUTIONS = ["normal", "uniform"] as const;
+export type Distribution = (typeof DISTRIBUTIONS)[number];
 
 /**
  * Gradient rendering parameters bundled as a single unit.
