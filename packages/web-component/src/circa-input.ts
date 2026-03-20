@@ -206,6 +206,7 @@ export class CircaInputElement extends HTMLElement {
     this._clearArea.removeEventListener("click", this._onClearClick);
 
     // Clean up any in-progress drag
+    this._pendingAttributeUpdate = false;
     if (this._isDragging) {
       this._isDragging = false;
       this._valueEl.removeEventListener(
@@ -236,6 +237,13 @@ export class CircaInputElement extends HTMLElement {
     // Skip if called before connectedCallback
     if (!this._config) return;
 
+    // Defer ALL attribute processing during drag to prevent position jumps
+    // and config/value inconsistencies. Applied when the drag ends.
+    if (this._isDragging || this._handleDragTarget) {
+      this._pendingAttributeUpdate = true;
+      return;
+    }
+
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
 
@@ -245,12 +253,6 @@ export class CircaInputElement extends HTMLElement {
       _name === ATTR.MARGIN_LOW ||
       _name === ATTR.MARGIN_HIGH
     ) {
-      if (this._isDragging || this._handleDragTarget) {
-        // Defer attribute updates during drag to prevent position jumps.
-        // The update is applied when the drag ends.
-        this._pendingAttributeUpdate = true;
-        return;
-      }
       if (this._isControlled) {
         this._circaValue = clampMargins(
           buildInitialValue(
