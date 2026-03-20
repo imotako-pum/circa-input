@@ -4,6 +4,25 @@
 export type Distribution = "normal" | "uniform";
 
 /**
+ * Distribution-specific parameters.
+ * Currently reserved for future use — all distributions use empty objects.
+ *
+ * When adding a new distribution (e.g., "skewed"), define its parameter type here
+ * and add it to DistributionParamsMap.
+ */
+export type NormalDistributionParams = Record<string, never>;
+export type UniformDistributionParams = Record<string, never>;
+
+/** Map from distribution name to its parameter type. */
+export interface DistributionParamsMap {
+  normal: NormalDistributionParams;
+  uniform: UniformDistributionParams;
+}
+
+/** Union of all distribution parameter types. */
+export type DistributionParams = DistributionParamsMap[Distribution];
+
+/**
  * Output value of circa-input. A data structure containing a center value and its ambiguity.
  */
 export interface CircaValue {
@@ -16,7 +35,7 @@ export interface CircaValue {
   /** Shape of the distribution */
   distribution: Distribution;
   /** Distribution parameters (reserved for future extension; always {} in v0.1.x) */
-  distributionParams: Record<string, unknown>;
+  distributionParams: DistributionParams;
 }
 
 /**

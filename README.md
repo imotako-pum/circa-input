@@ -92,7 +92,7 @@ interface CircaValue {
   marginLow: number | null;   // Lower tolerance
   marginHigh: number | null;  // Upper tolerance
   distribution: "normal" | "uniform";
-  distributionParams: Record<string, unknown>;
+  distributionParams: DistributionParams;  // Record<string, never> (empty object)
 }
 ```
 
