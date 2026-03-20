@@ -125,7 +125,7 @@ export function deserializeCircaValue(json: string): CircaValue {
         ? -Infinity
         : v,
   );
-  if (typeof parsed !== "object" || parsed === null) {
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
     throw new CircaInputError(
       "INVALID_CIRCA_VALUE",
       "Invalid CircaValue: expected an object",
@@ -157,6 +157,17 @@ export function deserializeCircaValue(json: string): CircaValue {
     throw new CircaInputError(
       "INVALID_CIRCA_VALUE",
       "Invalid CircaValue: distribution must be 'normal' or 'uniform'",
+    );
+  }
+  if (
+    parsed.distributionParams !== undefined &&
+    (typeof parsed.distributionParams !== "object" ||
+      parsed.distributionParams === null ||
+      Array.isArray(parsed.distributionParams))
+  ) {
+    throw new CircaInputError(
+      "INVALID_CIRCA_VALUE",
+      "Invalid CircaValue: distributionParams must be an object",
     );
   }
   return parsed as CircaValue;

@@ -207,6 +207,12 @@ export class CircaInputElement extends HTMLElement {
   }
 
   disconnectedCallback(): void {
+    // Cancel any pending rAF
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
+
     // Remove listeners
     this._valueEl.removeEventListener("keydown", this._onKeyDown);
     this._track.removeEventListener("pointerdown", this._onTrackPointerDown);

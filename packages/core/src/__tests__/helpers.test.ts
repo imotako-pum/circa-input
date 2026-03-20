@@ -233,4 +233,16 @@ describe("serializeCircaValue / deserializeCircaValue", () => {
       ),
     ).toThrow(CircaInputError);
   });
+
+  it("throws on array input", () => {
+    expect(() => deserializeCircaValue("[]")).toThrow(CircaInputError);
+  });
+
+  it("throws on invalid marginHigh type", () => {
+    expect(() =>
+      deserializeCircaValue(
+        '{"value":50,"marginLow":null,"marginHigh":"bad","distribution":"normal"}',
+      ),
+    ).toThrow(CircaInputError);
+  });
 });
