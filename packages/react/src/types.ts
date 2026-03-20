@@ -48,6 +48,8 @@ export interface CircaInputProps {
   noClear?: boolean;
   /** Tick mark interval (ticks are displayed only when set) */
   tickInterval?: number;
+  /** Default margin width applied when value is first set (null → value) */
+  initialMargin?: number | null;
 
   // --- Events ---
   /** Fires on interaction complete (receives CircaValue directly) */

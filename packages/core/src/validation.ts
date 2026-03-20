@@ -18,6 +18,11 @@ export function validateConfig(config: CircaInputConfig): void {
   if (config.step !== "any" && config.step <= 0) {
     throw new CircaInputError(`step (${config.step}) must be positive`);
   }
+  if (config.initialMargin !== null && config.initialMargin < 0) {
+    throw new CircaInputError(
+      `initialMargin (${config.initialMargin}) must be non-negative`,
+    );
+  }
 }
 
 /**

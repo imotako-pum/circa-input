@@ -52,6 +52,7 @@ const ATTR = {
   DISABLED: "disabled",
   NO_CLEAR: "no-clear",
   TICK_INTERVAL: "tick-interval",
+  INITIAL_MARGIN: "initial-margin",
   ARIA_LABEL: "aria-label",
 } as const;
 

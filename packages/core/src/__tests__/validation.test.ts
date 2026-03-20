@@ -32,6 +32,36 @@ describe("validateConfig", () => {
     const config = createDefaultConfig({ min: 0, max: 100, step: "any" });
     expect(() => validateConfig(config)).not.toThrow();
   });
+
+  it("throws CircaInputError when initialMargin is negative", () => {
+    const config = createDefaultConfig({
+      min: 0,
+      max: 100,
+      initialMargin: -1,
+    });
+    expect(() => validateConfig(config)).toThrow(CircaInputError);
+    expect(() => validateConfig(config)).toThrow(
+      "initialMargin (-1) must be non-negative",
+    );
+  });
+
+  it("does not throw when initialMargin is null", () => {
+    const config = createDefaultConfig({
+      min: 0,
+      max: 100,
+      initialMargin: null,
+    });
+    expect(() => validateConfig(config)).not.toThrow();
+  });
+
+  it("does not throw when initialMargin is 0", () => {
+    const config = createDefaultConfig({
+      min: 0,
+      max: 100,
+      initialMargin: 0,
+    });
+    expect(() => validateConfig(config)).not.toThrow();
+  });
 });
 
 describe("validateValue", () => {

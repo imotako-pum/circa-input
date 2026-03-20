@@ -39,4 +39,6 @@ export interface CircaInputConfig {
   name: string | null;
   /** Required validation */
   required: boolean;
+  /** Default margin width applied when value is first set (null → value). Defaults to (max - min) / 10. */
+  initialMargin: number | null;
 }
