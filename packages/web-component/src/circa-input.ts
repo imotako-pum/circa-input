@@ -76,6 +76,8 @@ const MARGIN_DRAG_SCALE_PX = 100;
  */
 const ASYMMETRIC_LOCK_THRESHOLD_PX = 5;
 
+let _warnedInternals = false;
+
 export class CircaInputElement extends HTMLElement {
   /** @internal Internal state */
   private _circaValue!: CircaValue;
@@ -120,6 +122,9 @@ export class CircaInputElement extends HTMLElement {
   /** @internal */
   private _handleDragStartMargin = 0;
 
+  /** @internal rAF id for throttled input events */
+  private _inputRafId: number | null = null;
+
   /** @internal Cached track BoundingClientRect from drag start */
   private _cachedTrackRect: { left: number; width: number } | null = null;
 
@@ -148,9 +153,12 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._internals = this.attachInternals();
     } catch {
-      console.warn(
-        "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
-      );
+      if (!_warnedInternals) {
+        console.warn(
+          "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
+        );
+        _warnedInternals = true;
+      }
     }
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
@@ -199,6 +207,12 @@ export class CircaInputElement extends HTMLElement {
   }
 
   disconnectedCallback(): void {
+    // Cancel any pending rAF
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
+
     // Remove listeners
     this._valueEl.removeEventListener("keydown", this._onKeyDown);
     this._track.removeEventListener("pointerdown", this._onTrackPointerDown);
@@ -584,7 +598,7 @@ export class CircaInputElement extends HTMLElement {
       this._config,
     );
     this._setValue(newCirca);
-    this._emitInput();
+    this._scheduleEmitInput();
   };
 
   /** @internal Drag end */
@@ -607,6 +621,10 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
     this._valueEl.removeEventListener("pointercancel", this._onValuePointerUp);
 
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
     this._applyPendingAttributeUpdate();
     this._emitChange();
   };
@@ -710,7 +728,7 @@ export class CircaInputElement extends HTMLElement {
         : { marginHigh: newMargin };
     this._setValue(updateValue(this._circaValue, marginUpdate, this._config));
 
-    this._emitInput();
+    this._scheduleEmitInput();
   };
 
   /** @internal Asymmetric handle drag end */
@@ -734,6 +752,10 @@ export class CircaInputElement extends HTMLElement {
     handle.removeEventListener("pointerup", this._onHandlePointerUp);
     handle.removeEventListener("pointercancel", this._onHandlePointerUp);
 
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
     this._applyPendingAttributeUpdate();
     this._emitChange();
   };
@@ -1039,6 +1061,15 @@ export class CircaInputElement extends HTMLElement {
         composed: true,
       }),
     );
+  }
+
+  /** @internal Schedule input event emission via rAF (throttle to display refresh rate) */
+  private _scheduleEmitInput(): void {
+    if (this._inputRafId !== null) return;
+    this._inputRafId = requestAnimationFrame(() => {
+      this._inputRafId = null;
+      this._emitInput();
+    });
   }
 
   /** @internal Fire input event (real-time during operation) */
