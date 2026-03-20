@@ -458,7 +458,7 @@ describe("CircaInputElement", () => {
       expect(changeDetail).not.toBeNull();
     });
 
-    it("input event fires in real-time during drag", () => {
+    it("input event fires in real-time during drag", async () => {
       el.setAttribute("default-value", "50");
       el.remove();
       document.body.appendChild(el);
@@ -488,6 +488,8 @@ describe("CircaInputElement", () => {
           bubbles: true,
         }),
       );
+      // Flush rAF so the first throttled input event fires
+      await new Promise((r) => requestAnimationFrame(r));
       slider.dispatchEvent(
         new PointerEvent("pointermove", {
           clientX: 100,
@@ -496,8 +498,10 @@ describe("CircaInputElement", () => {
           bubbles: true,
         }),
       );
+      // Flush rAF so the second throttled input event fires
+      await new Promise((r) => requestAnimationFrame(r));
 
-      // Input event fires on each pointermove
+      // Input event fires on each pointermove (throttled via rAF)
       expect(inputEvents.length).toBeGreaterThanOrEqual(2);
     });
 

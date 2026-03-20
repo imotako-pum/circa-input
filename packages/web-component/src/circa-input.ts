@@ -122,6 +122,9 @@ export class CircaInputElement extends HTMLElement {
   /** @internal */
   private _handleDragStartMargin = 0;
 
+  /** @internal rAF id for throttled input events */
+  private _inputRafId: number | null = null;
+
   /** @internal Cached track BoundingClientRect from drag start */
   private _cachedTrackRect: { left: number; width: number } | null = null;
 
@@ -589,7 +592,7 @@ export class CircaInputElement extends HTMLElement {
       this._config,
     );
     this._setValue(newCirca);
-    this._emitInput();
+    this._scheduleEmitInput();
   };
 
   /** @internal Drag end */
@@ -612,6 +615,10 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
     this._valueEl.removeEventListener("pointercancel", this._onValuePointerUp);
 
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
     this._applyPendingAttributeUpdate();
     this._emitChange();
   };
@@ -715,7 +722,7 @@ export class CircaInputElement extends HTMLElement {
         : { marginHigh: newMargin };
     this._setValue(updateValue(this._circaValue, marginUpdate, this._config));
 
-    this._emitInput();
+    this._scheduleEmitInput();
   };
 
   /** @internal Asymmetric handle drag end */
@@ -739,6 +746,10 @@ export class CircaInputElement extends HTMLElement {
     handle.removeEventListener("pointerup", this._onHandlePointerUp);
     handle.removeEventListener("pointercancel", this._onHandlePointerUp);
 
+    if (this._inputRafId !== null) {
+      cancelAnimationFrame(this._inputRafId);
+      this._inputRafId = null;
+    }
     this._applyPendingAttributeUpdate();
     this._emitChange();
   };
@@ -1044,6 +1055,15 @@ export class CircaInputElement extends HTMLElement {
         composed: true,
       }),
     );
+  }
+
+  /** @internal Schedule input event emission via rAF (throttle to display refresh rate) */
+  private _scheduleEmitInput(): void {
+    if (this._inputRafId !== null) return;
+    this._inputRafId = requestAnimationFrame(() => {
+      this._inputRafId = null;
+      this._emitInput();
+    });
   }
 
   /** @internal Fire input event (real-time during operation) */
