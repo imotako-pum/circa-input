@@ -1,3 +1,5 @@
+import { CircaInputError } from "./errors.js";
+import { DISTRIBUTIONS } from "./types.js";
 import type { CircaValue } from "./types.js";
 
 /**
@@ -116,11 +118,46 @@ export function serializeCircaValue(value: CircaValue): string {
  * Reverses the encoding performed by `serializeCircaValue`.
  */
 export function deserializeCircaValue(json: string): CircaValue {
-  return JSON.parse(json, (key, v) =>
+  const parsed = JSON.parse(json, (key, v) =>
     NUMERIC_KEYS.has(key) && v === "Infinity"
       ? Infinity
       : NUMERIC_KEYS.has(key) && v === "-Infinity"
         ? -Infinity
         : v,
   );
+  if (typeof parsed !== "object" || parsed === null) {
+    throw new CircaInputError(
+      "INVALID_CIRCA_VALUE",
+      "Invalid CircaValue: expected an object",
+    );
+  }
+  if (parsed.value !== null && typeof parsed.value !== "number") {
+    throw new CircaInputError(
+      "INVALID_CIRCA_VALUE",
+      "Invalid CircaValue: value must be number or null",
+    );
+  }
+  if (parsed.marginLow !== null && typeof parsed.marginLow !== "number") {
+    throw new CircaInputError(
+      "INVALID_CIRCA_VALUE",
+      "Invalid CircaValue: marginLow must be number or null",
+    );
+  }
+  if (parsed.marginHigh !== null && typeof parsed.marginHigh !== "number") {
+    throw new CircaInputError(
+      "INVALID_CIRCA_VALUE",
+      "Invalid CircaValue: marginHigh must be number or null",
+    );
+  }
+  if (
+    !DISTRIBUTIONS.includes(
+      parsed.distribution as (typeof DISTRIBUTIONS)[number],
+    )
+  ) {
+    throw new CircaInputError(
+      "INVALID_CIRCA_VALUE",
+      "Invalid CircaValue: distribution must be 'normal' or 'uniform'",
+    );
+  }
+  return parsed as CircaValue;
 }
