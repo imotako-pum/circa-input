@@ -119,6 +119,9 @@ export class CircaInputElement extends HTMLElement {
   /** @internal Cached track BoundingClientRect from drag start */
   private _cachedTrackRect: { left: number; width: number } | null = null;
 
+  /** @internal Deferred attribute update while dragging (controlled mode) */
+  private _pendingAttributeUpdate = false;
+
   /** @internal Form integration */
   private _internals: ElementInternals | null = null;
 
@@ -242,6 +245,12 @@ export class CircaInputElement extends HTMLElement {
       _name === ATTR.MARGIN_LOW ||
       _name === ATTR.MARGIN_HIGH
     ) {
+      if (this._isDragging || this._handleDragTarget) {
+        // Defer attribute updates during drag to prevent position jumps.
+        // The update is applied when the drag ends.
+        this._pendingAttributeUpdate = true;
+        return;
+      }
       if (this._isControlled) {
         this._circaValue = clampMargins(
           buildInitialValue(
@@ -583,8 +592,29 @@ export class CircaInputElement extends HTMLElement {
     this._valueEl.removeEventListener("pointerup", this._onValuePointerUp);
     this._valueEl.removeEventListener("pointercancel", this._onValuePointerUp);
 
+    this._applyPendingAttributeUpdate();
     this._emitChange();
   };
+
+  /** @internal Apply deferred attribute updates after drag ends */
+  private _applyPendingAttributeUpdate(): void {
+    if (!this._pendingAttributeUpdate) return;
+    this._pendingAttributeUpdate = false;
+    if (this._isControlled) {
+      this._config = buildConfig((name) => this.getAttribute(name));
+      validateConfig(this._config);
+      this._circaValue = clampMargins(
+        buildInitialValue(
+          (name) => this.getAttribute(name),
+          this._config,
+          true,
+        ),
+        this._config,
+      );
+      this._renderConfig();
+      this._render();
+    }
+  }
 
   /** @internal handle-low pointerdown */
   private _onHandleLowPointerDown = (e: Event): void => {
@@ -677,6 +707,7 @@ export class CircaInputElement extends HTMLElement {
     handle.removeEventListener("pointerup", this._onHandlePointerUp);
     handle.removeEventListener("pointercancel", this._onHandlePointerUp);
 
+    this._applyPendingAttributeUpdate();
     this._emitChange();
   };
 

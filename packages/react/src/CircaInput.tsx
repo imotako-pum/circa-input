@@ -131,11 +131,11 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
       syncAttributes(el, props);
     });
 
-    // On initial mount: re-trigger connectedCallback.
-    // When React inserts <circa-input> into the DOM, connectedCallback fires immediately,
-    // but attributes are not yet set at that point. The Web Component handles late
-    // default-* attributes via attributeChangedCallback, but in some DOM environments
-    // (e.g., happy-dom) the timing differs, so we keep this reconnect as a fallback.
+    // On initial mount: re-trigger connectedCallback so it picks up React-set attributes.
+    // React sets attributes asynchronously after DOM insertion, so the first connectedCallback
+    // fires before attributes exist. This remove/re-insert forces a second connectedCallback
+    // with all attributes present. Cannot be removed until the web component is refactored
+    // to defer initialization (see issue #6).
     useLayoutEffect(() => {
       const el = elRef.current;
       if (!el) return;
