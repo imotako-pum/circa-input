@@ -191,10 +191,12 @@ describe("serializeCircaValue / deserializeCircaValue", () => {
   });
 
   it("does not convert string 'Infinity' in distributionParams", () => {
-    const val: CircaValue = {
+    // Use type assertion: distributionParams is Record<string, never> today,
+    // but this test validates future-proofing of the serializer.
+    const val = {
       ...base,
       distributionParams: { label: "Infinity", note: "-Infinity" },
-    };
+    } as unknown as CircaValue;
     const json = serializeCircaValue(val);
     const parsed = deserializeCircaValue(json);
     expect(parsed.distributionParams).toEqual({

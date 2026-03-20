@@ -92,7 +92,7 @@ interface CircaValue {
   marginLow: number | null;   // 下側の許容幅
   marginHigh: number | null;  // 上側の許容幅
   distribution: "normal" | "uniform";
-  distributionParams: Record<string, unknown>;
+  distributionParams: DistributionParams;  // Record<string, never>（空オブジェクト）
 }
 ```
 

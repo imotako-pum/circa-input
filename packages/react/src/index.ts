@@ -5,6 +5,10 @@ export type {
   CircaInputConfig,
   CircaValue,
   Distribution,
+  DistributionParams,
+  DistributionParamsMap,
+  NormalDistributionParams,
+  UniformDistributionParams,
 } from "@circa-input/core";
 export { CircaInput } from "./CircaInput";
 export type { CircaInputHandle, CircaInputProps } from "./types";

@@ -23,12 +23,23 @@ A UI primitive that allows users to input both a "value" and its "ambiguity" sim
 ```typescript
 type Distribution = "normal" | "uniform";
 
+/** Distribution-specific parameters (reserved for future extension; always {} in v0.1.x) */
+type NormalDistributionParams = Record<string, never>;
+type UniformDistributionParams = Record<string, never>;
+
+interface DistributionParamsMap {
+  normal: NormalDistributionParams;
+  uniform: UniformDistributionParams;
+}
+
+type DistributionParams = DistributionParamsMap[Distribution];
+
 interface CircaValue {
   value: number | null;
   marginLow: number | null;
   marginHigh: number | null;
   distribution: Distribution;
-  distributionParams: Record<string, unknown>;
+  distributionParams: DistributionParams;
 }
 ```
 
@@ -309,17 +320,22 @@ Styles inside the Shadow DOM can be customized externally via CSS Custom Propert
 
 ### Browsers
 
-Latest 2 versions of modern browsers only. No polyfills are used.
+Latest 2 versions of modern browsers. No polyfills are used. Specific minimum versions (as of 2025-03):
 
-- Chrome / Edge (latest 2 versions)
-- Firefox (latest 2 versions)
-- Safari (latest 2 versions)
+| Browser | Minimum Version | Notes |
+|---------|----------------|-------|
+| Chrome | 131+ | |
+| Edge | 131+ | Chromium-based, same engine as Chrome |
+| Firefox | 133+ | ElementInternals unsupported; form integration uses graceful degradation |
+| Safari | 18+ | |
+
+See `.browserslistrc` in the repository root for tooling integration.
 
 ### Bundle Size Targets
 
 | Package | Target (gzip) |
 |---------|---------------|
-| @circa-input/core | Under 2KB |
+| @circa-input/core | Under 2.1KB |
 | @circa-input/web-component (includes core) | Under 8KB |
 
 ---
@@ -375,6 +391,6 @@ Demo site (`apps/demo/`) only. Does not affect published packages (core, web-com
 ## 14. Open Issues & Future Work
 
 - [ ] How to implement the UI for `distribution: "skewed"`
-- [ ] Concrete design of `distributionParams` contents
+- [ ] Concrete design of `distributionParams` contents (type extension point is in place via `DistributionParamsMap`)
 - [ ] How to handle correlations between multiple fields
 - [ ] Vue and Svelte adapter implementations
