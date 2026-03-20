@@ -6,8 +6,10 @@ export interface Translations {
   // Nav
   "nav.basic": string;
   "nav.controlled": string;
+  "nav.gradient": string;
+  "nav.rangeOnly": string;
   "nav.form": string;
-  "nav.useCase": string;
+  "nav.useCases": string;
 
   // Basic section
   "basic.title": string;
@@ -31,12 +33,34 @@ export interface Translations {
   "form.reset": string;
   "form.resultLabel": string;
 
-  // Use case section
-  "useCase.title": string;
-  "useCase.description": string;
-  "useCase.label": string;
-  "useCase.placeholder": string;
-  "useCase.approx": string;
+  // Gradient section
+  "gradient.title": string;
+  "gradient.description": string;
+  "gradient.relative": string;
+  "gradient.absolute": string;
+  "gradient.intensityLabel": string;
+
+  // Range Only section
+  "rangeOnly.title": string;
+  "rangeOnly.description": string;
+  "rangeOnly.normal": string;
+  "rangeOnly.rangeOnly": string;
+
+  // Use cases section
+  "useCases.title": string;
+  "useCases.description": string;
+  "useCases.time.title": string;
+  "useCases.time.description": string;
+  "useCases.budget.title": string;
+  "useCases.budget.description": string;
+  "useCases.temp.title": string;
+  "useCases.temp.description": string;
+  "useCases.age.title": string;
+  "useCases.age.description": string;
+  "useCases.meeting.title": string;
+  "useCases.meeting.description": string;
+  "useCases.commute.title": string;
+  "useCases.commute.description": string;
 
   // Common
   "common.unset": string;

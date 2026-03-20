@@ -4,7 +4,9 @@ import { useT } from "./i18n";
 import { BasicDemo } from "./sections/BasicDemo";
 import { ControlledDemo } from "./sections/ControlledDemo";
 import { FormDemo } from "./sections/FormDemo";
-import { UseCaseDemo } from "./sections/UseCaseDemo";
+import { GradientDemo } from "./sections/GradientDemo";
+import { RangeOnlyDemo } from "./sections/RangeOnlyDemo";
+import { UseCasesDemo } from "./sections/UseCasesDemo";
 
 export function App() {
   const t = useT();
@@ -25,16 +27,20 @@ export function App() {
         <div className="container">
           <a href="#basic">{t("nav.basic")}</a>
           <a href="#controlled">{t("nav.controlled")}</a>
+          <a href="#gradient">{t("nav.gradient")}</a>
+          <a href="#range-only">{t("nav.rangeOnly")}</a>
           <a href="#form">{t("nav.form")}</a>
-          <a href="#use-case">{t("nav.useCase")}</a>
+          <a href="#use-cases">{t("nav.useCases")}</a>
         </div>
       </nav>
 
       <main>
         <BasicDemo />
         <ControlledDemo />
+        <GradientDemo />
+        <RangeOnlyDemo />
         <FormDemo />
-        <UseCaseDemo />
+        <UseCasesDemo />
       </main>
 
       <footer className="footer">
