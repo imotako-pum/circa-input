@@ -47,7 +47,9 @@ test.describe("circa-input E2E", () => {
 
     // Get value after click
     const valueAfterClick = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { value: number } }).circaValue.value,
+      (el) =>
+        (el as HTMLElement & { circaValue: { value: number } }).circaValue
+          .value,
     );
 
     // Find the value thumb and drag it horizontally
@@ -68,7 +70,9 @@ test.describe("circa-input E2E", () => {
     await page.mouse.up();
 
     const valueAfterDrag = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { value: number } }).circaValue.value,
+      (el) =>
+        (el as HTMLElement & { circaValue: { value: number } }).circaValue
+          .value,
     );
 
     expect(valueAfterDrag).not.toBe(valueAfterClick);
@@ -83,7 +87,9 @@ test.describe("circa-input E2E", () => {
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 
     const valueBefore = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { value: number } }).circaValue.value,
+      (el) =>
+        (el as HTMLElement & { circaValue: { value: number } }).circaValue
+          .value,
     );
 
     // Focus the value thumb and press ArrowRight
@@ -92,7 +98,9 @@ test.describe("circa-input E2E", () => {
     await page.keyboard.press("ArrowRight");
 
     const valueAfter = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { value: number } }).circaValue.value,
+      (el) =>
+        (el as HTMLElement & { circaValue: { value: number } }).circaValue
+          .value,
     );
 
     expect(valueAfter).toBeGreaterThan(valueBefore);
@@ -100,14 +108,18 @@ test.describe("circa-input E2E", () => {
     // Press Home to go to min
     await page.keyboard.press("Home");
     const valueAtHome = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { value: number } }).circaValue.value,
+      (el) =>
+        (el as HTMLElement & { circaValue: { value: number } }).circaValue
+          .value,
     );
     expect(valueAtHome).toBe(0);
 
     // Press End to go to max
     await page.keyboard.press("End");
     const valueAtEnd = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { value: number } }).circaValue.value,
+      (el) =>
+        (el as HTMLElement & { circaValue: { value: number } }).circaValue
+          .value,
     );
     expect(valueAtEnd).toBe(100);
   });
@@ -121,7 +133,9 @@ test.describe("circa-input E2E", () => {
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 
     const marginBefore = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { marginLow: number | null } }).circaValue.marginLow,
+      (el) =>
+        (el as HTMLElement & { circaValue: { marginLow: number | null } })
+          .circaValue.marginLow,
     );
     expect(marginBefore).toBeNull();
 
@@ -131,7 +145,9 @@ test.describe("circa-input E2E", () => {
     await page.keyboard.press("Shift+ArrowRight");
 
     const marginAfter = await circaInput.evaluate(
-      (el) => (el as HTMLElement & { circaValue: { marginLow: number } }).circaValue.marginLow,
+      (el) =>
+        (el as HTMLElement & { circaValue: { marginLow: number } }).circaValue
+          .marginLow,
     );
     expect(marginAfter).toBeGreaterThan(0);
   });
