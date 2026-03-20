@@ -9,6 +9,7 @@ import {
   CircaErrorCode,
   CircaInputError,
   checkRequired,
+  clamp,
   clampMargins,
   createInitialValue,
   generateTicks,
@@ -614,9 +615,11 @@ export class CircaInputElement extends HTMLElement {
   private _applyPendingAttributeUpdate(): void {
     if (!this._pendingAttributeUpdate) return;
     this._pendingAttributeUpdate = false;
+    // Config rebuild is common to both modes
+    this._config = buildConfig((name) => this.getAttribute(name));
+    validateConfig(this._config);
     if (this._isControlled) {
-      this._config = buildConfig((name) => this.getAttribute(name));
-      validateConfig(this._config);
+      // Controlled: re-read value/margin attributes
       this._circaValue = clampMargins(
         buildInitialValue(
           (name) => this.getAttribute(name),
@@ -625,9 +628,19 @@ export class CircaInputElement extends HTMLElement {
         ),
         this._config,
       );
-      this._renderConfig();
-      this._render();
+    } else {
+      // Uncontrolled: keep current value, re-clamp to new config
+      const clampedValue =
+        this._circaValue.value !== null
+          ? clamp(this._circaValue.value, this._config.min, this._config.max)
+          : null;
+      this._circaValue = clampMargins(
+        { ...this._circaValue, value: clampedValue },
+        this._config,
+      );
     }
+    this._renderConfig();
+    this._render();
   }
 
   /** @internal handle-low pointerdown */
