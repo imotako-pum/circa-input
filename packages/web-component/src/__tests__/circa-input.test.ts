@@ -986,6 +986,56 @@ describe("CircaInputElement", () => {
       el2.remove();
     });
 
+    it("applies pending attribute updates in uncontrolled mode after drag", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("default-value", "80");
+      document.body.appendChild(el2);
+
+      const circaEl = el2 as HTMLElement & {
+        circaValue: { value: number };
+      };
+
+      // Verify initial value
+      expect(circaEl.circaValue.value).toBe(80);
+
+      const slider = el2.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+
+      // Start drag
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          clientX: 150,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      // While dragging, change max to 60
+      el2.setAttribute("max", "60");
+
+      // Value should still be 80 during drag (deferred)
+      expect(circaEl.circaValue.value).toBe(80);
+
+      // End drag
+      slider.dispatchEvent(
+        new PointerEvent("pointerup", {
+          clientX: 150,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      // After drag ends, value should be clamped to new max of 60
+      expect(circaEl.circaValue.value).toBe(60);
+
+      el2.remove();
+    });
+
     it("Controlled: value indicator moves visually during drag (optimistic rendering)", () => {
       const el2 = document.createElement("circa-input");
       el2.setAttribute("min", "0");
