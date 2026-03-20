@@ -54,13 +54,14 @@ function formatWithMargin(
 ): string {
   if (v.value === null) return t("format.unset");
   const center = centerFn(v.value);
-  if (v.marginLow === null || v.marginLow === 0) return center;
-  if (v.marginLow === v.marginHigh) {
-    return `${center} \u00B1 ${marginFn(v.marginLow)}`;
+  const ml = v.marginLow ?? 0;
+  const mh = v.marginHigh ?? 0;
+  if (ml === 0 && mh === 0) return center;
+  if (ml === mh) {
+    return `${center} \u00B1 ${marginFn(ml)}`;
   }
-  if (v.marginHigh === null) return center;
-  const low = rangeFn(v.value - v.marginLow);
-  const high = rangeFn(v.value + v.marginHigh);
+  const low = rangeFn(v.value - ml);
+  const high = rangeFn(v.value + mh);
   return t("format.range").replace("{low}", low).replace("{high}", high);
 }
 

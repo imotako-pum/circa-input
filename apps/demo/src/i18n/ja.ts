@@ -118,5 +118,4 @@ export const ja: Translations = {
   "format.range": "{low} \u301C {high}",
   "format.yearsUnit": "\u6B73",
   "format.kmUnit": "km",
-  "format.kmPlusMinus": "{value}km \u00B1 {margin}km",
 };

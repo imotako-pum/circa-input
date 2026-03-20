@@ -92,7 +92,6 @@ export interface Translations {
   "format.range": string;
   "format.yearsUnit": string;
   "format.kmUnit": string;
-  "format.kmPlusMinus": string;
 }
 
 export type TranslationKey = keyof Translations;

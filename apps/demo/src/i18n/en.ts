@@ -102,7 +102,6 @@ export const en: Translations = {
   "format.minuteUnit": "{m}min",
   "format.hourMinute": "{h}h {m}min",
   "format.range": "{low} \u2013 {high}",
-  "format.yearsUnit": "years",
+  "format.yearsUnit": " years",
   "format.kmUnit": "km",
-  "format.kmPlusMinus": "{value}km \u00B1 {margin}km",
 };

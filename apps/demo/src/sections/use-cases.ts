@@ -45,7 +45,7 @@ interface ResolvedUseCase {
 let resolvedCases: ResolvedUseCase[] = [];
 
 /**
- * Section 3: Bind event listeners for use cases. Called once.
+ * Section 5: Bind event listeners for use cases. Called once.
  */
 export function initUseCasesSection(): void {
   resolvedCases = useCases.map((uc) => {
