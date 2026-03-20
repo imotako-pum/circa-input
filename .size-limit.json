@@ -1,0 +1,8 @@
+[
+  { "path": "packages/core/dist/index.js", "limit": "2 KB", "gzip": true },
+  {
+    "path": "packages/web-component/dist/index.js",
+    "limit": "8 KB",
+    "gzip": true
+  }
+]
