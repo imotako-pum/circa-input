@@ -36,7 +36,7 @@ console.log(updated);
 
 - `CircaValue` — Output data structure with value, margins, and distribution
 - `CircaInputConfig` — Configuration (min, max, step, marginMax, etc.)
-- `Distribution` — `"normal" | "uniform" | "skewed"`
+- `Distribution` — `"normal" | "uniform"`
 
 ### Functions
 

@@ -91,7 +91,7 @@ interface CircaValue {
   value: number | null;       // 中心値
   marginLow: number | null;   // 下側の許容幅
   marginHigh: number | null;  // 上側の許容幅
-  distribution: "normal" | "uniform" | "skewed";
+  distribution: "normal" | "uniform";
   distributionParams: Record<string, unknown>;
 }
 ```
