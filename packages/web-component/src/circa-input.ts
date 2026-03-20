@@ -76,6 +76,8 @@ const MARGIN_DRAG_SCALE_PX = 100;
  */
 const ASYMMETRIC_LOCK_THRESHOLD_PX = 5;
 
+let _warnedInternals = false;
+
 export class CircaInputElement extends HTMLElement {
   /** @internal Internal state */
   private _circaValue!: CircaValue;
@@ -148,9 +150,12 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._internals = this.attachInternals();
     } catch {
-      console.warn(
-        "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
-      );
+      if (!_warnedInternals) {
+        console.warn(
+          "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
+        );
+        _warnedInternals = true;
+      }
     }
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
