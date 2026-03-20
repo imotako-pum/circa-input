@@ -13,9 +13,10 @@ export function RangeOnlyDemo() {
     <Section
       title={t("rangeOnly.title")}
       description={t("rangeOnly.description")}
+      id="range-only"
       alt
     >
-      <div id="range-only" className="range-only-comparison">
+      <div className="range-only-comparison">
         <div className="range-only-panel">
           <h3>{t("rangeOnly.normal")}</h3>
           <div className="demo-input">

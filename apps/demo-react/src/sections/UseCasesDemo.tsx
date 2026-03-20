@@ -1,4 +1,8 @@
-import { CircaInput, type CircaValue } from "@circa-input/react";
+import {
+  CircaInput,
+  type CircaInputProps,
+  type CircaValue,
+} from "@circa-input/react";
 import { useState } from "react";
 import { Section } from "../components/Section";
 import { useT } from "../i18n";
@@ -37,10 +41,11 @@ function formatWithMargin(
   return `${rangeFn(v.value - ml)} \u2013 ${rangeFn(v.value + mh)}`;
 }
 
-interface UseCaseCardProps {
+interface UseCaseConfig {
+  id: string;
   title: string;
   description: string;
-  inputProps: Record<string, unknown>;
+  inputProps: Omit<CircaInputProps, "onInput" | "onChange" | "children">;
   formatter: (v: CircaValue) => string;
   initialValue: CircaValue;
 }
@@ -51,7 +56,7 @@ function UseCaseCard({
   inputProps,
   formatter,
   initialValue,
-}: UseCaseCardProps) {
+}: Omit<UseCaseConfig, "id">) {
   const [value, setValue] = useState<CircaValue>(initialValue);
 
   return (
@@ -71,8 +76,9 @@ function UseCaseCard({
 export function UseCasesDemo() {
   const t = useT();
 
-  const cases = [
+  const cases: UseCaseConfig[] = [
     {
+      id: "time",
       title: t("useCases.time.title"),
       description: t("useCases.time.description"),
       inputProps: {
@@ -95,6 +101,7 @@ export function UseCasesDemo() {
       },
     },
     {
+      id: "budget",
       title: t("useCases.budget.title"),
       description: t("useCases.budget.description"),
       inputProps: {
@@ -117,6 +124,7 @@ export function UseCasesDemo() {
       },
     },
     {
+      id: "temp",
       title: t("useCases.temp.title"),
       description: t("useCases.temp.description"),
       inputProps: {
@@ -141,6 +149,7 @@ export function UseCasesDemo() {
       },
     },
     {
+      id: "age",
       title: t("useCases.age.title"),
       description: t("useCases.age.description"),
       inputProps: {
@@ -168,6 +177,7 @@ export function UseCasesDemo() {
       },
     },
     {
+      id: "meeting",
       title: t("useCases.meeting.title"),
       description: t("useCases.meeting.description"),
       inputProps: {
@@ -200,6 +210,7 @@ export function UseCasesDemo() {
       },
     },
     {
+      id: "commute",
       title: t("useCases.commute.title"),
       description: t("useCases.commute.description"),
       inputProps: {
@@ -228,13 +239,14 @@ export function UseCasesDemo() {
 
   return (
     <Section
+      id="use-cases"
       title={t("useCases.title")}
       description={t("useCases.description")}
       alt
     >
-      <div id="use-cases" className="use-case-grid">
+      <div className="use-case-grid">
         {cases.map((c) => (
-          <UseCaseCard key={c.title} {...c} />
+          <UseCaseCard key={c.id} {...c} />
         ))}
       </div>
     </Section>

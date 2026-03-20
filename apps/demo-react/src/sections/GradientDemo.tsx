@@ -12,10 +12,11 @@ export function GradientDemo() {
 
   return (
     <Section
+      id="gradient"
       title={t("gradient.title")}
       description={t("gradient.description")}
     >
-      <div id="gradient" className="gradient-comparison">
+      <div className="gradient-comparison">
         <div className="gradient-panel">
           <h3>{t("gradient.relative")}</h3>
           <div className="demo-input">
