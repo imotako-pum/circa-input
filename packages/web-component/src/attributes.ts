@@ -12,7 +12,7 @@ import type {
 import { createDefaultConfig, createInitialValue } from "@circa-input/core";
 
 /** Valid distribution values */
-const VALID_DISTRIBUTIONS: readonly string[] = ["normal", "uniform", "skewed"];
+const VALID_DISTRIBUTIONS: readonly string[] = ["normal", "uniform"];
 
 /**
  * Parse the distribution attribute, falling back to "normal" for invalid values.
