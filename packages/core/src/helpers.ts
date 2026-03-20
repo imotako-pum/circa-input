@@ -88,17 +88,25 @@ export function generateTicks(
   return ticks;
 }
 
+/** Keys in CircaValue that can hold numeric values (including Infinity). */
+const NUMERIC_KEYS = new Set(["value", "marginLow", "marginHigh"]);
+
 /**
  * Serialize a CircaValue to JSON, preserving Infinity values.
  *
  * Standard `JSON.stringify` converts `Infinity` to `null`, making it
  * impossible to distinguish "no margin set" from "unlimited margin".
  * This function encodes `Infinity` as the string `"Infinity"` and
- * `-Infinity` as `"-Infinity"`.
+ * `-Infinity` as `"-Infinity"`, scoped to numeric keys only to avoid
+ * collisions with string values in `distributionParams`.
  */
 export function serializeCircaValue(value: CircaValue): string {
-  return JSON.stringify(value, (_key, v) =>
-    v === Infinity ? "Infinity" : v === -Infinity ? "-Infinity" : v,
+  return JSON.stringify(value, (key, v) =>
+    NUMERIC_KEYS.has(key) && v === Infinity
+      ? "Infinity"
+      : NUMERIC_KEYS.has(key) && v === -Infinity
+        ? "-Infinity"
+        : v,
   );
 }
 
@@ -108,7 +116,11 @@ export function serializeCircaValue(value: CircaValue): string {
  * Reverses the encoding performed by `serializeCircaValue`.
  */
 export function deserializeCircaValue(json: string): CircaValue {
-  return JSON.parse(json, (_key, v) =>
-    v === "Infinity" ? Infinity : v === "-Infinity" ? -Infinity : v,
+  return JSON.parse(json, (key, v) =>
+    NUMERIC_KEYS.has(key) && v === "Infinity"
+      ? Infinity
+      : NUMERIC_KEYS.has(key) && v === "-Infinity"
+        ? -Infinity
+        : v,
   );
 }

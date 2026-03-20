@@ -189,4 +189,17 @@ describe("serializeCircaValue / deserializeCircaValue", () => {
     const parsed = deserializeCircaValue(json);
     expect(parsed.marginHigh).toBeNull();
   });
+
+  it("does not convert string 'Infinity' in distributionParams", () => {
+    const val: CircaValue = {
+      ...base,
+      distributionParams: { label: "Infinity", note: "-Infinity" },
+    };
+    const json = serializeCircaValue(val);
+    const parsed = deserializeCircaValue(json);
+    expect(parsed.distributionParams).toEqual({
+      label: "Infinity",
+      note: "-Infinity",
+    });
+  });
 });
