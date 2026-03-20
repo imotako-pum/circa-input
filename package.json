@@ -13,7 +13,7 @@
     "size": "size-limit",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm build && changeset publish --access public"
+    "release": "pnpm build && changeset publish --access public --provenance"
   },
   "packageManager": "pnpm@10.32.1",
   "engines": {
