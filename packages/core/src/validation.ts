@@ -53,14 +53,14 @@ export function validateValue(
   if (marginLow !== null && marginLow < 0) {
     throw new CircaInputError(
       CircaErrorCode.INVALID_MARGIN_LOW,
-      `marginLow must be non-negative (received: ${marginLow}).`,
+      `marginLow must be non-negative (received: ${marginLow}). Use 0 or a positive number.`,
     );
   }
 
   if (marginHigh !== null && marginHigh < 0) {
     throw new CircaInputError(
       CircaErrorCode.INVALID_MARGIN_HIGH,
-      `marginHigh must be non-negative (received: ${marginHigh}).`,
+      `marginHigh must be non-negative (received: ${marginHigh}). Use 0 or a positive number.`,
     );
   }
 }
