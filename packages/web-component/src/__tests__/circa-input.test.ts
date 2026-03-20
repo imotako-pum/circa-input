@@ -985,6 +985,72 @@ describe("CircaInputElement", () => {
 
       el2.remove();
     });
+
+    it("Controlled: value indicator moves visually during drag (optimistic rendering)", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("value", "50");
+      document.body.appendChild(el2);
+
+      const slider = el2.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+      const track = el2.shadowRoot?.querySelector(
+        "[part='track']",
+      ) as HTMLElement;
+
+      // Mock track dimensions
+      Object.defineProperty(track, "getBoundingClientRect", {
+        value: () => ({
+          left: 0,
+          top: 0,
+          width: 200,
+          height: 8,
+          right: 200,
+          bottom: 8,
+        }),
+      });
+
+      // Record initial position
+      const initialLeft = slider.style.left;
+      expect(initialLeft).toBe("50%");
+
+      // Start drag
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          clientX: 100,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      // Move pointer to 75% position (150px of 200px track)
+      slider.dispatchEvent(
+        new PointerEvent("pointermove", {
+          clientX: 150,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      // In controlled mode, the indicator should visually update during drag
+      expect(slider.style.left).toBe("75%");
+
+      // End drag
+      slider.dispatchEvent(
+        new PointerEvent("pointerup", {
+          clientX: 150,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      el2.remove();
+    });
   });
 
   describe("disconnectedCallback (resource cleanup)", () => {

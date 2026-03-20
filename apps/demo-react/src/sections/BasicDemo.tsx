@@ -29,6 +29,7 @@ export function BasicDemo() {
             max={100}
             defaultValue={50}
             defaultMarginLow={10}
+            defaultMarginHigh={10}
             onChange={(v) => addLog("change", v)}
             onInput={(v) => addLog("input", v)}
           />

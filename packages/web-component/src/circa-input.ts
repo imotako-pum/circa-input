@@ -730,8 +730,11 @@ export class CircaInputElement extends HTMLElement {
     this._circaValue = newValue;
     if (!this._isControlled) {
       this._render();
+    } else if (this._isDragging || this._handleDragTarget) {
+      // Optimistic rendering: show local state during drag for immediate visual feedback.
+      // On drag end, _applyPendingAttributeUpdate() reconciles with external attributes.
+      this._render();
     } else {
-      // In controlled mode, still update ARIA attributes live during drag
       this._updateAriaValues();
     }
   }
