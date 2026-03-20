@@ -941,6 +941,50 @@ describe("CircaInputElement", () => {
 
       el2.remove();
     });
+
+    it("Controlled: attribute change during drag is deferred until drag ends", () => {
+      const el2 = document.createElement("circa-input");
+      el2.setAttribute("min", "0");
+      el2.setAttribute("max", "100");
+      el2.setAttribute("value", "50");
+      document.body.appendChild(el2);
+
+      const slider = el2.shadowRoot?.querySelector(
+        "[part='value']",
+      ) as HTMLElement;
+
+      // Start drag
+      slider.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          clientX: 150,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      // Parent updates value attribute during drag
+      el2.setAttribute("value", "80");
+
+      // Value should NOT jump to 80 during drag
+      const circaEl = el2 as HTMLElement & { circaValue: { value: number } };
+      expect(circaEl.circaValue.value).toBe(50);
+
+      // End drag
+      slider.dispatchEvent(
+        new PointerEvent("pointerup", {
+          clientX: 150,
+          clientY: 100,
+          bubbles: true,
+          pointerId: 1,
+        }),
+      );
+
+      // After drag ends, deferred attribute update is applied
+      expect(circaEl.circaValue.value).toBe(80);
+
+      el2.remove();
+    });
   });
 
   describe("disconnectedCallback (resource cleanup)", () => {
