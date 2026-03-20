@@ -41,6 +41,7 @@ function App() {
 | `step` | number \| "any" | Value granularity |
 | `marginMax` | number | Max margin size |
 | `asymmetric` | boolean | Independent low/high margins |
+| `initialMargin` | number \| null | Margin applied on first value set. Default auto-calculates as `(max - min) / 10`. Set to `0` to disable. |
 | `name` | string | Form field name |
 | `required` | boolean | Form validation |
 | `tickInterval` | number | Tick mark interval |
