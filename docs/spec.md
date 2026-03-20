@@ -175,6 +175,8 @@ element.addEventListener('input', (e: CustomEvent<CircaValue>) => {
 
 When the `name` attribute is specified, the value is included in FormData as a JSON string.
 
+`Infinity` and `-Infinity` are serialized as the strings `"Infinity"` and `"-Infinity"` respectively, because standard JSON cannot represent these values. Use `deserializeCircaValue()` from `@circa-input/core` to parse the JSON back into a `CircaValue` with proper `Infinity` restoration.
+
 ```html
 <form>
   <circa-input name="delivery_time" min="9" max="21" />

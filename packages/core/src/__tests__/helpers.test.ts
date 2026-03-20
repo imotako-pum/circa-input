@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   clamp,
+  deserializeCircaValue,
   generateTicks,
   percentToValue,
+  serializeCircaValue,
   toPlainValue,
   valueToPercent,
 } from "../helpers.js";
@@ -71,7 +73,7 @@ describe("valueToPercent", () => {
     expect(valueToPercent(100, 0, 100)).toBe(100);
   });
 
-  it("returns 0 when min === max", () => {
+  it("returns 0 when min === max (defensive guard against division by zero)", () => {
     expect(valueToPercent(5, 5, 5)).toBe(0);
   });
 
@@ -150,5 +152,54 @@ describe("generateTicks", () => {
 
   it("returns min and max when tickInterval exceeds the range", () => {
     expect(generateTicks(0, 100, 200)).toEqual([0, 100]);
+  });
+});
+
+describe("serializeCircaValue / deserializeCircaValue", () => {
+  const base: CircaValue = {
+    value: 50,
+    marginLow: 5,
+    marginHigh: 10,
+    distribution: "normal",
+    distributionParams: {},
+  };
+
+  it("round-trips a normal CircaValue", () => {
+    const json = serializeCircaValue(base);
+    expect(deserializeCircaValue(json)).toEqual(base);
+  });
+
+  it("preserves Infinity in marginHigh", () => {
+    const val: CircaValue = { ...base, marginHigh: Infinity };
+    const json = serializeCircaValue(val);
+    expect(json).toContain('"Infinity"');
+    expect(deserializeCircaValue(json).marginHigh).toBe(Infinity);
+  });
+
+  it("preserves -Infinity in marginLow", () => {
+    const val: CircaValue = { ...base, marginLow: -Infinity };
+    const json = serializeCircaValue(val);
+    expect(json).toContain('"-Infinity"');
+    expect(deserializeCircaValue(json).marginLow).toBe(-Infinity);
+  });
+
+  it("preserves null values (no confusion with Infinity)", () => {
+    const val: CircaValue = { ...base, marginHigh: null };
+    const json = serializeCircaValue(val);
+    const parsed = deserializeCircaValue(json);
+    expect(parsed.marginHigh).toBeNull();
+  });
+
+  it("does not convert string 'Infinity' in distributionParams", () => {
+    const val: CircaValue = {
+      ...base,
+      distributionParams: { label: "Infinity", note: "-Infinity" },
+    };
+    const json = serializeCircaValue(val);
+    const parsed = deserializeCircaValue(json);
+    expect(parsed.distributionParams).toEqual({
+      label: "Infinity",
+      note: "-Infinity",
+    });
   });
 });

@@ -11,6 +11,7 @@ import {
   clampMargins,
   createInitialValue,
   generateTicks,
+  serializeCircaValue,
   updateValue,
   validateConfig,
 } from "@circa-input/core";
@@ -285,7 +286,7 @@ export class CircaInputElement extends HTMLElement {
   /** JSON value for form submission */
   get formValue(): string | null {
     if (this._circaValue.value !== null) {
-      return JSON.stringify(this._circaValue);
+      return serializeCircaValue(this._circaValue);
     }
     return null;
   }
@@ -951,7 +952,7 @@ export class CircaInputElement extends HTMLElement {
     if (!this._internals) return;
 
     if (this._circaValue.value !== null) {
-      this._internals.setFormValue(JSON.stringify(this._circaValue));
+      this._internals.setFormValue(serializeCircaValue(this._circaValue));
     } else {
       this._internals.setFormValue(null);
     }

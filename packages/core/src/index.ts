@@ -5,8 +5,10 @@ export { CircaInputError } from "./errors.js";
 // Helpers
 export {
   clamp,
+  deserializeCircaValue,
   generateTicks,
   percentToValue,
+  serializeCircaValue,
   toPlainValue,
   valueToPercent,
 } from "./helpers.js";
