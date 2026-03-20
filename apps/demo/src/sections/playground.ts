@@ -35,6 +35,18 @@ function setupControls(input: HTMLElement): void {
     "ctrl-tick-interval",
     "playground",
   );
+  const ctrlGradient = requireById<HTMLSelectElement>(
+    "ctrl-gradient",
+    "playground",
+  );
+  const ctrlGradientIntensity = requireById<HTMLInputElement>(
+    "ctrl-gradient-intensity",
+    "playground",
+  );
+  const ctrlRangeOnly = requireById<HTMLInputElement>(
+    "ctrl-range-only",
+    "playground",
+  );
   const ctrlDisabled = requireById<HTMLInputElement>(
     "ctrl-disabled",
     "playground",
@@ -67,6 +79,25 @@ function setupControls(input: HTMLElement): void {
 
   ctrlTickInterval.addEventListener("input", () => {
     updateAttribute("tick-interval", ctrlTickInterval.value.trim() || null);
+  });
+
+  ctrlGradient.addEventListener("change", () => {
+    updateAttribute("gradient", ctrlGradient.value || null);
+  });
+
+  ctrlGradientIntensity.addEventListener("input", () => {
+    updateAttribute(
+      "gradient-intensity",
+      ctrlGradientIntensity.value.trim() || null,
+    );
+  });
+
+  ctrlRangeOnly.addEventListener("change", () => {
+    if (ctrlRangeOnly.checked) {
+      input.setAttribute("range-only", "");
+    } else {
+      input.removeAttribute("range-only");
+    }
   });
 
   ctrlAsymmetric.addEventListener("change", () => {

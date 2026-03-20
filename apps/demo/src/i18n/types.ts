@@ -6,6 +6,8 @@ export interface Translations {
   // Nav
   "nav.basic": string;
   "nav.asymmetric": string;
+  "nav.gradient": string;
+  "nav.rangeOnly": string;
   "nav.useCases": string;
   "nav.playground": string;
   "nav.form": string;
@@ -22,6 +24,19 @@ export interface Translations {
   "asymmetric.guide1": string;
   "asymmetric.guide2": string;
 
+  // Gradient section
+  "gradient.title": string;
+  "gradient.description": string;
+  "gradient.relative": string;
+  "gradient.absolute": string;
+  "gradient.intensityLabel": string;
+
+  // Range Only section
+  "rangeOnly.title": string;
+  "rangeOnly.description": string;
+  "rangeOnly.normal": string;
+  "rangeOnly.rangeOnly": string;
+
   // Use cases section
   "useCases.title": string;
   "useCases.description": string;
@@ -31,6 +46,12 @@ export interface Translations {
   "useCases.budget.description": string;
   "useCases.temp.title": string;
   "useCases.temp.description": string;
+  "useCases.age.title": string;
+  "useCases.age.description": string;
+  "useCases.meeting.title": string;
+  "useCases.meeting.description": string;
+  "useCases.commute.title": string;
+  "useCases.commute.description": string;
 
   // Playground section
   "playground.title": string;
@@ -60,12 +81,18 @@ export interface Translations {
   // Footer
   "footer.text": string;
 
+  // Playground extras
+  "playground.gradientNone": string;
+
   // Format strings
   "format.unset": string;
   "format.hourUnit": string;
   "format.minuteUnit": string;
   "format.hourMinute": string;
   "format.range": string;
+  "format.yearsUnit": string;
+  "format.kmUnit": string;
+  "format.kmPlusMinus": string;
 }
 
 export type TranslationKey = keyof Translations;

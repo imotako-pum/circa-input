@@ -91,3 +91,52 @@ function degC(val: number): string {
 export function formatTemp(v: CircaValue): string {
   return formatWithMargin(v, degC, degC, degC);
 }
+
+/**
+ * Format a number with the "years" unit (e.g., "30 years" or "30歳").
+ */
+function withYears(val: number): string {
+  return `${val}${t("format.yearsUnit")}`;
+}
+
+/**
+ * Formatter for the age range use case.
+ * Range-only mode: shows "25 - 40 years" / "25歳 - 40歳"
+ */
+export function formatAge(v: CircaValue): string {
+  return formatWithMargin(v, withYears, withYears, withYears);
+}
+
+/**
+ * Format minutes as a duration string (e.g., 90 -> "1h 30min" or "1時間30分").
+ * Unlike toTimeDuration which takes hours, this takes minutes directly.
+ */
+function minutesToDuration(minutes: number): string {
+  return toTimeDuration(minutes / 60);
+}
+
+/**
+ * Formatter for the meeting duration use case.
+ */
+export function formatDuration(v: CircaValue): string {
+  return formatWithMargin(
+    v,
+    minutesToDuration,
+    minutesToDuration,
+    minutesToDuration,
+  );
+}
+
+/**
+ * Format a number with "km" unit.
+ */
+function withKm(val: number): string {
+  return `${val}${t("format.kmUnit")}`;
+}
+
+/**
+ * Formatter for the commute distance use case.
+ */
+export function formatDistance(v: CircaValue): string {
+  return formatWithMargin(v, withKm, withKm, withKm);
+}

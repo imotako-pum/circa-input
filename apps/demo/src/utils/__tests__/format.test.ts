@@ -30,7 +30,7 @@ vi.mock("../../i18n", async () => {
 
   return {
     t: (key: string) =>
-      (translations[locale] as Record<string, string>)[key] ?? key,
+      (translations[locale] as unknown as Record<string, string>)[key] ?? key,
     getLocale: () => locale,
     setLocale: (l: "ja" | "en") => {
       locale = l;

@@ -10,6 +10,8 @@ export const ja: Translations = {
   // Nav
   "nav.basic": "\u57FA\u672C\u64CD\u4F5C",
   "nav.asymmetric": "\u975E\u5BFE\u79F0\u30E2\u30FC\u30C9",
+  "nav.gradient": "\u30B0\u30E9\u30C7\u30FC\u30B7\u30E7\u30F3",
+  "nav.rangeOnly": "\u30EC\u30F3\u30B8\u30AA\u30F3\u30EA\u30FC",
   "nav.useCases": "\u30E6\u30FC\u30B9\u30B1\u30FC\u30B9",
   "nav.playground": "\u30D7\u30EC\u30A4\u30B0\u30E9\u30A6\u30F3\u30C9",
   "nav.form": "\u30D5\u30A9\u30FC\u30E0\u7D71\u5408",
@@ -33,6 +35,22 @@ export const ja: Translations = {
   "asymmetric.guide2":
     "\u5DE6\u53F3\u306E\u30CF\u30F3\u30C9\u30EB\u3092\u305D\u308C\u305E\u308C\u30C9\u30E9\u30C3\u30B0\u3057\u3066\u500B\u5225\u306B\u8ABF\u6574",
 
+  // Gradient section
+  "gradient.title": "\u30B0\u30E9\u30C7\u30FC\u30B7\u30E7\u30F3",
+  "gradient.description":
+    "<code>gradient</code>\u5C5E\u6027\u3092\u4ED8\u3051\u308B\u3068\u3001\u30DE\u30FC\u30B8\u30F3\u9818\u57DF\u306B\u78BA\u4FE1\u5EA6\u306E\u30B0\u30E9\u30C7\u30FC\u30B7\u30E7\u30F3\u304C\u8868\u793A\u3055\u308C\u307E\u3059\u3002<br /><strong>relative</strong>\u306F\u4E2D\u5FC3\u304B\u3089\u5916\u5074\u306B\u30D5\u30A7\u30FC\u30C9\u3001<strong>absolute</strong>\u306F\u5168\u7BC4\u56F2\u306B\u5BFE\u3059\u308B\u4F4D\u7F6E\u3067\u900F\u660E\u5EA6\u304C\u6C7A\u307E\u308A\u307E\u3059\u3002",
+  "gradient.relative": "relative",
+  "gradient.absolute": "absolute",
+  "gradient.intensityLabel": "\u5F37\u5EA6",
+
+  // Range Only section
+  "rangeOnly.title": "\u30EC\u30F3\u30B8\u30AA\u30F3\u30EA\u30FC",
+  "rangeOnly.description":
+    "<code>range-only</code>\u5C5E\u6027\u3092\u4ED8\u3051\u308B\u3068\u3001\u4E2D\u5FC3\u5024\u306E\u30CF\u30F3\u30C9\u30EB\u304C\u975E\u8868\u793A\u306B\u306A\u308A\u3001\u30EC\u30F3\u30B8\u30D0\u30FC\u306E\u307F\u304C\u8868\u793A\u3055\u308C\u307E\u3059\u3002<br />\u8A31\u5BB9\u5E45\u3067\u306F\u306A\u304F<strong>\u7BC4\u56F2</strong>\u305D\u306E\u3082\u306E\u3092\u6307\u5B9A\u3057\u305F\u3044\u5834\u5408\u306B\u4FBF\u5229\u3067\u3059\u3002",
+  "rangeOnly.normal": "\u901A\u5E38\u30E2\u30FC\u30C9",
+  "rangeOnly.rangeOnly":
+    "\u30EC\u30F3\u30B8\u30AA\u30F3\u30EA\u30FC\u30E2\u30FC\u30C9",
+
   // Use cases section
   "useCases.title": "\u30E6\u30FC\u30B9\u30B1\u30FC\u30B9",
   "useCases.description":
@@ -46,6 +64,14 @@ export const ja: Translations = {
   "useCases.temp.title": "\u6C17\u6E29",
   "useCases.temp.description":
     "\u5FEB\u9069\u306B\u611F\u3058\u308B\u6C17\u6E29\u306E\u7BC4\u56F2",
+  "useCases.age.title": "\u5E74\u9F62\u5C64",
+  "useCases.age.description":
+    "\u30BF\u30FC\u30B2\u30C3\u30C8\u3068\u306A\u308B\u5E74\u9F62\u5C64\u3092\u6307\u5B9A",
+  "useCases.meeting.title": "\u4F1A\u8B70\u6642\u9593",
+  "useCases.meeting.description":
+    "\u4F1A\u8B70\u306E\u6240\u8981\u6642\u9593\u306E\u898B\u7A4D\u3082\u308A",
+  "useCases.commute.title": "\u901A\u52E4\u8DDD\u96E2",
+  "useCases.commute.description": "\u901A\u52E4\u8DDD\u96E2\u306E\u7BC4\u56F2",
 
   // Playground section
   "playground.title": "\u30D7\u30EC\u30A4\u30B0\u30E9\u30A6\u30F3\u30C9",
@@ -58,6 +84,7 @@ export const ja: Translations = {
   "playground.logEmpty":
     "\u30A4\u30D9\u30F3\u30C8\u304C\u3053\u3053\u306B\u8868\u793A\u3055\u308C\u307E\u3059",
   "playground.clearLog": "\u30ED\u30B0\u3092\u30AF\u30EA\u30A2",
+  "playground.gradientNone": "\u306A\u3057",
 
   // Form section
   "form.title": "\u30D5\u30A9\u30FC\u30E0\u7D71\u5408",
@@ -89,4 +116,7 @@ export const ja: Translations = {
   "format.minuteUnit": "{m}\u5206",
   "format.hourMinute": "{h}\u6642\u9593{m}\u5206",
   "format.range": "{low} \u301C {high}",
+  "format.yearsUnit": "\u6B73",
+  "format.kmUnit": "km",
+  "format.kmPlusMinus": "{value}km \u00B1 {margin}km",
 };

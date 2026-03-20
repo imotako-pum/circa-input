@@ -1,6 +1,13 @@
 import type { CircaValue } from "@circa-input/core";
 import { requireById, requireElement } from "../utils/dom";
-import { formatBudget, formatTemp, formatTime } from "../utils/format";
+import {
+  formatAge,
+  formatBudget,
+  formatDistance,
+  formatDuration,
+  formatTemp,
+  formatTime,
+} from "../utils/format";
 
 interface UseCaseConfig {
   inputId: string;
@@ -16,6 +23,17 @@ const useCases: UseCaseConfig[] = [
     formatter: formatBudget,
   },
   { inputId: "uc-temp", outputId: "uc-temp-output", formatter: formatTemp },
+  { inputId: "uc-age", outputId: "uc-age-output", formatter: formatAge },
+  {
+    inputId: "uc-meeting",
+    outputId: "uc-meeting-output",
+    formatter: formatDuration,
+  },
+  {
+    inputId: "uc-commute",
+    outputId: "uc-commute-output",
+    formatter: formatDistance,
+  },
 ];
 
 interface ResolvedUseCase {
