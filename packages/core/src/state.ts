@@ -73,6 +73,7 @@ export function createDefaultConfig(
     step: "any",
     name: null,
     required: false,
+    initialMargin: null,
     ...overrides,
   };
 }
@@ -148,7 +149,31 @@ export function updateValue(
     next.value = snapToStep(next.value, config);
   }
 
-  // Step 2: Symmetric mode sync
+  // Step 2: Apply initialMargin on null→value transition
+  // When the value transitions from null to a number and no margins are specified,
+  // automatically apply the configured initial margin width.
+  if (
+    current.value === null &&
+    next.value !== null &&
+    next.marginLow === null &&
+    next.marginHigh === null
+  ) {
+    let effectiveMargin =
+      config.initialMargin ?? (config.max - config.min) / 10;
+    if (config.step !== "any") {
+      // Snap the margin to the nearest step increment
+      const decimals = countDecimals(config.step);
+      effectiveMargin = parseFloat(
+        (Math.round(effectiveMargin / config.step) * config.step).toFixed(
+          decimals,
+        ),
+      );
+    }
+    next.marginLow = effectiveMargin;
+    next.marginHigh = effectiveMargin;
+  }
+
+  // Step 3: Symmetric mode sync
   // When asymmetric=false, marginLow and marginHigh always have the same value.
   // Copy the explicitly specified side to the other side.
   if (!config.asymmetric) {

@@ -40,6 +40,7 @@ const PROP_TO_ATTR: Record<string, string> = {
   step: "step",
   name: "name",
   tickInterval: "tick-interval",
+  initialMargin: "initial-margin",
 };
 
 /** Boolean attribute mapping (true -> attribute present, false/undefined -> attribute absent) */

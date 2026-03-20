@@ -38,6 +38,7 @@ describe("createDefaultConfig", () => {
       step: "any",
       name: null,
       required: false,
+      initialMargin: null,
     });
   });
 
@@ -298,6 +299,101 @@ describe("updateValue", () => {
       const updated = updateValue(current, { marginLow: 10 }, asymConfig);
       expect(updated.marginLow).toBe(10);
       expect(updated.marginHigh).toBe(5); // unchanged
+    });
+  });
+
+  describe("initialMargin", () => {
+    it("applies default margin (max-min)/10 on null→value transition when initialMargin is not specified", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 50 }, config);
+      // (100 - 0) / 10 = 10
+      expect(updated.marginLow).toBe(10);
+      expect(updated.marginHigh).toBe(10);
+    });
+
+    it("applies specified initialMargin on null→value transition", () => {
+      const cfgWithInitial = createDefaultConfig({
+        min: 0,
+        max: 100,
+        initialMargin: 5,
+      });
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 50 }, cfgWithInitial);
+      expect(updated.marginLow).toBe(5);
+      expect(updated.marginHigh).toBe(5);
+    });
+
+    it("does not apply initialMargin when changing an existing value", () => {
+      const current: CircaValue = {
+        value: 30,
+        marginLow: 3,
+        marginHigh: 3,
+        distribution: "normal",
+        distributionParams: {},
+      };
+      const updated = updateValue(current, { value: 50 }, config);
+      expect(updated.marginLow).toBe(3);
+      expect(updated.marginHigh).toBe(3);
+    });
+
+    it("does not apply initialMargin when margins are already specified in the update", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(
+        initial,
+        { value: 50, marginLow: 7, marginHigh: 7 },
+        config,
+      );
+      expect(updated.marginLow).toBe(7);
+      expect(updated.marginHigh).toBe(7);
+    });
+
+    it("snaps initialMargin to step", () => {
+      const stepConfig = createDefaultConfig({
+        min: 0,
+        max: 100,
+        step: 3,
+        initialMargin: 7,
+      });
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 50 }, stepConfig);
+      // 7 rounded to nearest step of 3: round(7/3)*3 = round(2.33)*3 = 2*3 = 6
+      expect(updated.marginLow).toBe(6);
+      expect(updated.marginHigh).toBe(6);
+    });
+
+    it("clamps initialMargin by marginMax", () => {
+      const cfgWithMax = createDefaultConfig({
+        min: 0,
+        max: 100,
+        marginMax: 3,
+        initialMargin: 10,
+      });
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 50 }, cfgWithMax);
+      // initialMargin=10 but marginMax=3, so clampMargins limits it
+      expect(updated.marginLow).toBe(3);
+      expect(updated.marginHigh).toBe(3);
+    });
+
+    it("clamps initialMargin near edge (value close to min)", () => {
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 5 }, config);
+      // default margin = 10, but value=5, min=0, so marginLow clamped to 5
+      expect(updated.marginLow).toBe(5);
+      expect(updated.marginHigh).toBe(10);
+    });
+
+    it("applies symmetric initialMargin even when asymmetric=true", () => {
+      const asymConfig = createDefaultConfig({
+        min: 0,
+        max: 100,
+        asymmetric: true,
+        initialMargin: 8,
+      });
+      const initial = createInitialValue({ distribution: "normal" });
+      const updated = updateValue(initial, { value: 50 }, asymConfig);
+      expect(updated.marginLow).toBe(8);
+      expect(updated.marginHigh).toBe(8);
     });
   });
 

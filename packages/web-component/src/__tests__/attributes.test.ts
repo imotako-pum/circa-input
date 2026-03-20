@@ -134,6 +134,7 @@ describe("buildInitialValue", () => {
     step: "any" as const,
     name: null,
     required: false,
+    initialMargin: null,
   };
 
   it("returns unset state when no attributes are provided", () => {

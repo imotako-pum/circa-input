@@ -118,6 +118,7 @@ Used when the component manages its own internal state.
 | `required` | boolean | false | Required validation |
 | `no-clear` | boolean | false | Hides the clear button |
 | `tick-interval` | number \| null | null | Tick mark interval (displays tick lines + numeric labels only when set) |
+| `initial-margin` | number \| null | null | Default margin width applied when value is first set (null → value). When null, defaults to (max - min) / 10. Snapped to step if step is set. |
 | `disabled` | boolean | false | Disables the component (pointer-events: none, opacity: 0.5, ARIA disabled) |
 
 ### Controlled Mode
@@ -165,6 +166,7 @@ element.addEventListener('input', (e: CustomEvent<CircaValue>) => {
 | `marginLow` or `marginHigh` is negative | Throw error | Meaningless |
 | Value after margin application exceeds min/max | Clamp (auto-adjust) | Naturally occurs during user interaction |
 | Margin exceeds `margin-max` | Clamp | Naturally occurs during user interaction |
+| `initialMargin` is negative | Throw error | Meaningless |
 | `required=true` and `value=null` | Validation error | Detected on form submission |
 
 ---

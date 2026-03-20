@@ -209,3 +209,4 @@ Record specification changes and additions made during implementation here. Alwa
 | Date | Change | spec.md Updated |
 |------|--------|-----------------|
 | 2026-02-23 | Added Sections 8-11 (a11y, CSS customization, supported environments, license) | Done |
+| 2026-03-20 | Added `initialMargin` property (Issue #20): auto-applies margin width on first value set | Done |

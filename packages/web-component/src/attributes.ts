@@ -59,6 +59,7 @@ export function buildConfig(
   const step: number | "any" = stepRaw ?? "any";
   const name = getAttr("name");
   const required = parseBooleanAttr(getAttr("required"));
+  const initialMargin = parseNumberAttr(getAttr("initial-margin"));
 
   return createDefaultConfig({
     min,
@@ -69,6 +70,7 @@ export function buildConfig(
     step,
     name,
     required,
+    initialMargin,
   });
 }
 
