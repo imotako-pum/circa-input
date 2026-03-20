@@ -1,6 +1,6 @@
 import { CircaInputError } from "./errors.js";
-import { DISTRIBUTIONS } from "./types.js";
 import type { CircaValue } from "./types.js";
+import { DISTRIBUTIONS } from "./types.js";
 
 /**
  * Clamp a value within the [min, max] range.

@@ -10,19 +10,16 @@ import type {
   Distribution,
 } from "@circa-input/core";
 import {
-  DISTRIBUTIONS,
   createDefaultConfig,
   createInitialValue,
+  DISTRIBUTIONS,
 } from "@circa-input/core";
 
 /**
  * Parse the distribution attribute, falling back to "normal" for invalid values.
  */
 function parseDistribution(raw: string | null): Distribution {
-  if (
-    raw !== null &&
-    (DISTRIBUTIONS as readonly string[]).includes(raw)
-  ) {
+  if (raw !== null && (DISTRIBUTIONS as readonly string[]).includes(raw)) {
     return raw as Distribution;
   }
   return "normal";

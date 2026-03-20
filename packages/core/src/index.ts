@@ -20,7 +20,6 @@ export {
   snapToStep,
   updateValue,
 } from "./state.js";
-export { DISTRIBUTIONS } from "./types.js";
 export type {
   CircaInputConfig,
   CircaValue,
@@ -30,5 +29,6 @@ export type {
   NormalDistributionParams,
   UniformDistributionParams,
 } from "./types.js";
+export { DISTRIBUTIONS } from "./types.js";
 // Validation
 export { checkRequired, validateConfig, validateValue } from "./validation.js";
