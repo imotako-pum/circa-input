@@ -21,7 +21,7 @@ A UI primitive that allows users to input both a "value" and its "ambiguity" sim
 ### Output Type (CircaValue)
 
 ```typescript
-type Distribution = "normal" | "uniform" | "skewed";
+type Distribution = "normal" | "uniform";
 
 interface CircaValue {
   value: number | null;
