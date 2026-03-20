@@ -124,27 +124,15 @@ export const CircaInput = forwardRef<CircaInputHandle, CircaInputProps>(
       onInputRef.current = props.onInput;
     });
 
-    // Sync props to HTML attributes (only updates changed attributes)
+    // Sync props to HTML attributes (only updates changed attributes).
+    // On initial mount, connectedCallback fires before React sets attributes (using defaults).
+    // This layout effect then sets all attributes, triggering attributeChangedCallback
+    // which rebuilds config and re-renders with correct values — all before browser paint.
     useLayoutEffect(() => {
       const el = elRef.current;
       if (!el) return;
       syncAttributes(el, props);
     });
-
-    // On initial mount: re-trigger connectedCallback so it picks up React-set attributes.
-    // React sets attributes asynchronously after DOM insertion, so the first connectedCallback
-    // fires before attributes exist. This remove/re-insert forces a second connectedCallback
-    // with all attributes present. Cannot be removed until the web component is refactored
-    // to defer initialization (see issue #6).
-    useLayoutEffect(() => {
-      const el = elRef.current;
-      if (!el) return;
-      const parent = el.parentNode;
-      if (!parent) return;
-      const next = el.nextSibling;
-      parent.removeChild(el);
-      next ? parent.insertBefore(el, next) : parent.appendChild(el);
-    }, []);
 
     // Register event listeners (once only; callbacks reference latest via refs)
     useEffect(() => {

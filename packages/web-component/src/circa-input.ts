@@ -125,6 +125,10 @@ export class CircaInputElement extends HTMLElement {
   /** @internal Deferred attribute update while dragging (controlled mode) */
   private _pendingAttributeUpdate = false;
 
+  /** @internal True after a value-changing operation; prevents default-* attributes from overwriting user choices.
+   *  Reset on clear() and connectedCallback() to allow re-initialization from defaults. */
+  private _defaultsLocked = false;
+
   /** @internal Form integration */
   private _internals: ElementInternals | null = null;
 
@@ -161,6 +165,8 @@ export class CircaInputElement extends HTMLElement {
   }
 
   connectedCallback(): void {
+    // Reset defaults lock so default-* attributes can re-apply on reconnection
+    this._defaultsLocked = false;
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
     this._circaValue = clampMargins(
@@ -269,13 +275,14 @@ export class CircaInputElement extends HTMLElement {
     }
 
     // Handle default-* attributes set after connectedCallback
-    // (e.g., React sets attributes after DOM insertion)
+    // (e.g., React sets attributes after DOM insertion via useLayoutEffect).
+    // Re-initialize from defaults unless the user has already interacted.
     if (
       (_name === ATTR.DEFAULT_VALUE ||
         _name === ATTR.DEFAULT_MARGIN_LOW ||
         _name === ATTR.DEFAULT_MARGIN_HIGH) &&
       !this._isControlled &&
-      this._circaValue.value === null
+      !this._defaultsLocked
     ) {
       this._circaValue = clampMargins(
         buildInitialValue(
@@ -324,6 +331,8 @@ export class CircaInputElement extends HTMLElement {
       this._circaValue = initial;
       this._render();
       this._emitChange();
+      // Allow default-* attributes to re-apply after clear
+      this._defaultsLocked = false;
     }
   }
 
@@ -1006,6 +1015,7 @@ export class CircaInputElement extends HTMLElement {
 
   /** @internal Fire change event (on operation complete) */
   private _emitChange(): void {
+    this._defaultsLocked = true;
     this.dispatchEvent(
       new CustomEvent("change", {
         detail: this.circaValue,
