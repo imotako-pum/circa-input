@@ -106,9 +106,12 @@ describe("buildConfig", () => {
     expect(
       buildConfig(makeGetAttr({ distribution: "uniform" })).distribution,
     ).toBe("uniform");
+  });
+
+  it("'skewed' falls back to 'normal' (not yet implemented)", () => {
     expect(
       buildConfig(makeGetAttr({ distribution: "skewed" })).distribution,
-    ).toBe("skewed");
+    ).toBe("normal");
   });
 
   it("uses null when margin-max is not specified", () => {

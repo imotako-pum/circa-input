@@ -1,8 +1,7 @@
 /**
  * Type representing the shape of a distribution.
- * Note: "skewed" is reserved for future use and has no special behavior in v0.1.x.
  */
-export type Distribution = "normal" | "uniform" | "skewed";
+export type Distribution = "normal" | "uniform";
 
 /**
  * Output value of circa-input. A data structure containing a center value and its ambiguity.
