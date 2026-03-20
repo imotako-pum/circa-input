@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-03-20
+
+### Added
+
+- **@circa-input/core** — `initialMargin` property: auto-applies default margin width when value is first set (#21)
+- **@circa-input/core** — Error codes (`CircaErrorCode`) and structured error messages with fix suggestions
+- **@circa-input/web-component** — `initial-margin` attribute support
+- **CI** — Playwright E2E tests, bundle size monitoring (size-limit)
+
+### Fixed
+
+- **@circa-input/web-component** — Controlled mode: value indicator now moves visually during drag (optimistic rendering) (#27)
+- **@circa-input/web-component** — Attribute updates during drag are deferred until drag ends (#23)
+- **@circa-input/react** — Removed removeChild/appendChild hack; use proper React event bridging (#6)
+- **@circa-input/react** — `min`/`max` props are now optional (default 0/100)
+- **@circa-input/core** — `countDecimals` handles scientific notation correctly
+- **@circa-input/core** — `Infinity` JSON serialization scoped to numeric keys only
+
+### Changed
+
+- **@circa-input/core** — Removed unimplemented `"skewed"` from `Distribution` type (breaking: type narrowed)
+- **@circa-input/core** — `distributionParams` is now type-safe per distribution type
+- All packages now specify explicit browser targets
+
 ## [0.1.0] - 2026-03-15
 
 Initial release of circa-input.
