@@ -158,16 +158,16 @@ export function updateValue(
     next.marginLow === null &&
     next.marginHigh === null
   ) {
-    let effectiveMargin = config.initialMargin ?? (config.max - config.min) / 10;
+    let effectiveMargin =
+      config.initialMargin ?? (config.max - config.min) / 10;
     if (config.step !== "any") {
       // Snap the margin to the nearest step increment
-      const decimals = config.step.toString().split(".")[1]?.length ?? 0;
-      effectiveMargin =
-        parseFloat(
-          (Math.round(effectiveMargin / config.step) * config.step).toFixed(
-            decimals,
-          ),
-        );
+      const decimals = countDecimals(config.step);
+      effectiveMargin = parseFloat(
+        (Math.round(effectiveMargin / config.step) * config.step).toFixed(
+          decimals,
+        ),
+      );
     }
     next.marginLow = effectiveMargin;
     next.marginHigh = effectiveMargin;
