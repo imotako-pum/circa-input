@@ -136,7 +136,9 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._internals = this.attachInternals();
     } catch {
-      // May not be supported in happy-dom
+      console.warn(
+        "[circa-input] ElementInternals is not supported. Form integration will be unavailable.",
+      );
     }
     const template = createTemplate();
     shadow.appendChild(template.content.cloneNode(true));
@@ -484,7 +486,8 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._valueEl.setPointerCapture(pe.pointerId);
     } catch {
-      // May not be supported in happy-dom
+      // Pointer capture is optional — drag still works via attached event listeners.
+      // May fail in test environments (happy-dom) or very old browsers.
     }
 
     this._valueEl.addEventListener("pointermove", this._onValuePointerMove);
@@ -571,7 +574,8 @@ export class CircaInputElement extends HTMLElement {
     try {
       this._valueEl.releasePointerCapture(pe.pointerId);
     } catch {
-      // May not be supported in happy-dom
+      // Pointer capture is optional — drag still works via attached event listeners.
+      // May fail in test environments (happy-dom) or very old browsers.
     }
 
     this._valueEl.removeEventListener("pointermove", this._onValuePointerMove);
@@ -613,7 +617,8 @@ export class CircaInputElement extends HTMLElement {
     try {
       handle.setPointerCapture(pe.pointerId);
     } catch {
-      // May not be supported in happy-dom
+      // Pointer capture is optional — drag still works via attached event listeners.
+      // May fail in test environments (happy-dom) or very old browsers.
     }
 
     handle.addEventListener("pointermove", this._onHandlePointerMove);
@@ -663,7 +668,8 @@ export class CircaInputElement extends HTMLElement {
     try {
       handle.releasePointerCapture(pe.pointerId);
     } catch {
-      // May not be supported in happy-dom
+      // Pointer capture is optional — drag still works via attached event listeners.
+      // May fail in test environments (happy-dom) or very old browsers.
     }
 
     handle.removeEventListener("pointermove", this._onHandlePointerMove);
