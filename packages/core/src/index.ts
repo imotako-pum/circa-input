@@ -1,7 +1,8 @@
 // Types
 
+export type { CircaErrorCode as CircaErrorCodeType } from "./errors.js";
 // Errors
-export { CircaInputError } from "./errors.js";
+export { CircaErrorCode, CircaInputError } from "./errors.js";
 // Helpers
 export {
   clamp,

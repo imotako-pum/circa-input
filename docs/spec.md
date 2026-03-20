@@ -169,6 +169,21 @@ element.addEventListener('input', (e: CustomEvent<CircaValue>) => {
 | `initialMargin` is negative | Throw error | Meaningless |
 | `required=true` and `value=null` | Validation error | Detected on form submission |
 
+### Error Codes
+
+Each `CircaInputError` includes a `code` property for programmatic handling:
+
+| Code | Category | Trigger |
+|------|----------|---------|
+| `INVALID_RANGE` | Config | `min >= max` |
+| `INVALID_MARGIN_MAX` | Config | `marginMax < 0` |
+| `INVALID_STEP` | Config | `step <= 0` |
+| `INVALID_INITIAL_MARGIN` | Config | `initialMargin < 0` |
+| `VALUE_OUT_OF_RANGE` | Value | `value < min` or `value > max` |
+| `INVALID_MARGIN_LOW` | Value | `marginLow < 0` |
+| `INVALID_MARGIN_HIGH` | Value | `marginHigh < 0` |
+| `DOM_ELEMENT_NOT_FOUND` | Internal | Shadow DOM element missing (library bug) |
+
 ---
 
 ## 6. Form Integration

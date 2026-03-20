@@ -6,6 +6,7 @@
  */
 import type { CircaInputConfig, CircaValue } from "@circa-input/core";
 import {
+  CircaErrorCode,
   CircaInputError,
   checkRequired,
   clampMargins,
@@ -27,7 +28,8 @@ function queryRequired(root: ShadowRoot, selector: string): HTMLElement {
   const el = root.querySelector(selector);
   if (!el) {
     throw new CircaInputError(
-      `Required shadow DOM element not found: ${selector}`,
+      CircaErrorCode.DOM_ELEMENT_NOT_FOUND,
+      `Required shadow DOM element not found: ${selector}. This is a library bug — please report it.`,
     );
   }
   return el as HTMLElement;
