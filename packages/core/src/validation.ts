@@ -1,4 +1,4 @@
-import { CircaInputError } from "./errors.js";
+import { CircaErrorCode, CircaInputError } from "./errors.js";
 import type { CircaInputConfig, CircaValue } from "./types.js";
 
 /**
@@ -7,20 +7,26 @@ import type { CircaInputConfig, CircaValue } from "./types.js";
 export function validateConfig(config: CircaInputConfig): void {
   if (config.min >= config.max) {
     throw new CircaInputError(
-      `min (${config.min}) must be less than max (${config.max})`,
+      CircaErrorCode.INVALID_RANGE,
+      `min must be less than max (received: min=${config.min}, max=${config.max}). Swap the values or adjust the range.`,
     );
   }
   if (config.marginMax !== null && config.marginMax < 0) {
     throw new CircaInputError(
-      `marginMax (${config.marginMax}) must be non-negative`,
+      CircaErrorCode.INVALID_MARGIN_MAX,
+      `marginMax must be non-negative (received: ${config.marginMax}). Use 0 for no margin or a positive number.`,
     );
   }
   if (config.step !== "any" && config.step <= 0) {
-    throw new CircaInputError(`step (${config.step}) must be positive`);
+    throw new CircaInputError(
+      CircaErrorCode.INVALID_STEP,
+      `step must be positive (received: ${config.step}). Use a positive number or "any" for continuous input.`,
+    );
   }
   if (config.initialMargin !== null && config.initialMargin < 0) {
     throw new CircaInputError(
-      `initialMargin (${config.initialMargin}) must be non-negative`,
+      CircaErrorCode.INVALID_INITIAL_MARGIN,
+      `initialMargin must be non-negative (received: ${config.initialMargin}). Use 0 for no initial margin.`,
     );
   }
 }
@@ -38,18 +44,23 @@ export function validateValue(
   if (value !== null) {
     if (value < config.min || value > config.max) {
       throw new CircaInputError(
-        `value (${value}) is out of range [${config.min}, ${config.max}]`,
+        CircaErrorCode.VALUE_OUT_OF_RANGE,
+        `value is out of range (received: ${value}, allowed: [${config.min}, ${config.max}]). Clamp or adjust the value to fit within min/max.`,
       );
     }
   }
 
   if (marginLow !== null && marginLow < 0) {
-    throw new CircaInputError(`marginLow (${marginLow}) must be non-negative`);
+    throw new CircaInputError(
+      CircaErrorCode.INVALID_MARGIN_LOW,
+      `marginLow must be non-negative (received: ${marginLow}). Use 0 or a positive number.`,
+    );
   }
 
   if (marginHigh !== null && marginHigh < 0) {
     throw new CircaInputError(
-      `marginHigh (${marginHigh}) must be non-negative`,
+      CircaErrorCode.INVALID_MARGIN_HIGH,
+      `marginHigh must be non-negative (received: ${marginHigh}). Use 0 or a positive number.`,
     );
   }
 }

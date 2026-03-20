@@ -1,8 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { CircaInputError } from "../errors.js";
+import { CircaErrorCode, CircaInputError } from "../errors.js";
 import { createDefaultConfig, createInitialValue } from "../state.js";
 import type { CircaValue } from "../types.js";
 import { checkRequired, validateConfig, validateValue } from "../validation.js";
+
+/** Helper: assert that a function throws CircaInputError with the expected code */
+function expectCircaError(
+  fn: () => void,
+  code: CircaErrorCode,
+): CircaInputError {
+  let caught: CircaInputError | undefined;
+  try {
+    fn();
+  } catch (e) {
+    caught = e as CircaInputError;
+  }
+  expect(caught).toBeInstanceOf(CircaInputError);
+  expect(caught?.code).toBe(code);
+  return caught as CircaInputError;
+}
 
 describe("validateConfig", () => {
   it("does not throw when min < max", () => {
@@ -10,22 +26,27 @@ describe("validateConfig", () => {
     expect(() => validateConfig(config)).not.toThrow();
   });
 
-  it("throws CircaInputError when min >= max", () => {
+  it("throws INVALID_RANGE when min >= max", () => {
     const config = createDefaultConfig({ min: 100, max: 100 });
-    expect(() => validateConfig(config)).toThrow(CircaInputError);
-    expect(() => validateConfig(config)).toThrow(
-      "min (100) must be less than max (100)",
+    const err = expectCircaError(
+      () => validateConfig(config),
+      CircaErrorCode.INVALID_RANGE,
+    );
+    expect(err.message).toContain("min=100");
+    expect(err.message).toContain("max=100");
+  });
+
+  it("throws INVALID_MARGIN_MAX when marginMax is negative", () => {
+    const config = createDefaultConfig({ min: 0, max: 100, marginMax: -1 });
+    expectCircaError(
+      () => validateConfig(config),
+      CircaErrorCode.INVALID_MARGIN_MAX,
     );
   });
 
-  it("throws CircaInputError when marginMax is negative", () => {
-    const config = createDefaultConfig({ min: 0, max: 100, marginMax: -1 });
-    expect(() => validateConfig(config)).toThrow(CircaInputError);
-  });
-
-  it("throws CircaInputError when step is 0 or negative", () => {
+  it("throws INVALID_STEP when step is 0 or negative", () => {
     const config = createDefaultConfig({ min: 0, max: 100, step: 0 });
-    expect(() => validateConfig(config)).toThrow(CircaInputError);
+    expectCircaError(() => validateConfig(config), CircaErrorCode.INVALID_STEP);
   });
 
   it('does not throw when step="any"', () => {
@@ -33,16 +54,17 @@ describe("validateConfig", () => {
     expect(() => validateConfig(config)).not.toThrow();
   });
 
-  it("throws CircaInputError when initialMargin is negative", () => {
+  it("throws INVALID_INITIAL_MARGIN when initialMargin is negative", () => {
     const config = createDefaultConfig({
       min: 0,
       max: 100,
       initialMargin: -1,
     });
-    expect(() => validateConfig(config)).toThrow(CircaInputError);
-    expect(() => validateConfig(config)).toThrow(
-      "initialMargin (-1) must be non-negative",
+    const err = expectCircaError(
+      () => validateConfig(config),
+      CircaErrorCode.INVALID_INITIAL_MARGIN,
     );
+    expect(err.message).toContain("-1");
   });
 
   it("does not throw when initialMargin is null", () => {
@@ -83,7 +105,7 @@ describe("validateValue", () => {
     expect(() => validateValue(value, config)).not.toThrow();
   });
 
-  it("throws CircaInputError when value is below min", () => {
+  it("throws VALUE_OUT_OF_RANGE when value is below min", () => {
     const value: CircaValue = {
       value: -1,
       marginLow: null,
@@ -91,10 +113,13 @@ describe("validateValue", () => {
       distribution: "normal",
       distributionParams: {},
     };
-    expect(() => validateValue(value, config)).toThrow(CircaInputError);
+    expectCircaError(
+      () => validateValue(value, config),
+      CircaErrorCode.VALUE_OUT_OF_RANGE,
+    );
   });
 
-  it("throws CircaInputError when value exceeds max", () => {
+  it("throws VALUE_OUT_OF_RANGE when value exceeds max", () => {
     const value: CircaValue = {
       value: 101,
       marginLow: null,
@@ -102,10 +127,13 @@ describe("validateValue", () => {
       distribution: "normal",
       distributionParams: {},
     };
-    expect(() => validateValue(value, config)).toThrow(CircaInputError);
+    expectCircaError(
+      () => validateValue(value, config),
+      CircaErrorCode.VALUE_OUT_OF_RANGE,
+    );
   });
 
-  it("throws CircaInputError when marginLow is negative", () => {
+  it("throws INVALID_MARGIN_LOW when marginLow is negative", () => {
     const value: CircaValue = {
       value: 50,
       marginLow: -1,
@@ -113,10 +141,13 @@ describe("validateValue", () => {
       distribution: "normal",
       distributionParams: {},
     };
-    expect(() => validateValue(value, config)).toThrow(CircaInputError);
+    expectCircaError(
+      () => validateValue(value, config),
+      CircaErrorCode.INVALID_MARGIN_LOW,
+    );
   });
 
-  it("throws CircaInputError when marginHigh is negative", () => {
+  it("throws INVALID_MARGIN_HIGH when marginHigh is negative", () => {
     const value: CircaValue = {
       value: 50,
       marginLow: 10,
@@ -124,7 +155,10 @@ describe("validateValue", () => {
       distribution: "normal",
       distributionParams: {},
     };
-    expect(() => validateValue(value, config)).toThrow(CircaInputError);
+    expectCircaError(
+      () => validateValue(value, config),
+      CircaErrorCode.INVALID_MARGIN_HIGH,
+    );
   });
 });
 
