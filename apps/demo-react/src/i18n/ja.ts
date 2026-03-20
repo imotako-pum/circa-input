@@ -68,6 +68,9 @@ export const ja: Translations = {
   "useCases.commute.title": "\u901A\u52E4\u8DDD\u96E2",
   "useCases.commute.description": "\u901A\u52E4\u8DDD\u96E2\u306E\u7BC4\u56F2",
 
+  "format.yearsUnit": "\u6B73",
+  "format.range": "{low} \u301C {high}",
+
   "common.unset": "未設定",
 
   "footer.text": "circa-input — 曖昧さをデータ化するUIプリミティブ",

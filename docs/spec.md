@@ -342,6 +342,7 @@ Styles inside the Shadow DOM can be customized externally via CSS Custom Propert
 | `--circa-tick-height` | `6px` | Tick line height |
 | `--circa-tick-width` | `1px` | Tick line width |
 | `--circa-tick-label-size` | `10px` | Tick label font size |
+| `--circa-range-handle-width` | `12px` | Minimum width of the value bar in range-only mode |
 
 * Variables may be added as needed during implementation. Update this table when adding new variables.
 

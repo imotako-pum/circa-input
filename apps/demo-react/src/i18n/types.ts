@@ -62,6 +62,10 @@ export interface Translations {
   "useCases.commute.title": string;
   "useCases.commute.description": string;
 
+  // Format
+  "format.yearsUnit": string;
+  "format.range": string;
+
   // Common
   "common.unset": string;
 

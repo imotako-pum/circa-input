@@ -313,10 +313,8 @@ export class CircaInputElement extends HTMLElement {
       );
     }
 
-    // Sync distributionParams when gradient config changes
-    if (_name === ATTR.GRADIENT || _name === ATTR.GRADIENT_INTENSITY) {
-      this._syncDistributionParams();
-    }
+    // Sync distributionParams (idempotent — no-op when gradient is not configured)
+    this._syncDistributionParams();
 
     this._renderConfig();
     this._render();

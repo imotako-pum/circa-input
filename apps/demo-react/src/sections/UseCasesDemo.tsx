@@ -31,6 +31,7 @@ function formatWithMargin(
   centerFn: (val: number) => string,
   marginFn: (m: number) => string,
   rangeFn: (val: number) => string,
+  rangeTemplate?: string,
 ): string {
   if (v.value === null) return "\u2014";
   const center = centerFn(v.value);
@@ -38,7 +39,12 @@ function formatWithMargin(
   const mh = v.marginHigh ?? 0;
   if (ml === 0 && mh === 0) return center;
   if (ml === mh) return `${center} \u00B1 ${marginFn(ml)}`;
-  return `${rangeFn(v.value - ml)} \u2013 ${rangeFn(v.value + mh)}`;
+  const low = rangeFn(v.value - ml);
+  const high = rangeFn(v.value + mh);
+  if (rangeTemplate) {
+    return rangeTemplate.replace("{low}", low).replace("{high}", high);
+  }
+  return `${low} \u2013 ${high}`;
 }
 
 interface UseCaseConfig {
@@ -163,10 +169,9 @@ export function UseCasesDemo() {
         defaultMarginHigh: 10,
       },
       formatter: (v: CircaValue) => {
-        if (v.value === null) return "\u2014";
-        const ml = v.marginLow ?? 0;
-        const mh = v.marginHigh ?? 0;
-        return `${v.value - ml} \u2013 ${v.value + mh} years`;
+        const unit = t("format.yearsUnit");
+        const withYears = (val: number) => `${val}${unit}`;
+        return formatWithMargin(v, withYears, withYears, withYears, t("format.range"));
       },
       initialValue: {
         value: 30,

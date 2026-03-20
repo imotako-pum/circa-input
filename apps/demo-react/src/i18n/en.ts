@@ -62,6 +62,9 @@ export const en: Translations = {
   "useCases.commute.title": "Commute Distance",
   "useCases.commute.description": "Your commute distance range",
 
+  "format.yearsUnit": " years",
+  "format.range": "{low} \u2013 {high}",
+
   "common.unset": "Not set",
 
   "footer.text": "circa-input — A UI primitive that captures ambiguity as data",
