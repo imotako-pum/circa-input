@@ -84,13 +84,6 @@ interface CircaValue {
 
 ## 3. Attribute Specification
 
-### Required Attributes
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `min` | number | Minimum selectable value |
-| `max` | number | Maximum selectable value |
-
 ### Controlled Attributes
 
 Used when managing values externally. When specified, these take priority over the component's internal state.
@@ -115,6 +108,8 @@ Used when the component manages its own internal state.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
+| `min` | number | 0 | Minimum selectable value |
+| `max` | number | 100 | Maximum selectable value |
 | `margin-max` | number \| null | null | Maximum margin value (null = no limit) |
 | `distribution` | string | "normal" | Distribution shape |
 | `asymmetric` | boolean | false | Enables asymmetric UI when true |

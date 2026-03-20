@@ -8,11 +8,10 @@ import type { CSSProperties, ReactNode } from "react";
  * internally converts them to kebab-case HTML attributes to sync with <circa-input>.
  */
 export interface CircaInputProps {
-  // --- Required ---
-  /** Minimum selectable value */
-  min: number;
-  /** Maximum selectable value */
-  max: number;
+  /** Minimum selectable value (default: 0) */
+  min?: number;
+  /** Maximum selectable value (default: 100) */
+  max?: number;
 
   // --- Controlled ---
   /** Center value (Controlled). When present, enables controlled mode */
