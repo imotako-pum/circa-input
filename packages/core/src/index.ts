@@ -20,6 +20,7 @@ export {
   snapToStep,
   updateValue,
 } from "./state.js";
+export { DISTRIBUTIONS } from "./types.js";
 export type {
   CircaInputConfig,
   CircaValue,
