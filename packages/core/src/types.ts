@@ -24,14 +24,26 @@ export interface GradientStop {
 export type Distribution = "normal" | "uniform";
 
 /**
+ * Gradient rendering parameters bundled as a single unit.
+ * Present when gradient visualization is enabled; absent otherwise.
+ * This is a rendering hint — it describes how the margin band should be
+ * visually rendered, not the statistical shape of the distribution.
+ */
+export interface GradientParams {
+  /** Which gradient algorithm to use */
+  mode: GradientMode;
+  /** Exponent controlling the falloff curve (higher = steeper) */
+  intensity: number;
+}
+
+/**
  * Base distribution parameters shared by all distribution types.
- * Contains gradient metadata that describes the confidence shape within the margin.
+ * Contains optional gradient metadata that describes the visual confidence
+ * shape within the margin band.
  */
 export interface BaseDistributionParams {
-  /** Gradient mode applied to this value's margin (undefined when no gradient is set) */
-  gradientMode?: GradientMode;
-  /** Gradient intensity exponent (undefined when no gradient is set) */
-  gradientIntensity?: number;
+  /** Gradient rendering config. Undefined when no gradient is set. */
+  gradient?: GradientParams;
 }
 
 /**

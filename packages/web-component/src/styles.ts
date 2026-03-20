@@ -137,6 +137,7 @@ export const STYLES = `
 :host([range-only]) [part="value"] {
   height: var(--circa-track-height, 8px);
   border-radius: var(--circa-track-radius, 4px);
+  min-width: var(--circa-range-handle-width, 12px);
   /* width and left are set dynamically in _render() */
   transform: translate(0, -50%);
 }

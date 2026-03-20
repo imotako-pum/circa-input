@@ -192,6 +192,7 @@ export class CircaInputElement extends HTMLElement {
       ),
       this._config,
     );
+    this._syncDistributionParams();
     this._renderConfig();
     this._render();
 
@@ -327,11 +328,13 @@ export class CircaInputElement extends HTMLElement {
       this._circaValue = {
         ...this._circaValue,
         distributionParams: {
-          gradientMode: this._gradientConfig.mode,
-          gradientIntensity: this._gradientConfig.intensity,
+          gradient: {
+            mode: this._gradientConfig.mode,
+            intensity: this._gradientConfig.intensity,
+          },
         },
       };
-    } else if ("gradientMode" in this._circaValue.distributionParams) {
+    } else if (this._circaValue.distributionParams.gradient) {
       this._circaValue = {
         ...this._circaValue,
         distributionParams: {},
@@ -425,7 +428,7 @@ export class CircaInputElement extends HTMLElement {
         marginHigh: mh,
       };
 
-      if (this._effectiveAsymmetric) {
+      if (this._effectiveAsymmetric && !this._isRangeOnly) {
         // Asymmetric mode: Up/Left adjusts marginLow, Down/Right adjusts marginHigh
         if (key === "ArrowUp" || key === "ArrowLeft") {
           this._setValue(
@@ -677,6 +680,9 @@ export class CircaInputElement extends HTMLElement {
     if (this._isControlled) {
       this._config = buildConfig((name) => this.getAttribute(name));
       validateConfig(this._config);
+      this._gradientConfig = buildGradientConfig((name) =>
+        this.getAttribute(name),
+      );
       this._circaValue = clampMargins(
         buildInitialValue(
           (name) => this.getAttribute(name),
@@ -685,6 +691,7 @@ export class CircaInputElement extends HTMLElement {
         ),
         this._config,
       );
+      this._syncDistributionParams();
       this._renderConfig();
       this._render();
     }
@@ -788,7 +795,6 @@ export class CircaInputElement extends HTMLElement {
   /** @internal Update internal state and render. Skips full rendering in controlled mode (rendered on attribute change). */
   private _setValue(newValue: CircaValue): void {
     this._circaValue = newValue;
-    this._syncDistributionParams();
     if (!this._isControlled) {
       this._render();
     } else if (this._isDragging || this._handleDragTarget) {

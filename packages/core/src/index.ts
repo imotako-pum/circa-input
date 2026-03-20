@@ -30,6 +30,7 @@ export type {
   DistributionParams,
   DistributionParamsMap,
   GradientMode,
+  GradientParams,
   GradientStop,
   NormalDistributionParams,
   UniformDistributionParams,
