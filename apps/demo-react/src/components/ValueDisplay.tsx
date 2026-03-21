@@ -25,6 +25,9 @@ export function ValueDisplay({
               marginLow: value.marginLow,
               marginHigh: value.marginHigh,
               distribution: value.distribution,
+              ...(value.distributionParams.gradient && {
+                distributionParams: value.distributionParams,
+              }),
             },
             null,
             2,

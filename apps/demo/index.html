@@ -32,6 +32,8 @@
       <div class="container">
         <a href="#basic" data-i18n="nav.basic">Basic</a>
         <a href="#asymmetric" data-i18n="nav.asymmetric">Asymmetric</a>
+        <a href="#gradient" data-i18n="nav.gradient">Gradient</a>
+        <a href="#range-only" data-i18n="nav.rangeOnly">Range Only</a>
         <a href="#use-cases" data-i18n="nav.useCases">Use Cases</a>
         <a href="#playground" data-i18n="nav.playground">Playground</a>
         <a href="#form" data-i18n="nav.form">Form</a>
@@ -86,7 +88,73 @@
       </div>
     </section>
 
-    <!-- Section 3: Use Cases -->
+    <!-- Section 3: Gradient -->
+    <section id="gradient" class="section">
+      <div class="container">
+        <h2 data-i18n="gradient.title">Gradient</h2>
+        <p class="section-description" data-i18n-html="gradient.description">
+          The <code>gradient</code> attribute adds a visual confidence gradient to the margin area.<br />
+          <strong>relative</strong> fades from center outward, <strong>absolute</strong> maps opacity to the full range.
+        </p>
+
+        <div class="gradient-comparison">
+          <div class="gradient-panel">
+            <h3 data-i18n="gradient.relative">relative</h3>
+            <circa-input id="gradient-relative" gradient="relative" default-value="50" default-margin-low="15" default-margin-high="30" asymmetric min="0" max="100"></circa-input>
+            <div class="demo-output" id="gradient-relative-output">
+              <div class="output-label" data-i18n="common.outputLabel">CircaValue</div>
+              <pre class="output-value" data-i18n="common.notYetOperated">Not yet operated</pre>
+            </div>
+          </div>
+          <div class="gradient-panel">
+            <h3 data-i18n="gradient.absolute">absolute</h3>
+            <circa-input id="gradient-absolute" gradient="absolute" default-value="50" default-margin-low="15" default-margin-high="30" asymmetric min="0" max="100"></circa-input>
+            <div class="demo-output" id="gradient-absolute-output">
+              <div class="output-label" data-i18n="common.outputLabel">CircaValue</div>
+              <pre class="output-value" data-i18n="common.notYetOperated">Not yet operated</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="intensity-control">
+          <label for="gradient-intensity" data-i18n="gradient.intensityLabel">Intensity</label>
+          <input type="range" id="gradient-intensity" min="0.5" max="5" step="0.1" value="1.5" />
+          <span class="intensity-value" id="gradient-intensity-value">1.5</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Range Only -->
+    <section id="range-only" class="section section-alt">
+      <div class="container">
+        <h2 data-i18n="rangeOnly.title">Range Only</h2>
+        <p class="section-description" data-i18n-html="rangeOnly.description">
+          The <code>range-only</code> attribute hides the center value handle and shows only the range bar.<br />
+          Useful when the user wants to specify a <strong>range</strong> rather than a point with tolerance.
+        </p>
+
+        <div class="range-only-comparison">
+          <div class="range-only-panel">
+            <h3 data-i18n="rangeOnly.normal">Normal Mode</h3>
+            <circa-input id="ro-normal" default-value="50" default-margin-low="10" default-margin-high="20" asymmetric min="0" max="100"></circa-input>
+            <div class="demo-output" id="ro-normal-output">
+              <div class="output-label" data-i18n="common.outputLabel">CircaValue</div>
+              <pre class="output-value" data-i18n="common.notYetOperated">Not yet operated</pre>
+            </div>
+          </div>
+          <div class="range-only-panel">
+            <h3 data-i18n="rangeOnly.rangeOnly">Range Only Mode</h3>
+            <circa-input id="ro-range-only" range-only gradient="relative" default-value="50" default-margin-low="10" default-margin-high="20" min="0" max="100"></circa-input>
+            <div class="demo-output" id="ro-range-only-output">
+              <div class="output-label" data-i18n="common.outputLabel">CircaValue</div>
+              <pre class="output-value" data-i18n="common.notYetOperated">Not yet operated</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Use Cases -->
     <section id="use-cases" class="section">
       <div class="container">
         <h2 data-i18n="useCases.title">Use Cases</h2>
@@ -124,11 +192,40 @@
               <span class="use-case-formatted">25&deg;C &plusmn; 3&deg;C</span>
             </div>
           </div>
+          <!-- Age Range -->
+          <div class="use-case-card">
+            <h3 data-i18n="useCases.age.title">Age Range</h3>
+            <p class="use-case-description" data-i18n="useCases.age.description">Specify the target age group</p>
+            <circa-input id="uc-age" range-only min="18" max="65" step="1" tick-interval="10" default-value="30" default-margin-low="5" default-margin-high="10"></circa-input>
+            <div class="use-case-output" id="uc-age-output">
+              <span class="use-case-formatted">25 &ndash; 40 years</span>
+            </div>
+          </div>
+
+          <!-- Meeting Duration -->
+          <div class="use-case-card">
+            <h3 data-i18n="useCases.meeting.title">Meeting Duration</h3>
+            <p class="use-case-description" data-i18n="useCases.meeting.description">Estimate how long the meeting will take</p>
+            <circa-input id="uc-meeting" asymmetric gradient="relative" min="15" max="180" step="5" tick-interval="30" default-value="60" default-margin-low="10" default-margin-high="30"></circa-input>
+            <div class="use-case-output" id="uc-meeting-output">
+              <span class="use-case-formatted">50min &ndash; 1h 30min</span>
+            </div>
+          </div>
+
+          <!-- Commute Distance -->
+          <div class="use-case-card">
+            <h3 data-i18n="useCases.commute.title">Commute Distance</h3>
+            <p class="use-case-description" data-i18n="useCases.commute.description">Your commute distance range</p>
+            <circa-input id="uc-commute" gradient="absolute" min="0" max="60" step="1" tick-interval="10" default-value="20" default-margin-low="5" default-margin-high="5"></circa-input>
+            <div class="use-case-output" id="uc-commute-output">
+              <span class="use-case-formatted">20km &plusmn; 5km</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 4: Playground -->
+    <!-- Section 6: Playground -->
     <section id="playground" class="section section-alt">
       <div class="container">
         <h2 data-i18n="playground.title">Playground</h2>
@@ -167,9 +264,25 @@
               <label for="ctrl-tick-interval">tick-interval</label>
               <input type="text" id="ctrl-tick-interval" value="" data-i18n="playground.tickIntervalPlaceholder" data-i18n-attr="placeholder" />
             </div>
+            <div class="control-group">
+              <label for="ctrl-gradient">gradient</label>
+              <select id="ctrl-gradient">
+                <option value="" data-i18n="playground.gradientNone">None</option>
+                <option value="relative">relative</option>
+                <option value="absolute">absolute</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="ctrl-gradient-intensity">gradient-intensity</label>
+              <input type="number" id="ctrl-gradient-intensity" value="" step="0.1" min="0.1" placeholder="1.0" />
+            </div>
             <div class="control-group control-checkbox">
               <input type="checkbox" id="ctrl-asymmetric" />
               <label for="ctrl-asymmetric">asymmetric</label>
+            </div>
+            <div class="control-group control-checkbox">
+              <input type="checkbox" id="ctrl-range-only" />
+              <label for="ctrl-range-only">range-only</label>
             </div>
             <div class="control-group control-checkbox">
               <input type="checkbox" id="ctrl-disabled" />
@@ -188,7 +301,7 @@
       </div>
     </section>
 
-    <!-- Section 5: Form Integration -->
+    <!-- Section 7: Form Integration -->
     <section id="form" class="section">
       <div class="container">
         <h2 data-i18n="form.title">Form Integration</h2>

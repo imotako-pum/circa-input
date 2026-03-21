@@ -2,6 +2,8 @@
 
 // Errors
 export { CircaErrorCode, CircaInputError } from "./errors.js";
+// Gradient
+export { generateGradientStops } from "./gradient.js";
 // Helpers
 export {
   clamp,
@@ -21,11 +23,15 @@ export {
   updateValue,
 } from "./state.js";
 export type {
+  BaseDistributionParams,
   CircaInputConfig,
   CircaValue,
   Distribution,
   DistributionParams,
   DistributionParamsMap,
+  GradientMode,
+  GradientParams,
+  GradientStop,
   NormalDistributionParams,
   UniformDistributionParams,
 } from "./types.js";

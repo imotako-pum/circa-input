@@ -239,6 +239,89 @@ body {
   flex-shrink: 0;
 }
 
+/* === Gradient Comparison === */
+.gradient-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.gradient-panel {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.gradient-panel h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.gradient-panel circa-input {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.intensity-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.intensity-control label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+}
+
+.intensity-control input[type="range"] {
+  flex: 1;
+  accent-color: #1976d2;
+}
+
+.intensity-control .intensity-value {
+  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: #1976d2;
+  font-weight: 600;
+  min-width: 2.5em;
+  text-align: right;
+}
+
+/* === Range Only Comparison === */
+.range-only-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.range-only-panel {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.range-only-panel h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.range-only-panel circa-input {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
 /* === Use Cases === */
 .use-case-grid {
   display: grid;
@@ -335,6 +418,7 @@ body {
   margin-bottom: 0.25rem;
 }
 
+.control-group select,
 .control-group input[type="number"],
 .control-group input[type="text"] {
   width: 100%;
@@ -345,10 +429,15 @@ body {
   font-family: inherit;
 }
 
-.control-group input:focus {
+.control-group input:focus,
+.control-group select:focus {
   outline: none;
   border-color: #1976d2;
   box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+.control-group select {
+  appearance: auto;
 }
 
 .control-checkbox {
@@ -534,6 +623,14 @@ body {
   .guide {
     flex-direction: column;
     gap: 0.75rem;
+  }
+
+  .gradient-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .range-only-comparison {
+    grid-template-columns: 1fr;
   }
 
   .use-case-grid {

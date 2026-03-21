@@ -301,6 +301,107 @@ form {
   color: #2d3748;
 }
 
+/* Gradient Comparison */
+.gradient-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gradient-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.gradient-panel h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #4a5568;
+}
+
+.intensity-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.intensity-control label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #718096;
+  white-space: nowrap;
+}
+
+.intensity-control input[type="range"] {
+  flex: 1;
+  accent-color: #667eea;
+}
+
+.intensity-value {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #667eea;
+  font-weight: 600;
+  min-width: 2.5em;
+  text-align: right;
+}
+
+/* Range Only Comparison */
+.range-only-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.range-only-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.range-only-panel h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #4a5568;
+}
+
+/* Use Case Grid */
+.use-case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.use-case-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.use-case-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #1a1a2e;
+}
+
+.use-case-description {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 1rem;
+}
+
 /* Use Case */
 .use-case-result {
   margin-top: 1rem;
@@ -342,5 +443,17 @@ form {
 
   .demo-area {
     padding: 1rem;
+  }
+
+  .gradient-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .range-only-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .use-case-grid {
+    grid-template-columns: 1fr;
   }
 }

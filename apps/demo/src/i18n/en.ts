@@ -10,6 +10,8 @@ export const en: Translations = {
   // Nav
   "nav.basic": "Basic",
   "nav.asymmetric": "Asymmetric",
+  "nav.gradient": "Gradient",
+  "nav.rangeOnly": "Range Only",
   "nav.useCases": "Use Cases",
   "nav.playground": "Playground",
   "nav.form": "Form",
@@ -29,6 +31,21 @@ export const en: Translations = {
   "asymmetric.guide2":
     "Drag left/right handles independently to adjust each side",
 
+  // Gradient section
+  "gradient.title": "Gradient",
+  "gradient.description":
+    "The <code>gradient</code> attribute adds a visual confidence gradient to the margin area.<br /><strong>relative</strong> fades from center outward, <strong>absolute</strong> maps opacity to the full range.",
+  "gradient.relative": "relative",
+  "gradient.absolute": "absolute",
+  "gradient.intensityLabel": "Intensity",
+
+  // Range Only section
+  "rangeOnly.title": "Range Only",
+  "rangeOnly.description":
+    "The <code>range-only</code> attribute hides the center value handle and shows only the range bar.<br />Useful when the user wants to specify a <strong>range</strong> rather than a point with tolerance.",
+  "rangeOnly.normal": "Normal Mode",
+  "rangeOnly.rangeOnly": "Range Only Mode",
+
   // Use cases section
   "useCases.title": "Use Cases",
   "useCases.description":
@@ -39,6 +56,12 @@ export const en: Translations = {
   "useCases.budget.description": "Enter an approximate budget",
   "useCases.temp.title": "Temperature",
   "useCases.temp.description": "Comfortable temperature range",
+  "useCases.age.title": "Age Range",
+  "useCases.age.description": "Specify the target age group",
+  "useCases.meeting.title": "Meeting Duration",
+  "useCases.meeting.description": "Estimate how long the meeting will take",
+  "useCases.commute.title": "Commute Distance",
+  "useCases.commute.description": "Your commute distance range",
 
   // Playground section
   "playground.title": "Playground",
@@ -50,6 +73,7 @@ export const en: Translations = {
   "playground.eventLog": "Event Log",
   "playground.logEmpty": "Events will appear here",
   "playground.clearLog": "Clear Log",
+  "playground.gradientNone": "None",
 
   // Form section
   "form.title": "Form Integration",
@@ -78,4 +102,6 @@ export const en: Translations = {
   "format.minuteUnit": "{m}min",
   "format.hourMinute": "{h}h {m}min",
   "format.range": "{low} \u2013 {high}",
+  "format.yearsUnit": " years",
+  "format.kmUnit": "km",
 };

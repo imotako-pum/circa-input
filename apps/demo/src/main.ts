@@ -8,7 +8,9 @@ import { getLocale, initI18n, setLocale } from "./i18n";
 import { initAsymmetricSection } from "./sections/asymmetric";
 import { initBasicSection } from "./sections/basic";
 import { initFormSection } from "./sections/form";
+import { initGradientSection } from "./sections/gradient";
 import { initPlaygroundSection } from "./sections/playground";
+import { initRangeOnlySection } from "./sections/range-only";
 import {
   initUseCasesSection,
   updateUseCasesOutput,
@@ -46,6 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLangToggle();
   initBasicSection();
   initAsymmetricSection();
+  initGradientSection();
+  initRangeOnlySection();
   initUseCasesSection();
   initPlaygroundSection();
   initFormSection();

@@ -12,12 +12,18 @@ import {
   clamp,
   clampMargins,
   createInitialValue,
+  generateGradientStops,
   generateTicks,
   serializeCircaValue,
   updateValue,
   validateConfig,
 } from "@circa-input/core";
-import { buildConfig, buildInitialValue } from "./attributes.js";
+import type { GradientConfig } from "./attributes.js";
+import {
+  buildConfig,
+  buildGradientConfig,
+  buildInitialValue,
+} from "./attributes.js";
 import {
   clientXToPercent,
   percentToValue,
@@ -57,6 +63,9 @@ const ATTR = {
   NO_CLEAR: "no-clear",
   TICK_INTERVAL: "tick-interval",
   INITIAL_MARGIN: "initial-margin",
+  GRADIENT: "gradient",
+  GRADIENT_INTENSITY: "gradient-intensity",
+  RANGE_ONLY: "range-only",
   ARIA_LABEL: "aria-label",
 } as const;
 
@@ -135,6 +144,9 @@ export class CircaInputElement extends HTMLElement {
    *  Reset on clear() and connectedCallback() to allow re-initialization from defaults. */
   private _defaultsLocked = false;
 
+  /** @internal Gradient configuration parsed from attributes */
+  private _gradientConfig: GradientConfig = { mode: null, intensity: 1.5 };
+
   /** @internal Form integration */
   private _internals: ElementInternals | null = null;
 
@@ -178,6 +190,9 @@ export class CircaInputElement extends HTMLElement {
     this._defaultsLocked = false;
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
+    this._gradientConfig = buildGradientConfig((name) =>
+      this.getAttribute(name),
+    );
     this._circaValue = clampMargins(
       buildInitialValue(
         (name) => this.getAttribute(name),
@@ -186,6 +201,7 @@ export class CircaInputElement extends HTMLElement {
       ),
       this._config,
     );
+    this._syncDistributionParams();
     this._renderConfig();
     this._render();
 
@@ -270,6 +286,9 @@ export class CircaInputElement extends HTMLElement {
 
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
+    this._gradientConfig = buildGradientConfig((name) =>
+      this.getAttribute(name),
+    );
 
     // Rebuild value when controlled attributes change
     if (
@@ -286,6 +305,15 @@ export class CircaInputElement extends HTMLElement {
           ),
           this._config,
         );
+      } else if (
+        _name === ATTR.VALUE &&
+        _newValue === null &&
+        _oldValue !== null
+      ) {
+        // Controlled → uncontrolled transition (value attribute removed):
+        // Reset internal state so the component doesn't render stale values.
+        this._circaValue = createInitialValue(this._config);
+        this._defaultsLocked = false;
       }
     }
 
@@ -309,8 +337,31 @@ export class CircaInputElement extends HTMLElement {
       );
     }
 
+    // Sync distributionParams (idempotent — no-op when gradient is not configured)
+    this._syncDistributionParams();
+
     this._renderConfig();
     this._render();
+  }
+
+  /** @internal Sync gradient config into distributionParams */
+  private _syncDistributionParams(): void {
+    if (this._gradientConfig.mode !== null) {
+      this._circaValue = {
+        ...this._circaValue,
+        distributionParams: {
+          gradient: {
+            mode: this._gradientConfig.mode,
+            intensity: this._gradientConfig.intensity,
+          },
+        },
+      };
+    } else if (this._circaValue.distributionParams.gradient) {
+      this._circaValue = {
+        ...this._circaValue,
+        distributionParams: {},
+      };
+    }
   }
 
   /** Expose the current CircaValue as a read-only property */
@@ -361,6 +412,16 @@ export class CircaInputElement extends HTMLElement {
     return this.hasAttribute("disabled");
   }
 
+  /** @internal Whether range-only mode is active */
+  private get _isRangeOnly(): boolean {
+    return this.hasAttribute("range-only");
+  }
+
+  /** @internal Effective asymmetric flag: true if asymmetric attribute or range-only mode is active */
+  private get _effectiveAsymmetric(): boolean {
+    return this._config.asymmetric || this._isRangeOnly;
+  }
+
   /** @internal Step size (1% of range when step="any") */
   private get _stepSize(): number {
     if (this._config.step === "any") {
@@ -389,7 +450,7 @@ export class CircaInputElement extends HTMLElement {
         marginHigh: mh,
       };
 
-      if (this._config.asymmetric) {
+      if (this._effectiveAsymmetric && !this._isRangeOnly) {
         // Asymmetric mode: Up/Left adjusts marginLow, Down/Right adjusts marginHigh
         if (key === "ArrowUp" || key === "ArrowLeft") {
           this._setValue(
@@ -555,7 +616,16 @@ export class CircaInputElement extends HTMLElement {
     let newMarginLow: number;
     let newMarginHigh: number;
 
-    if (this._config.asymmetric) {
+    if (this._isRangeOnly) {
+      // Range-only mode: vertical drag adjusts both margins symmetrically
+      // Down expands, up shrinks (same direction as symmetric mode)
+      const marginDeltaLow =
+        this._dragStartMarginLow + (deltaY / MARGIN_DRAG_SCALE_PX) * range;
+      const marginDeltaHigh =
+        this._dragStartMarginHigh + (deltaY / MARGIN_DRAG_SCALE_PX) * range;
+      newMarginLow = Math.max(marginDeltaLow, 0);
+      newMarginHigh = Math.max(marginDeltaHigh, 0);
+    } else if (this._effectiveAsymmetric) {
       // Asymmetric mode: lock the target margin on the first vertical movement
       // Drag up -> marginLow, drag down -> marginHigh
       // After locking, freely increase/decrease that margin (the other stays unchanged)
@@ -636,6 +706,9 @@ export class CircaInputElement extends HTMLElement {
     // Config rebuild is common to both modes
     this._config = buildConfig((name) => this.getAttribute(name));
     validateConfig(this._config);
+    this._gradientConfig = buildGradientConfig((name) =>
+      this.getAttribute(name),
+    );
     if (this._isControlled) {
       // Controlled: re-read value/margin attributes
       this._circaValue = clampMargins(
@@ -657,6 +730,7 @@ export class CircaInputElement extends HTMLElement {
         this._config,
       );
     }
+    this._syncDistributionParams();
     this._renderConfig();
     this._render();
   }
@@ -782,7 +856,7 @@ export class CircaInputElement extends HTMLElement {
       if (marginLow !== null || marginHigh !== null) {
         const low = marginLow ?? 0;
         const high = marginHigh ?? 0;
-        if (!this._config.asymmetric && low === high) {
+        if (!this._effectiveAsymmetric && low === high) {
           this._valueEl.setAttribute(
             "aria-valuetext",
             `${value}, plus or minus ${low}`,
@@ -944,7 +1018,7 @@ export class CircaInputElement extends HTMLElement {
     }
 
     // Accessibility for asymmetric handles
-    const isAsymmetric = this._config.asymmetric;
+    const isAsymmetric = this._effectiveAsymmetric;
     this._handleLow.setAttribute("tabindex", isAsymmetric ? "0" : "-1");
     this._handleLow.setAttribute(
       "aria-hidden",
@@ -973,12 +1047,22 @@ export class CircaInputElement extends HTMLElement {
 
     // Value indicator position
     if (value !== null) {
-      const percent = valueToPercent(value, min, max);
-      this._valueEl.style.left = `${percent}%`;
+      if (this._isRangeOnly) {
+        // Range-only: stretch the value element to cover the entire margin band
+        const lowPercent = valueToPercent(value - low, min, max);
+        const highPercent = valueToPercent(value + high, min, max);
+        this._valueEl.style.left = `${lowPercent}%`;
+        this._valueEl.style.width = `${highPercent - lowPercent}%`;
+      } else {
+        const percent = valueToPercent(value, min, max);
+        this._valueEl.style.left = `${percent}%`;
+        this._valueEl.style.width = "";
+      }
       this._valueEl.classList.remove("unset");
     } else {
       // Show thumb at center even when unset so keyboard users can focus it
       this._valueEl.style.left = "50%";
+      this._valueEl.style.width = "";
       this._valueEl.classList.add("unset");
     }
 
@@ -989,8 +1073,28 @@ export class CircaInputElement extends HTMLElement {
       this._marginEl.style.left = `${lowPercent}%`;
       this._marginEl.style.width = `${highPercent - lowPercent}%`;
       this._marginEl.style.display = "";
+
+      // Apply gradient if enabled
+      if (this._gradientConfig.mode !== null) {
+        const stops = generateGradientStops(
+          this._gradientConfig.mode,
+          this._gradientConfig.intensity,
+          low,
+          high,
+        );
+        const cssStops = stops
+          .map(
+            (s) =>
+              `rgba(var(--circa-margin-color-rgb, 25,118,210), ${s.opacity.toFixed(3)}) ${(s.position * 100).toFixed(1)}%`,
+          )
+          .join(", ");
+        this._marginEl.style.background = `linear-gradient(to right, ${cssStops})`;
+      } else {
+        this._marginEl.style.background = "";
+      }
     } else {
       this._marginEl.style.display = "none";
+      this._marginEl.style.background = "";
     }
 
     // Update handle positions and ARIA values

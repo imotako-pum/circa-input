@@ -1,8 +1,11 @@
 import type { CircaValue } from "@circa-input/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  formatAge,
   formatBudget,
   formatCircaValue,
+  formatDistance,
+  formatDuration,
   formatTemp,
   formatTime,
 } from "../format";
@@ -30,7 +33,7 @@ vi.mock("../../i18n", async () => {
 
   return {
     t: (key: string) =>
-      (translations[locale] as Record<string, string>)[key] ?? key,
+      (translations[locale] as unknown as Record<string, string>)[key] ?? key,
     getLocale: () => locale,
     setLocale: (l: "ja" | "en") => {
       locale = l;
@@ -213,5 +216,143 @@ describe("formatTemp (en)", () => {
     expect(
       formatTemp(makeValue({ value: 25, marginLow: 5, marginHigh: 10 })),
     ).toBe("20\u00B0C \u2013 35\u00B0C");
+  });
+});
+
+describe("formatAge (ja)", () => {
+  beforeEach(async () => {
+    await switchLocale("ja");
+  });
+
+  it("returns unset for null value", () => {
+    expect(formatAge(makeValue())).toBe("\u672A\u8A2D\u5B9A");
+  });
+
+  it("returns value only for zero margins", () => {
+    expect(
+      formatAge(makeValue({ value: 30, marginLow: 0, marginHigh: 0 })),
+    ).toBe("30\u6B73");
+  });
+
+  it("returns \u00B1 notation for symmetric margin", () => {
+    expect(
+      formatAge(makeValue({ value: 30, marginLow: 5, marginHigh: 5 })),
+    ).toBe("30\u6B73 \u00B1 5\u6B73");
+  });
+
+  it("returns range for asymmetric margin", () => {
+    expect(
+      formatAge(makeValue({ value: 30, marginLow: 5, marginHigh: 10 })),
+    ).toBe("25\u6B73 \u301C 40\u6B73");
+  });
+
+  it("shows range when marginLow is 0 but marginHigh is not", () => {
+    expect(
+      formatAge(makeValue({ value: 30, marginLow: 0, marginHigh: 10 })),
+    ).toBe("30\u6B73 \u301C 40\u6B73");
+  });
+});
+
+describe("formatAge (en)", () => {
+  beforeEach(async () => {
+    await switchLocale("en");
+  });
+
+  it("returns range with space before unit", () => {
+    expect(
+      formatAge(makeValue({ value: 30, marginLow: 5, marginHigh: 10 })),
+    ).toBe("25 years \u2013 40 years");
+  });
+
+  it("returns \u00B1 notation for symmetric margin", () => {
+    expect(
+      formatAge(makeValue({ value: 30, marginLow: 5, marginHigh: 5 })),
+    ).toBe("30 years \u00B1 5 years");
+  });
+});
+
+describe("formatDuration (ja)", () => {
+  beforeEach(async () => {
+    await switchLocale("ja");
+  });
+
+  it("returns unset for null value", () => {
+    expect(formatDuration(makeValue())).toBe("\u672A\u8A2D\u5B9A");
+  });
+
+  it("returns duration for value only", () => {
+    expect(
+      formatDuration(makeValue({ value: 60, marginLow: 0, marginHigh: 0 })),
+    ).toBe("1\u6642\u9593");
+  });
+
+  it("returns \u00B1 notation for symmetric margin", () => {
+    expect(
+      formatDuration(makeValue({ value: 60, marginLow: 15, marginHigh: 15 })),
+    ).toBe("1\u6642\u9593 \u00B1 15\u5206");
+  });
+
+  it("returns range for asymmetric margin", () => {
+    expect(
+      formatDuration(makeValue({ value: 60, marginLow: 10, marginHigh: 30 })),
+    ).toBe("50\u5206 \u301C 1\u6642\u959330\u5206");
+  });
+
+  it("handles minutes-only values", () => {
+    expect(
+      formatDuration(makeValue({ value: 30, marginLow: 0, marginHigh: 0 })),
+    ).toBe("30\u5206");
+  });
+});
+
+describe("formatDuration (en)", () => {
+  beforeEach(async () => {
+    await switchLocale("en");
+  });
+
+  it("returns range with en-dash for asymmetric margin", () => {
+    expect(
+      formatDuration(makeValue({ value: 60, marginLow: 10, marginHigh: 30 })),
+    ).toBe("50min \u2013 1h 30min");
+  });
+});
+
+describe("formatDistance (ja)", () => {
+  beforeEach(async () => {
+    await switchLocale("ja");
+  });
+
+  it("returns unset for null value", () => {
+    expect(formatDistance(makeValue())).toBe("\u672A\u8A2D\u5B9A");
+  });
+
+  it("returns value only for zero margins", () => {
+    expect(
+      formatDistance(makeValue({ value: 20, marginLow: 0, marginHigh: 0 })),
+    ).toBe("20km");
+  });
+
+  it("returns \u00B1 notation for symmetric margin", () => {
+    expect(
+      formatDistance(makeValue({ value: 20, marginLow: 5, marginHigh: 5 })),
+    ).toBe("20km \u00B1 5km");
+  });
+
+  it("returns range for asymmetric margin", () => {
+    expect(
+      formatDistance(makeValue({ value: 20, marginLow: 5, marginHigh: 10 })),
+    ).toBe("15km \u301C 30km");
+  });
+});
+
+describe("formatDistance (en)", () => {
+  beforeEach(async () => {
+    await switchLocale("en");
+  });
+
+  it("returns range with en-dash for asymmetric margin", () => {
+    expect(
+      formatDistance(makeValue({ value: 20, marginLow: 5, marginHigh: 10 })),
+    ).toBe("15km \u2013 30km");
   });
 });
