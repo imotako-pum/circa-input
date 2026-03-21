@@ -171,7 +171,13 @@ export function UseCasesDemo() {
       formatter: (v: CircaValue) => {
         const unit = t("format.yearsUnit");
         const withYears = (val: number) => `${val}${unit}`;
-        return formatWithMargin(v, withYears, withYears, withYears, t("format.range"));
+        return formatWithMargin(
+          v,
+          withYears,
+          withYears,
+          withYears,
+          t("format.range"),
+        );
       },
       initialValue: {
         value: 30,

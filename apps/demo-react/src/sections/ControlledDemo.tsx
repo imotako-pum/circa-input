@@ -10,11 +10,15 @@ const PRESETS = [
   { label: "25 ± 20", value: 25, marginLow: 20, marginHigh: 20 },
 ] as const;
 
+const INITIAL = PRESETS[0];
+
 export function ControlledDemo() {
   const t = useT();
-  const [value, setValue] = useState<number | null>(50);
-  const [marginLow, setMarginLow] = useState<number | null>(10);
-  const [marginHigh, setMarginHigh] = useState<number | null>(10);
+  const [value, setValue] = useState<number | null>(INITIAL.value);
+  const [marginLow, setMarginLow] = useState<number | null>(INITIAL.marginLow);
+  const [marginHigh, setMarginHigh] = useState<number | null>(
+    INITIAL.marginHigh,
+  );
 
   const circaValue: CircaValue = {
     value,
@@ -37,9 +41,9 @@ export function ControlledDemo() {
   };
 
   const reset = () => {
-    setValue(null);
-    setMarginLow(null);
-    setMarginHigh(null);
+    setValue(INITIAL.value);
+    setMarginLow(INITIAL.marginLow);
+    setMarginHigh(INITIAL.marginHigh);
   };
 
   return (
@@ -57,6 +61,7 @@ export function ControlledDemo() {
             marginLow={marginLow}
             marginHigh={marginHigh}
             onInput={handleInput}
+            onChange={handleInput}
           />
         </div>
 

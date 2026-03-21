@@ -305,6 +305,15 @@ export class CircaInputElement extends HTMLElement {
           ),
           this._config,
         );
+      } else if (
+        _name === ATTR.VALUE &&
+        _newValue === null &&
+        _oldValue !== null
+      ) {
+        // Controlled → uncontrolled transition (value attribute removed):
+        // Reset internal state so the component doesn't render stale values.
+        this._circaValue = createInitialValue(this._config);
+        this._defaultsLocked = false;
       }
     }
 

@@ -8,17 +8,17 @@ describe("generateGradientStops", () => {
       // Center is at position 0.5
       const center = stops.find((s) => Math.abs(s.position - 0.5) < 0.001);
       expect(center).toBeDefined();
-      expect(center!.opacity).toBeCloseTo(1);
+      expect(center?.opacity).toBeCloseTo(1);
 
       // Left edge (position=0)
       const leftEdge = stops.find((s) => s.position === 0);
       expect(leftEdge).toBeDefined();
-      expect(leftEdge!.opacity).toBeCloseTo(0);
+      expect(leftEdge?.opacity).toBeCloseTo(0);
 
       // Right edge (position=1)
       const rightEdge = stops.find((s) => Math.abs(s.position - 1) < 0.001);
       expect(rightEdge).toBeDefined();
-      expect(rightEdge!.opacity).toBeCloseTo(0);
+      expect(rightEdge?.opacity).toBeCloseTo(0);
     });
 
     it("asymmetric margins → each side independently normalized", () => {
@@ -26,7 +26,7 @@ describe("generateGradientStops", () => {
       // Center at 10/(10+30) = 0.25
       const center = stops.find((s) => Math.abs(s.position - 0.25) < 0.001);
       expect(center).toBeDefined();
-      expect(center!.opacity).toBeCloseTo(1);
+      expect(center?.opacity).toBeCloseTo(1);
 
       // Both edges reach 0 in relative mode
       const leftEdge = stops[0];
@@ -68,7 +68,7 @@ describe("generateGradientStops", () => {
       // Midpoint of left side: position = 0.25, d = 0.5, opacity = 0.5
       const midLeft = stops.find((s) => Math.abs(s.position - 0.25) < 0.01);
       expect(midLeft).toBeDefined();
-      expect(midLeft!.opacity).toBeCloseTo(0.5, 1);
+      expect(midLeft?.opacity).toBeCloseTo(0.5, 1);
     });
 
     it("intensity=2 produces steeper falloff", () => {
@@ -76,7 +76,7 @@ describe("generateGradientStops", () => {
       // Midpoint of left side: d = 0.5, opacity = (1-0.5)^2 = 0.25
       const midLeft = stops.find((s) => Math.abs(s.position - 0.25) < 0.01);
       expect(midLeft).toBeDefined();
-      expect(midLeft!.opacity).toBeCloseTo(0.25, 1);
+      expect(midLeft?.opacity).toBeCloseTo(0.25, 1);
     });
 
     it("intensity=0.5 produces gentler falloff", () => {
@@ -84,7 +84,7 @@ describe("generateGradientStops", () => {
       // Midpoint of left side: d = 0.5, opacity = (1-0.5)^0.5 ≈ 0.707
       const midLeft = stops.find((s) => Math.abs(s.position - 0.25) < 0.01);
       expect(midLeft).toBeDefined();
-      expect(midLeft!.opacity).toBeCloseTo(0.5 ** 0.5, 1);
+      expect(midLeft?.opacity).toBeCloseTo(0.5 ** 0.5, 1);
     });
   });
 
