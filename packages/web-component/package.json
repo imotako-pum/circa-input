@@ -1,6 +1,6 @@
 {
   "name": "@circa-input/web-component",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Web Component implementation of circa-input (<circa-input> tag)",
   "license": "MIT",
   "author": "imotako-pum",

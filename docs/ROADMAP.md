@@ -199,6 +199,7 @@ Decided on 2026-02-23. See `docs/spec.md` Sections 8-11 for details.
 | 2026-03-08 | M3 complete | Demo site implementation complete. 5-section structure (basic operations, asymmetric mode, use case collection, playground, form integration). Modular section design (sections/ + utils/). Responsive support. Build succeeds. lint/type-check clear. All 132 tests green. |
 | 2026-03-15 | M4 complete | React adapter implementation complete. CircaInput component (forwardRef + useImperativeHandle), type definitions (CircaInputProps/CircaInputHandle), camelCase to kebab-case attribute mapping, CustomEvent to callback bridging, Controlled/Uncontrolled support. 25 tests all green. Build succeeds (ESM gzip 0.97KB / CJS gzip 0.83KB). lint/type-check all clear. All 188 tests green. |
 | 2026-03-15 | M5 complete | Publish preparation complete. package.json metadata (license, repository, keywords, sideEffects, version 0.1.0). GitHub Actions CI (Node 18/20 matrix). Source code comments translated to English (19 files across core/web-component/react). Demo site i18n (EN/JA toggle, data-i18n attributes, format.ts locale support). Documentation translated to English (spec.md, ROADMAP.md, CONTRIB.md). README for root + each package. CHANGELOG. LICENSE. All 224 tests green. lint/type-check all clear. npm pack verified. |
+| 2026-03-22 | v0.3.0 release | Gradient visualization, range-only mode, RAF input throttle, controlled mode fix, README overhaul with "One input. One action." messaging, npm landing pages for all packages, updated images, keyword improvements. |
 
 ---
 

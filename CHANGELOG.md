@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-03-22
+
+### Added
+
+- **@circa-input/core** — Gradient stop generation module for distribution visualization
+- **@circa-input/core** — Runtime validation for `deserializeCircaValue` (#34)
+- **@circa-input/core** — `Distribution` type derived from const array for improved type safety (#36)
+- **@circa-input/web-component** — `range-only` attribute: margin-only mode without center value
+- **@circa-input/web-component** — Gradient visualization (`gradient` attribute with `"relative"` / `"absolute"` modes)
+- **Demo site** — Gradient and range-only sections with interactive examples
+- **Demo site (React)** — Gradient, range-only sections and expanded use cases
+
+### Fixed
+
+- **@circa-input/web-component** — Controlled mode: Clear/Reset now correctly updates the visual display
+- **@circa-input/web-component** — Pending attribute updates in uncontrolled mode after drag (#31)
+- **@circa-input/web-component** — Range-only drag behavior
+- **@circa-input/web-component** — Deduplicate `ElementInternals` console.warn (#36)
+
+### Changed
+
+- **Performance** — Throttle input events during drag with `requestAnimationFrame` (#35)
+- **Docs** — README overhaul: new "One input. One action." tagline, Why section, `<details>` API reference, npm landing pages for all packages
+- **Docs** — Updated demo GIF and use-cases screenshot
+- **Metadata** — Added keywords (`circa`, `approximate-input`, `fuzzy-input`, `uncertainty-ui`, `value-tolerance`) to all packages
+
 ## [0.2.0] - 2026-03-20
 
 ### Added
