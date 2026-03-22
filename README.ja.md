@@ -1,14 +1,19 @@
 # circa-input
 
-[![npm](https://img.shields.io/npm/v/@circa-input/core)](https://www.npmjs.com/package/@circa-input/core)
+[![npm](https://img.shields.io/npm/v/@circa-input/web-component)](https://www.npmjs.com/package/@circa-input/web-component)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@circa-input/web-component)](https://bundlephobia.com/package/@circa-input/web-component)
 [![CI](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml/badge.svg)](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [English](./README.md)
 
-**値**と**その曖昧さ**を同時に入力できるUIプリミティブです。
+**1つの入力。1アクション。値と曖昧さを同時に。** 数値だけでなく「その数値がどのくらいあいまいか」まで、1つのUIコンポーネントで入力できます。
 
-従来のUIはユーザーに「点」での入力を強制します（例：配達時間＝14:00）。しかし人間の本音は「14時前後」「5万円くらい」。circa-inputは、この曖昧さを構造化データとしてキャプチャします。
+```
+従来の入力:    「何時がいい？」 →  14:00          （正確すぎる嘘）
+circa-input:   「何時がいい？」 →  14:00 ± 1時間   （正直な答え）
+```
 
 > *circa*（ラテン語）：「約〜」「およそ」
 
@@ -16,7 +21,15 @@
 
 ![circa-input デモ](./docs/assets/demo.gif)
 
-![circa-input ユースケース](./docs/assets/demo-use-cases.png)
+## なぜ circa-input？
+
+人間は範囲で考えます。「14時前後」「5万円くらい」「通勤20〜30分」。スライダー2本、min/maxの入力欄、数値フィールド＋許容幅フィールド——既存のパーツを組み合わせれば同じことはできます。でもそれは複数のコントロール、複数の操作、そして分かりにくいUXです。
+
+**circa-input は、それを1つで実現します。** クリックで値を決め、端をドラッグして曖昧さを表現。1コンポーネント、1ジェスチャーで、出力は構造化データ（`値 ± マージン`）。マッチング、フィルタリング、最適化にそのまま使えます。
+
+- **配達時間** — 2つのドロップダウンではなく、1回のドラッグで「14時〜16時の間」
+- **予算** — minフィールドとmaxフィールドではなく「50万円 ± 10万円」
+- **通勤距離** — 追加コントロールなしで「20分がいいけど30分まではOK」を非対称マージンで表現
 
 ## 特徴
 
@@ -26,8 +39,10 @@
 - **Reactアダプター** — `<CircaInput>` でReactネイティブに使用可能
 - **フォーム連携** — ネイティブの `<form>` / FormData と統合
 - **アクセシブル** — キーボード操作とARIA対応
-- **カスタマイズ可能** — CSS Custom Propertiesでスタイル変更
+- **カスタマイズ可能** — 14個のCSS Custom Propertiesでスタイル変更
 - **軽量** — Core約1.3KB、Web Component約6.7KB（gzip）
+
+![circa-input ユースケース](./docs/assets/demo-use-cases.png)
 
 ## インストール
 
@@ -84,7 +99,7 @@ function App() {
 
 ## データ構造
 
-circa-inputは `CircaValue` を出力します：
+circa-input は `CircaValue` を出力します：
 
 ```typescript
 interface CircaValue {
@@ -92,12 +107,9 @@ interface CircaValue {
   marginLow: number | null;   // 下側の許容幅
   marginHigh: number | null;  // 上側の許容幅
   distribution: "normal" | "uniform";
-  distributionParams: DistributionParams;  // Record<string, never>（空オブジェクト）
+  distributionParams: DistributionParams;
 }
 ```
-
-> **注意:** `distribution` と `distributionParams` は将来の拡張用に予約されています。
-> v0.1.x では常にデフォルト値（`"normal"` と `{}`）が使用され、動作には影響しません。
 
 **例：** ユーザーが「14あたり」を±1の許容幅で選択した場合：
 
@@ -105,7 +117,20 @@ interface CircaValue {
 { "value": 14, "marginLow": 1, "marginHigh": 1, "distribution": "normal", "distributionParams": {} }
 ```
 
-## 属性
+> `distribution` と `distributionParams` は将来の拡張用です。現在は常に `"normal"` と `{}` がデフォルトです。
+
+## パッケージ
+
+| パッケージ | 説明 | サイズ (gzip) |
+|-----------|------|-------------|
+| [`@circa-input/core`](./packages/core) | フレームワーク非依存のコアロジック | ~1.3KB |
+| [`@circa-input/web-component`](./packages/web-component) | `<circa-input>` カスタム要素 | ~6.7KB |
+| [`@circa-input/react`](./packages/react) | Reactアダプター (`<CircaInput>`) | ~1.1KB |
+
+<details>
+<summary><strong>APIリファレンス</strong></summary>
+
+### 属性
 
 | 属性 | 型 | デフォルト | 説明 |
 |------|------|---------|------|
@@ -120,20 +145,40 @@ interface CircaValue {
 | `step` | number \| `"any"` | `"any"` | 値の粒度 |
 | `margin-max` | number | — | マージンの最大サイズ |
 | `asymmetric` | boolean | `false` | 上下独立マージンを有効化 |
+| `initial-margin` | number \| null | `null` | 初回クリック時に自動適用されるマージン（[自動マージン](#自動マージン)参照） |
 | `name` | string | — | フォームフィールド名 |
 | `required` | boolean | `false` | フォームバリデーション |
 | `disabled` | boolean | `false` | コンポーネントを無効化 |
 | `no-clear` | boolean | `false` | クリアボタンを非表示 |
 | `tick-interval` | number | — | 目盛りの間隔 |
 
-## イベント
+### 自動マージン
+
+ユーザーが初めてトラックをクリックすると、circa-input は `(max - min) / 10` のマージンを自動的に適用します。これは「人間の入力は本質的にあいまいである」というコアの思想を反映しています。
+
+- **デフォルト:** `initial-margin` は `null` → `(max - min) / 10` を自動計算
+- **カスタム:** `initial-margin="5"` → 常にマージン5を適用
+- **無効化:** `initial-margin="0"` → マージンなしのポイント値
+
+```html
+<!-- デフォルト: (100-0)/10 = 10 の自動マージン -->
+<circa-input min="0" max="100"></circa-input>
+
+<!-- 自動マージンなし -->
+<circa-input min="0" max="100" initial-margin="0"></circa-input>
+
+<!-- カスタム自動マージン: 5 -->
+<circa-input min="0" max="100" initial-margin="5"></circa-input>
+```
+
+### イベント
 
 | イベント | 型 | 発火タイミング |
 |---------|------|------------|
 | `change` | `CustomEvent<CircaValue>` | 操作終了時（mouseup/touchend） |
 | `input` | `CustomEvent<CircaValue>` | 操作中（mousemove/touchmove） |
 
-## キーボード操作
+### キーボード操作
 
 | キー | 動作 |
 |------|------|
@@ -142,9 +187,7 @@ interface CircaValue {
 | `Home` / `End` | 最小値/最大値にジャンプ |
 | `Delete` / `Backspace` | 値をクリア |
 
-## CSSカスタマイズ
-
-全14個のCSS Custom Properties:
+### CSSカスタマイズ
 
 | 変数名 | デフォルト | 説明 |
 |---|---|---|
@@ -175,7 +218,7 @@ circa-input {
 }
 ```
 
-## フォーム連携
+### フォーム連携
 
 ```html
 <form>
@@ -192,13 +235,7 @@ import { toPlainValue } from "@circa-input/core";
 const plain = toPlainValue(circaValue); // 14.0
 ```
 
-## パッケージ
-
-| パッケージ | 説明 | サイズ (gzip) |
-|-----------|------|-------------|
-| [`@circa-input/core`](./packages/core) | フレームワーク非依存のコアロジック | ~1.3KB |
-| [`@circa-input/web-component`](./packages/web-component) | `<circa-input>` カスタム要素 | ~6.7KB |
-| [`@circa-input/react`](./packages/react) | Reactアダプター (`<CircaInput>`) | ~1.1KB |
+</details>
 
 ## ブラウザサポート
 

@@ -1,8 +1,17 @@
 # @circa-input/web-component
 
-A Web Component (`<circa-input>`) for entering a value and its ambiguity. Works in any framework or vanilla HTML.
+[![npm](https://img.shields.io/npm/v/@circa-input/web-component)](https://www.npmjs.com/package/@circa-input/web-component)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@circa-input/web-component)](https://bundlephobia.com/package/@circa-input/web-component)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/imotako-pum/circa-input/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
 
-Part of the [circa-input](https://github.com/imotako-pum/circa-input) project.
+**One input. One action. Value + ambiguity.** A Web Component that captures not just a number, but how fuzzy that number is — in a single gesture. Works with any framework or plain HTML.
+
+No more wiring up two sliders, a min/max pair, or a number field plus tolerance. One `<circa-input>` tag replaces them all.
+
+![circa-input demo](https://raw.githubusercontent.com/imotako-pum/circa-input/main/docs/assets/demo.gif)
+
+**[Live Demo](https://imotako-pum.github.io/circa-input/)** · **[React? Use @circa-input/react](https://www.npmjs.com/package/@circa-input/react)**
 
 ## Install
 
@@ -10,7 +19,7 @@ Part of the [circa-input](https://github.com/imotako-pum/circa-input) project.
 npm install @circa-input/web-component
 ```
 
-## Usage
+## Quick Start
 
 ### With a bundler
 
@@ -20,22 +29,21 @@ npm install @circa-input/web-component
 </script>
 
 <circa-input min="0" max="100"></circa-input>
+
+<script>
+  document.querySelector("circa-input")
+    .addEventListener("change", (e) => {
+      console.log(e.detail);
+      // { value: 42, marginLow: 5, marginHigh: 5, distribution: "normal", distributionParams: {} }
+    });
+</script>
 ```
 
 ### Via CDN (no build tools)
 
 ```html
-<script src="https://unpkg.com/@circa-input/web-component@0.1.0/dist/index.iife.js"></script>
-
-<circa-input min="0" max="100"></circa-input>
-```
-
-```javascript
-document.querySelector("circa-input")
-  .addEventListener("change", (e) => {
-    console.log(e.detail);
-    // { value: 42, marginLow: 5, marginHigh: 5, distribution: "normal", distributionParams: {} }
-  });
+<script src="https://unpkg.com/@circa-input/web-component"></script>
+<circa-input min="0" max="24" step="1" tick-interval="6"></circa-input>
 ```
 
 ## Attributes
@@ -44,54 +52,49 @@ document.querySelector("circa-input")
 |-----------|------|---------|-------------|
 | `min` | number | 0 | Minimum value |
 | `max` | number | 100 | Maximum value |
-| `value` | number | null | Center value (controlled) |
-| `margin-low` | number | null | Lower margin (controlled) |
-| `margin-high` | number | null | Upper margin (controlled) |
-| `default-value` | number | null | Initial value (uncontrolled) |
-| `default-margin-low` | number | null | Initial lower margin (uncontrolled) |
-| `default-margin-high` | number | null | Initial upper margin (uncontrolled) |
-| `step` | number \| "any" | "any" | Value granularity |
-| `margin-max` | number | null | Max margin size |
-| `asymmetric` | boolean | false | Independent low/high margins |
-| `initial-margin` | number \| null | null | Margin applied on first value set. Default auto-calculates as `(max - min) / 10`. Set to `0` to disable. |
-| `name` | string | null | Form field name |
-| `required` | boolean | false | Form validation |
-| `tick-interval` | number | null | Tick mark interval |
-| `no-clear` | boolean | false | Hide clear button |
-| `disabled` | boolean | false | Disable interaction |
+| `value` | number | — | Center value (controlled) |
+| `margin-low` | number | — | Lower margin (controlled) |
+| `margin-high` | number | — | Upper margin (controlled) |
+| `default-value` | number | — | Initial value (uncontrolled) |
+| `default-margin-low` | number | — | Initial lower margin (uncontrolled) |
+| `default-margin-high` | number | — | Initial upper margin (uncontrolled) |
+| `step` | number \| `"any"` | `"any"` | Value granularity |
+| `margin-max` | number | — | Max margin size |
+| `asymmetric` | boolean | `false` | Independent low/high margins |
+| `initial-margin` | number \| null | `null` | Margin applied on first click. Default: `(max - min) / 10`. Set to `0` to disable. |
+| `name` | string | — | Form field name |
+| `required` | boolean | `false` | Form validation |
+| `tick-interval` | number | — | Tick mark interval |
+| `no-clear` | boolean | `false` | Hide clear button |
+| `disabled` | boolean | `false` | Disable interaction |
 
 ## Events
 
-- **`change`** — Fires on interaction end (`CustomEvent<CircaValue>`)
-- **`input`** — Fires during interaction (`CustomEvent<CircaValue>`)
+| Event | Type | When |
+|-------|------|------|
+| `change` | `CustomEvent<CircaValue>` | On interaction end |
+| `input` | `CustomEvent<CircaValue>` | During interaction |
 
-## CSS Custom Properties
+## CSS Customization
 
-| Variable | Default | Description |
-|---|---|---|
-| `--circa-track-height` | `8px` | Track height |
-| `--circa-track-color` | `#e0e0e0` | Track background color |
-| `--circa-track-radius` | `4px` | Track border radius |
-| `--circa-value-color` | `#1976d2` | Value indicator color |
-| `--circa-margin-color` | `rgba(25,118,210,0.2)` | Margin area color |
-| `--circa-handle-size` | `20px` | Handle diameter |
-| `--circa-handle-color` | `#1976d2` | Handle color |
-| `--circa-clear-color` | `#bbb` | Clear button color |
-| `--circa-clear-hover-color` | `#888` | Clear button hover color |
-| `--circa-tick-height` | `6px` | Tick line height |
-| `--circa-tick-width` | `1px` | Tick line width |
-| `--circa-tick-color` | `#999` | Tick line color |
-| `--circa-tick-label-size` | `10px` | Tick label font size |
-| `--circa-tick-label-color` | `#666` | Tick label color |
+Style with 14 CSS Custom Properties:
 
 ```css
 circa-input {
   --circa-track-height: 8px;
   --circa-track-color: #e0e0e0;
+  --circa-track-radius: 4px;
   --circa-value-color: #1976d2;
   --circa-margin-color: rgba(25, 118, 210, 0.2);
   --circa-handle-size: 20px;
   --circa-handle-color: #1976d2;
+  --circa-clear-color: #bbb;
+  --circa-clear-hover-color: #888;
+  --circa-tick-height: 6px;
+  --circa-tick-width: 1px;
+  --circa-tick-color: #999;
+  --circa-tick-label-size: 10px;
+  --circa-tick-label-color: #666;
 }
 ```
 
@@ -104,7 +107,11 @@ circa-input {
 </form>
 ```
 
-FormData will contain CircaValue as a JSON string.
+FormData contains the `CircaValue` as a JSON string.
+
+## Full Documentation
+
+See the [circa-input monorepo](https://github.com/imotako-pum/circa-input) for keyboard shortcuts, auto-margin details, and more examples.
 
 ## License
 

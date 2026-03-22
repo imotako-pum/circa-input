@@ -15,13 +15,18 @@
   },
   "keywords": [
     "circa-input",
+    "circa",
+    "approximate-input",
+    "fuzzy-input",
     "slider",
     "web-component",
     "custom-element",
     "tolerance",
     "ambiguity",
     "uncertainty",
+    "uncertainty-ui",
     "plus-minus",
+    "value-tolerance",
     "range-input",
     "form-component",
     "ui-primitive"

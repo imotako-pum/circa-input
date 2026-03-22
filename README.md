@@ -1,14 +1,19 @@
 # circa-input
 
-[![npm](https://img.shields.io/npm/v/@circa-input/core)](https://www.npmjs.com/package/@circa-input/core)
+[![npm](https://img.shields.io/npm/v/@circa-input/web-component)](https://www.npmjs.com/package/@circa-input/web-component)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@circa-input/web-component)](https://bundlephobia.com/package/@circa-input/web-component)
 [![CI](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml/badge.svg)](https://github.com/imotako-pum/circa-input/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [日本語](./README.ja.md)
 
-A UI primitive for entering a **value** and its **ambiguity** at the same time.
+**One input. One action. Value + ambiguity.** A single UI component that captures not just a number, but how fuzzy that number is.
 
-Traditional UIs force users to pick a single precise value — but people really mean "around 2pm" or "about $500". circa-input captures that fuzziness as structured data.
+```
+Traditional:    "What time?"  →  14:00          (a precise lie)
+circa-input:    "What time?"  →  14:00 ± 1h     (the honest answer)
+```
 
 > *circa* (Latin): "approximately"
 
@@ -16,7 +21,15 @@ Traditional UIs force users to pick a single precise value — but people really
 
 ![circa-input demo](./docs/assets/demo.gif)
 
-![circa-input use cases](./docs/assets/demo-use-cases.png)
+## Why
+
+Users think in ranges — "around 2pm", "about $500", "20–30 minute commute". You could build this with two sliders, a min/max pair, or a number input plus a tolerance field. But that's multiple controls, multiple interactions, and a confusing UX.
+
+**circa-input does it in one.** Click to set the value, drag the edges to express uncertainty. One component, one gesture, and the output is structured data (`value ± margin`) ready for matching, filtering, and optimization.
+
+- **Delivery time** — "between 2pm and 4pm" in a single drag, not two dropdowns
+- **Budget** — "$50k ± $10k" without a min field and a max field
+- **Commute tolerance** — "ideally 20 min, up to 30" with asymmetric margins — no extra controls
 
 ## Features
 
@@ -26,8 +39,10 @@ Traditional UIs force users to pick a single precise value — but people really
 - **React adapter** — First-class React support with `<CircaInput>`
 - **Form integration** — Works with native `<form>` and FormData
 - **Accessible** — Full keyboard navigation and ARIA support
-- **Customizable** — Style with CSS Custom Properties
-- **Lightweight** — Core ~1.3KB gzipped, Web Component ~6.7KB gzipped
+- **Customizable** — Style with 14 CSS Custom Properties
+- **Lightweight** — Core ~1.3KB, Web Component ~6.7KB gzipped
+
+![circa-input use cases](./docs/assets/demo-use-cases.png)
 
 ## Installation
 
@@ -92,12 +107,9 @@ interface CircaValue {
   marginLow: number | null;   // Lower tolerance
   marginHigh: number | null;  // Upper tolerance
   distribution: "normal" | "uniform";
-  distributionParams: DistributionParams;  // Record<string, never> (empty object)
+  distributionParams: DistributionParams;
 }
 ```
-
-> **Note:** `distribution` and `distributionParams` are reserved for future use.
-> In v0.1.x, they always default to `"normal"` and `{}` respectively and have no effect on behavior.
 
 **Example:** A user selects "around 14" with ±1 tolerance:
 
@@ -105,7 +117,20 @@ interface CircaValue {
 { "value": 14, "marginLow": 1, "marginHigh": 1, "distribution": "normal", "distributionParams": {} }
 ```
 
-## Attributes
+> `distribution` and `distributionParams` are reserved for future use. Currently they default to `"normal"` and `{}`.
+
+## Packages
+
+| Package | Description | Size (gzip) |
+|---------|-------------|-------------|
+| [`@circa-input/core`](./packages/core) | Framework-agnostic core logic | ~1.3KB |
+| [`@circa-input/web-component`](./packages/web-component) | `<circa-input>` custom element | ~6.7KB |
+| [`@circa-input/react`](./packages/react) | React adapter (`<CircaInput>`) | ~1.1KB |
+
+<details>
+<summary><strong>API Reference</strong></summary>
+
+### Attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -129,32 +154,31 @@ interface CircaValue {
 
 ### Auto-margin
 
-By default, when a user first clicks the track to set a value, circa-input automatically applies a margin of `(max - min) / 10` to both sides. This reflects circa-input's core philosophy: human input is inherently approximate, so the initial selection should convey that ambiguity rather than false precision.
+When a user first clicks the track, circa-input automatically applies a margin of `(max - min) / 10`. This reflects the core philosophy: human input is inherently approximate.
 
-- **Default behavior:** `initial-margin` is `null`, which auto-calculates as `(max - min) / 10`. For a 0–100 range this means ±10.
-- **Custom value:** Set `initial-margin="5"` to always apply a margin of 5 on first click.
-- **Opt out:** Set `initial-margin="0"` to get a point value with no automatic margin.
-- **Step interaction:** When `step` is configured, the auto-margin is snapped to the nearest step size.
+- **Default:** `initial-margin` is `null` → auto-calculates as `(max - min) / 10`
+- **Custom:** `initial-margin="5"` → always applies a margin of 5
+- **Opt out:** `initial-margin="0"` → point value, no automatic margin
 
 ```html
 <!-- Default: auto-margin of (100-0)/10 = 10 -->
 <circa-input min="0" max="100"></circa-input>
 
-<!-- No auto-margin: first click gives a precise point value -->
+<!-- No auto-margin -->
 <circa-input min="0" max="100" initial-margin="0"></circa-input>
 
 <!-- Custom auto-margin of 5 -->
 <circa-input min="0" max="100" initial-margin="5"></circa-input>
 ```
 
-## Events
+### Events
 
 | Event | Type | When |
 |-------|------|------|
 | `change` | `CustomEvent<CircaValue>` | On interaction end (mouseup/touchend) |
 | `input` | `CustomEvent<CircaValue>` | During interaction (mousemove/touchmove) |
 
-## Keyboard
+### Keyboard
 
 | Key | Action |
 |-----|--------|
@@ -163,9 +187,7 @@ By default, when a user first clicks the track to set a value, circa-input autom
 | `Home` / `End` | Jump to min / max |
 | `Delete` / `Backspace` | Clear value |
 
-## CSS Customization
-
-All 14 CSS Custom Properties:
+### CSS Customization
 
 | Variable | Default | Description |
 |---|---|---|
@@ -196,7 +218,7 @@ circa-input {
 }
 ```
 
-## Form Integration
+### Form Integration
 
 ```html
 <form>
@@ -213,13 +235,7 @@ import { toPlainValue } from "@circa-input/core";
 const plain = toPlainValue(circaValue); // 14.0
 ```
 
-## Packages
-
-| Package | Description | Size (gzip) |
-|---------|-------------|-------------|
-| [`@circa-input/core`](./packages/core) | Framework-agnostic core logic | ~1.3KB |
-| [`@circa-input/web-component`](./packages/web-component) | `<circa-input>` custom element | ~6.7KB |
-| [`@circa-input/react`](./packages/react) | React adapter (`<CircaInput>`) | ~1.1KB |
+</details>
 
 ## Browser Support
 

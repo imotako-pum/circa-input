@@ -20,3 +20,7 @@ test-results/
 # Debug logs
 pnpm-debug.log
 npm-debug.log
+
+.superpowers/*
+docs/superpowers/*
+docs/review/*
